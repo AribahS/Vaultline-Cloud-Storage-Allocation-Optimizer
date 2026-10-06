@@ -1,0 +1,128 @@
+<USER_REQUEST>
+Build a new UI in /src/ui, move the old UI to /src/legacy, and do not change /src/engine. Work scene by scene.
+CONTEXT
+"Vaultline" (Vite + React + TypeScript + Framer Motion) has a tested engine in /src/engine (knapsack DP, greedy, brute force, traceBack, worker, multi-place split, two-constraint variant, self-test). KEEP the engine and its tests untouched. Feedback on the current UI: it is a dashboard of many cards and three tabs, it looks boring and too technical, and there are too many things for an end user. REPLACE the whole UI with a fun, animated, single-flow experience. Build the new UI in /src/ui and move the old UI to /src/legacy (unused, kept only for reference; delete it at the end if everything works).
+
+PRODUCT IN ONE LINE
+"Drop your files, tell us how much room you have, tell us what matters, and watch Vaultline pack the best mix into the box."
+Audience: anyone, no technical knowledge. Second audience: a professor who wants to see the real algorithm. The second audience is served by "Teacher mode" so the first never sees complexity.
+
+DESIGN RULES
+1. One scene at a time. Each scene has ONE primary action and at most five visible elements.
+2. No tables, no forms with many fields, no jargon on the main path. Banned words on the main path: knapsack, capacity, weight, value, DP, dynamic programming, quota, priority, table, cell, recurrence, complexity, algorithm (allowed only in Teacher mode).
+3. Everything reacts: hover, press, drop, success and error each have an animation. Nothing appears without motion (respecting reduced motion).
+4. Every scene works with a mouse, touch and keyboard.
+5. Short friendly copy. Sentence case. No emoji (use illustrations and icons). Second person.
+
+VISUAL LANGUAGE: "STICKER PLAYGROUND"
+- Solid colours only. NO frosted glass, NO translucent white fills, NO backdrop-filter (except none at all).
+- Thick 2.5px ink outlines (#1B1533) on all cards, buttons, chips and tiles. Hard offset shadows (4px 4px 0 #1B1533) that shrink to 1px 1px on press (buttons "push down").
+- Radius: 18px cards, 999px buttons/chips, 14px tiles.
+- Canvas: light lilac #F3F0FF with a static soft pattern of tiny dots (#E2DBFF) plus slow-floating background shapes (circles, squares, triangles) in candy colours at low contrast, behind everything.
+- Candy palette: grape #7B5CFF (primary), mint #2FD3A0 (keep/success), tangerine #FF9F43 (attention), bubblegum #FF6FA5 (move/drop), sky #4CC9FF, lemon #FFD84D. Ink #1B1533, muted ink #57507A (4.5:1 on canvas), surface #FFFFFF.
+- File-type colours (tiles): documents sky, photos bubblegum, videos tangerine, audio lemon, archives mint, code grape, installers/system #9AA3C7, other #D9CBA0. Each tile also has an icon and a text label.
+- Typography: headings "Bricolage Grotesque" 800, body "Nunito" 600, numbers "JetBrains Mono". Hero 56 to 72px, scene titles 36 to 44px, body 18px, minimum 14px.
+- Dark mode: optional toggle, solid aubergine #191433 canvas, same sticker outlines in light lilac. DEFAULT IS LIGHT regardless of system setting.
+- Icons: lucide-react only.
+
+MASCOT: "BOXY"
+A small friendly bento-box character drawn as inline SVG (rounded square with two eyes and a small smile; no arms needed). States, each with a Framer Motion animation: idle (slow blink and gentle bob), curious (eyes look toward the cursor or dragged file), munching (files dropped in), thinking (packing), cheer (jump + sparkles), squished (box is nearly full), oops (shake when over the limit). Boxy sits bottom-left and shows a speech bubble with ONE short tip per scene (for example "Drop a folder onto me!"). Bubbles can be dismissed and are turned off by a small "Hide tips" toggle. Under reduced motion, Boxy is static with a swapped expression.
+
+APP SHELL
+- Top bar (slim, solid): logo (small bento icon + "Vaultline"), a progress trail of 5 dots that are clickable to go back (dots fill in as the box fills), and two small controls: theme toggle and "Teacher mode" (labelled, with a tooltip "Shows the algorithm behind the scenes"). Nothing else.
+- Scenes live at hash routes (#/drop, #/room, #/swipe, #/pack, #/result) and #/teacher. Use AnimatePresence with shared-layout transitions so pieces move between scenes (for example the box shrinks and slides from the Drop scene into the Room scene). Back button works.
+- Persist state in memory for the session. A "Start over" link is available in the result scene.
+- Global ErrorBoundary with a friendly Boxy "oops" card, "Try again" and "Start fresh". No blank screens ever.
+
+SCENE 1: DROP (#/drop)
+- Full-height hero. Left: headline "Fit the right files into the space you have." One-line subline "Nothing leaves your device." Right/center: a big open lunchbox illustration with three empty compartments, gently bobbing.
+- Whole window is a drop target. On drag-over: the box lid opens wide, compartments glow mint, Boxy looks at the file. On drop: file icons fly (spring physics, staggered) into the compartments and Boxy munches; a counter ticks up ("38 files, 12.4 GB").
+- Buttons under the box: "Choose files", "Choose folder" (webkitdirectory or File System Access API where available; call it "Choose folder" only) and "Try an example". The example button opens three sticker cards to pick from: "Student laptop", "Photographer", "Small office".
+- Next button "Pick your space" appears with a bounce once files exist.
+- Read only names, sizes, types and dates. Stream large folders in batches with a friendly progress bar ("Looking through your folder... 4,200 files").
+
+SCENE 2: ROOM (#/room)
+- Title: "Where do these need to fit?"
+- A row of 5 chunky sticker cards: Phone, Pen drive, Google account, Email, Custom. Choosing one animates the box on the right: it stretches or shrinks (a smooth scale of its outline and grid) to reflect the size, with the number ticking (for example "15 GB"). Custom reveals a big number input with MB/GB/TB chips and a slider that stretches the box live as you drag.
+- Below the box, ONE sentence that reacts: "Your files add up to 15.3 GB. You have 15 GB, so a little has to go." or "Everything fits with room to spare." (different Boxy expression for each).
+- "Add another place" is a small dashed sticker button (multi-place split). Each extra place adds a second compartment box beside the first with its own colour. Keep it optional and out of the way.
+- Next: "What matters most?".
+
+SCENE 3: SWIPE (#/swipe)
+Goal: get importance without typing numbers, in about 20 seconds.
+- Title "Quick: what matters?" with a subtitle "Swipe your biggest files. We will guess the rest."
+- A stack of up to 12 file cards (the biggest by size, plus any detected duplicates or files untouched for a year), Tinder-style with drag gestures and spring return. Each card shows the type illustration, file name, size, and how old it is.
+  Right = "Important", Left = "Can go", Up = "Must keep", Down or a "Skip" button = "Normal". Big buttons under the stack do the same (for keyboard and touch); arrow keys work too.
+  A side-by-side counter: three little jars (Important, Can go, Must keep) fill as cards land in them (animated).
+- Above the stack, one row of tiny insight chips (only if relevant): "3 possible duplicates", "5 files not opened in a year". Tapping a chip sends those files to the front of the stack.
+- A link "Skip, let Vaultline guess" applies smart defaults by type and recency (documents and code high, photos medium-high, videos medium, archives and installers lower, plus a recency bonus). The remaining files that were not swiped always use these defaults.
+- Mapping to the engine: Important 9, Normal 5, Can go 2, Must keep = pinned, and a "Never keep" is not offered here (available later in the result scene).
+- Next: "Pack it!".
+
+SCENE 4: PACK (#/pack) (a short cinematic, 4 to 6 seconds, skippable)
+- The engine runs in the worker while the screen shows Boxy "thinking" with a shuffling animation of the tiles.
+- Then the tiles fall into the box one after another with bounce and squash, sized to scale (treemap layout by size). Tiles that do not fit hop out to a "Move pile" on the right with a small "boing". Running totals count up ("Kept: 11 files, 11.9 GB").
+- A snug fit (95% or more full) triggers a small confetti burst and Boxy cheers. Over-limit from Must keep files triggers Boxy oops and a clear friendly message: "Your must-keep files use 16 GB, more than your 15 GB. Let one go, or make more room." with two buttons.
+- Auto-advances to the result, or press Skip.
+
+SCENE 5: RESULT (#/result) (compact, one screen at 1366x768)
+- Center: the packed box (treemap). Hover or tap a tile: a sticker popover with name, size, and a one-line reason ("Kept: important and small for its value" or "Moved: takes 23% of your space for low importance"). Keep tiles are solid with a check; move tiles are hatched pink with a "Move" tag.
+- Left column: three big count-up numbers only: "Files kept", "Space used" (with a fill meter), "Importance kept" (percentage).
+- Right column: the Move pile as stacked sticker cards (scrollable), each with an "Actually keep" button (pins it and recomputes with an animation) and a "Never keep" option for kept tiles via a context menu.
+- Bottom action row (max 4 buttons): "Download checklist" (printable Keep/Move lists with checkboxes; menu for CSV, copy, and a script with a review-before-running warning), "Pack it yourself", "What if I had more room?", "Show me how it decided".
+- "What if I had more room?" opens a slider panel: dragging updates the box live and a single sentence: "With 5 GB more, you would also keep Spotify_Offline_Cache.dat." Dots mark points where the plan changes. Uses the last row of the DP table.
+- "Pack it yourself" turns the box into a game: drag tiles in and out, live fill meter turns tangerine then pink if over the limit, Boxy reacts. Button "Reveal Vaultline's plan" animates the best answer and shows "You got 72%. Vaultline found 100%." with the differing tiles highlighted. Keyboard and tap alternatives.
+- "Show me how it decided" opens the story mode (below). "Start over" is a small text link.
+
+STORY MODE (modal or full-screen scene from Result, called "How Vaultline decided")
+Non-technical, 4 short slides with big visuals, next/back and a progress bar. Never more than one idea per slide.
+1. "A tricky puzzle": the greedy-fails example drawn as a 10-cell box with blocks A (6), B (5), C (5). Buttons "Try the quick way" (A drops in, the rest bounce out, score 30) and "Try the better way" (B and C snap in, score 48) and "Try it yourself".
+2. "Too many options": the 8 combinations of three pieces flip through quickly, invalid ones crossed out; then "With 30 files there are over a billion combinations."
+3. "The smart shortcut": a friendly, simplified animation of the table filling using the user's top 6 files and about 10 columns, with a single plain-English sentence per step and Play/Pause/Step controls. Cells light up one at a time; the mini box beside it shows the small puzzle being solved. Ends with the trace back drawing the path and the chosen tiles hopping into the box. No formulas, no code.
+4. "Quick vs careful": two boxes side by side (quick method vs Vaultline) with totals. Message: "Same answer here, but the quick method can miss the best mix."
+Footer link: "Teacher mode: see the full algorithm".
+
+TEACHER MODE (#/teacher) (for the professor; all the technical content lives here)
+Restyled in the same sticker language but denser and clearly labelled "Teacher mode". Tabs at the top: "Algorithm", "Compare", "Lab".
+- Algorithm: the full DP theatre with the table, legend, live plain-English explanation, recurrence with numbers substituted, pseudocode drawer with line sync, Play/Pause/Step/Back/Speed/Skip/Row-by-row, keyboard shortcuts, then the trace back. Fit the table with no clipping or overlap; the table scrolls inside its own container only when needed. Show the complexity numbers (time, space, cells computed, measured runtime, brute force count) with consistent counters from the engine and a unit test that asserts displayed numbers equal engine counters. Include the pseudo-polynomial and NP-complete note and the self-test button (200 random cases vs brute force).
+- Compare: greedy vs DP vs brute force (only when 20 items or fewer), plus the greedy-fails counterexample.
+- Lab: the extra variations (split across places, time-limit as a second constraint, fractional, fast estimate mode, speed test with fitted line, value-versus-room curve). Use plain titles and put the formal names in small muted text. Each has a one-line intro and a "how is this different from the basic plan" line. No cost, price or tier features anywhere in the app.
+
+ANIMATION SYSTEM (build once, reuse)
+- Central motion tokens: springs (soft, snappy, bouncy), durations (150, 250, 400 ms), easing. Shared components: PopIn, Stagger, CountUp, Squash (press), Wiggle, Bounce, ConfettiBurst (canvas, lightweight, no library or a tiny one), FloatingShapes (CSS transforms only, 60fps).
+- Respect prefers-reduced-motion everywhere: replace movement with fades, stop floating shapes, no confetti.
+- Optional sounds: tiny WebAudio blips (drop, boing, cheer) OFF by default, toggle in the top bar via a speaker icon. No audio files needed.
+
+ENGINE HOOKS (reuse existing engine)
+- Packing: run the worker with Must keep pinned, Never keep removed, importance mapped as above, spaces from Scene 2 (multi-place uses the existing sequential DP). Ties prefer fewer files.
+- Reasons text per tile: derived from importance-per-size rank and share of space.
+- What-if: use the final DP row for all room values; compute the list of change points.
+- Pack it yourself: compare the user's total importance to the optimum.
+- Keep the 500-item limit with a friendly choice (keep the 500 largest, group by folder, bundle tiny files).
+
+QUALITY BAR
+- No blank screens: ErrorBoundary plus smoke tests that mount every scene with empty data, sample data and after clearing files.
+- Automated axe check: zero contrast or aria violations on every scene in both themes.
+- Performance: 5,000 scanned files stay smooth (virtualised or capped visuals, worker, batches); animations at 60fps; no layout shift.
+- Responsive to 360px: the box and cards stack, swipe works by touch, buttons at least 44px.
+- Accessibility: visible focus rings (3px grape with offset), aria-live for Boxy tips and step sentences, keyboard alternatives for every drag or swipe, colour never the only cue.
+- Existing engine tests pass; add tests for the swipe-to-importance mapping, pluralisation helper, change-point calculation and pack-it-yourself scoring.
+
+BUILD PLAN AND VERIFICATION
+Work scene by scene in this order: shell + design tokens + animation system + Boxy, Drop, Room, Swipe, Pack, Result, Story mode, Teacher mode, polish. After EACH scene open the running app in your browser tool, exercise it (drag, drop, swipe, keyboard, resize to 360px and 1366x768, light and dark), take screenshots into /docs/qa, and fix issues before the next scene. Console must be clean.
+
+ACCEPTANCE CHECKS
+(a) A new user gets from opening the app to a finished plan with: Try an example, Pick your space, Skip or swipe, Pack it, in under 30 seconds. (b) Each scene has one clear primary action and at most five visible elements. (c) No banned jargon on the main path. (d) Every interaction has visible motion; reduced-motion is respected. (e) Swipe cards, Pack it yourself and the story puzzle all work by mouse, touch and keyboard. (f) Look is the sticker style, light by default, solid colours, no glass, no washed-out cards. (g) Result fits one screen at 1366x768. (h) Teacher mode shows the full algorithm with consistent numbers and passing self-test. (i) No cost or tier features exist. (j) No blank screens. At the end, list anything not completed.
+</USER_REQUEST>
+<ADDITIONAL_METADATA>
+The current local time is: 2026-09-29T23:26:38+05:30.
+
+The user's current state is as follows:
+Active Document: c:\Users\Admin\AOA\package.json (LANGUAGE_JSON)
+Cursor is on line: 35
+Other open documents:
+- c:\Users\Admin\AOA\package.json (LANGUAGE_JSON)
+</ADDITIONAL_METADATA>
+<USER_SETTINGS_CHANGE>
+The user changed setting `Model Selection` from Gemini 3.6 Flash (Medium) to Claude Opus 4.6 (Thinking). No need to comment on this change if the user doesn't ask about it. If reporting what model you are, please use a human readable name instead of the exact string.
+</USER_SETTINGS_CHANGE>

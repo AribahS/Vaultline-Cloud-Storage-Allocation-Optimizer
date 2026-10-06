@@ -1,0 +1,197 @@
+/* ============================================================
+   Vaultline — Aurora Sorbet & Bento Box Design System
+   Light-first, frosted glass cards, soft aurora drifting canvas,
+   vivid file-type color system, accessible contrast (>= 4.5:1).
+   ============================================================ */
+
+@import url('https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;700;800&family=JetBrains+Mono:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap');
+
+:root {
+  /* Fonts */
+  --font-display: 'Bricolage Grotesque', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-sans: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+
+  /* Spacing Scale */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --space-10: 40px;
+  --space-12: 48px;
+  --space-16: 64px;
+
+  /* Radii */
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 18px;
+  --radius-xl: 24px;
+  --radius-full: 9999px;
+
+  /* Transitions */
+  --transition-fast: 160ms cubic-bezier(0.16, 1, 0.3, 1);
+  --transition-normal: 260ms cubic-bezier(0.16, 1, 0.3, 1);
+  --transition-spring: 420ms cubic-bezier(0.34, 1.56, 0.64, 1);
+
+  /* Type Scale */
+  --text-xs: 12px;
+  --text-sm: 14px;
+  --text-base: 15px;
+  --text-lg: 18px;
+  --text-xl: 22px;
+  --text-2xl: 28px;
+  --text-3xl: 38px;
+  --text-hero: 48px;
+
+  /* Content widths */
+  --content-max: 1280px;
+
+  /* File-type vivid colours */
+  --color-type-doc: #4F5BD5;
+  --color-type-photo: #FF6B6B;
+  --color-type-video: #FFB020;
+  --color-type-audio: #F472B6;
+  --color-type-archive: #14B8A6;
+  --color-type-code: #8B5CF6;
+  --color-type-system: #64748B;
+  --color-type-other: #C7B99A;
+
+  /* Status Colors */
+  --color-keep: #10B981;
+  --color-keep-hover: #059669;
+  --color-keep-surface: rgba(16, 185, 129, 0.12);
+  --color-keep-glow: rgba(16, 185, 129, 0.25);
+
+  --color-move: #F9A8B8;
+  --color-move-hover: #F472B6;
+  --color-move-surface: rgba(249, 168, 184, 0.18);
+  --color-move-border: rgba(249, 168, 184, 0.6);
+
+  --color-attention: #F5A524;
+  --color-attention-surface: rgba(245, 165, 36, 0.14);
+}
+
+/* ─── Light Theme (Default: Aurora Sorbet) ─── */
+:root, [data-theme='light'] {
+  --color-canvas: #FBFAFF;
+  --color-surface: rgba(255, 255, 255, 0.72);
+  --color-surface-solid: #FFFFFF;
+  --color-surface-raised: rgba(255, 255, 255, 0.88);
+  --color-surface-sunken: rgba(244, 241, 252, 0.7);
+
+  --color-ink: #14112B;
+  --color-muted: #5B5878;
+  --color-dim: #8884A4;
+
+  --color-primary: #6C47FF;
+  --color-primary-hover: #8F6BFF;
+  --color-primary-surface: rgba(108, 71, 255, 0.08);
+  --color-primary-glow: rgba(108, 71, 255, 0.22);
+
+  --color-success: var(--color-keep);
+  --color-warning: var(--color-attention);
+  --color-danger: #EF4444;
+
+  --color-border: rgba(108, 71, 255, 0.1);
+  --color-border-subtle: rgba(20, 17, 43, 0.06);
+  --color-border-glass: rgba(255, 255, 255, 0.85);
+  --color-border-strong: rgba(20, 17, 43, 0.14);
+
+  --shadow-card: 0 4px 20px -2px rgba(20, 17, 43, 0.05), 0 1px 4px -1px rgba(20, 17, 43, 0.03);
+  --shadow-elevation: 0 16px 40px -8px rgba(20, 17, 43, 0.1), 0 4px 12px -2px rgba(20, 17, 43, 0.05);
+  --shadow-glass: 0 8px 32px 0 rgba(108, 71, 255, 0.07);
+  --shadow-glow-primary: 0 0 24px rgba(108, 71, 255, 0.22);
+
+  /* Aurora Blobs */
+  --blob-sky: #A5D8FF;
+  --blob-lilac: #CDB8FF;
+  --blob-peach: #FFD3B6;
+  --blob-opacity: 0.35;
+
+  /* Backward compat */
+  --color-bg-base: var(--color-canvas);
+  --color-bg-surface: var(--color-surface-solid);
+  --color-bg-elevated: var(--color-surface-raised);
+  --color-text-main: var(--color-ink);
+  --color-text-muted: var(--color-muted);
+  --color-text-dim: var(--color-dim);
+  --color-accent-lime: var(--color-keep);
+  --color-accent-lime-surface: var(--color-keep-surface);
+  --color-primary-blue: var(--color-primary);
+  --color-primary-blue-surface: var(--color-primary-surface);
+  --color-amber: var(--color-attention);
+  --color-amber-surface: var(--color-attention-surface);
+  --color-dropped: var(--color-move);
+  --color-dropped-surface: var(--color-move-surface);
+}
+
+/* ─── Soft Dark Theme (Deep Aubergine — NOT black) ─── */
+[data-theme='dark'] {
+  --color-canvas: #1B1730;
+  --color-surface: rgba(35, 30, 60, 0.72);
+  --color-surface-solid: #231E3C;
+  --color-surface-raised: rgba(45, 39, 76, 0.85);
+  --color-surface-sunken: rgba(22, 18, 40, 0.7);
+
+  --color-ink: #F7F5FC;
+  --color-muted: #B4B0D0;
+  --color-dim: #7C779C;
+
+  --color-primary: #8F6BFF;
+  --color-primary-hover: #A78BFA;
+  --color-primary-surface: rgba(143, 107, 255, 0.15);
+  --color-primary-glow: rgba(143, 107, 255, 0.3);
+
+  --color-success: #34D399;
+  --color-warning: #FBBF24;
+  --color-danger: #F87171;
+
+  --color-border: rgba(143, 107, 255, 0.16);
+  --color-border-subtle: rgba(255, 255, 255, 0.08);
+  --color-border-glass: rgba(255, 255, 255, 0.12);
+  --color-border-strong: rgba(255, 255, 255, 0.2);
+
+  --shadow-card: 0 4px 20px rgba(0, 0, 0, 0.3);
+  --shadow-elevation: 0 16px 40px rgba(0, 0, 0, 0.45);
+  --shadow-glass: 0 8px 32px 0 rgba(0, 0, 0, 0.35);
+  --shadow-glow-primary: 0 0 24px rgba(143, 107, 255, 0.25);
+
+  /* Dark Aurora Blobs */
+  --blob-sky: #2B4C7E;
+  --blob-lilac: #4E327A;
+  --blob-peach: #663945;
+  --blob-opacity: 0.4;
+
+  /* Backward compat */
+  --color-bg-base: var(--color-canvas);
+  --color-bg-surface: var(--color-surface-solid);
+  --color-bg-elevated: var(--color-surface-raised);
+  --color-text-main: var(--color-ink);
+  --color-text-muted: var(--color-muted);
+  --color-text-dim: var(--color-dim);
+  --color-accent-lime: var(--color-keep);
+  --color-accent-lime-surface: var(--color-keep-surface);
+  --color-primary-blue: var(--color-primary);
+  --color-primary-blue-surface: var(--color-primary-surface);
+  --color-amber: var(--color-attention);
+  --color-amber-surface: var(--color-attention-surface);
+  --color-dropped: var(--color-move);
+  --color-dropped-surface: var(--color-move-surface);
+}
+
+/* ─── Classroom Present Mode ─── */
+body.present-mode {
+  font-size: 16px;
+}
+body.present-mode .hide-in-present {
+  display: none !important;
+}
+body.present-mode .dp-cell {
+  font-size: 15px !important;
+  min-width: 46px !important;
+  height: 42px !important;
+}
+
