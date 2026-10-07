@@ -2,8 +2,7 @@ import React, { useEffect, useState, useRef } from 'react';
 import { NavLink } from 'react-router-dom';
 import { LayoutDashboard, Folder, Sliders, LineChart, Wrench, FileText, Settings, HelpCircle, Box, PanelLeftClose, PanelLeftOpen, PieChart, X } from 'lucide-react';
 import { useAppStore } from '../../store/useAppStore';
-import { pluralize } from '../../utils/pluralize';
-import { formatBytes } from '../../utils/formatBytes';
+import { formatSize, pluralize } from '../../lib/format';
 import { SettingsModal } from './SettingsModal';
 import { HelpModal } from './HelpModal';
 
@@ -195,7 +194,7 @@ export const Sidebar: React.FC = () => {
       {/* Mini Card — A3: uses formatBytes */}
       <div style={{ padding: collapsed ? '16px 8px' : '16px' }}>
         <div 
-          title={collapsed ? `${files.length} files, ${formatBytes(totalSize)}` : undefined}
+          title={collapsed ? `${pluralize(files.length, 'file')}, ${formatSize(totalSize)}` : undefined}
           style={{
             backgroundColor: 'rgba(0, 0, 0, 0.25)',
             borderRadius: '8px',
@@ -212,10 +211,10 @@ export const Sidebar: React.FC = () => {
             <>
               <div style={{ fontSize: '12px', fontWeight: 600, marginBottom: '4px', color: '#fff', whiteSpace: 'nowrap' }}>Current scan</div>
               <div style={{ fontSize: '12px', fontVariantNumeric: 'tabular-nums', whiteSpace: 'nowrap' }}>
-                {pluralize(files.length, 'file')} ({formatBytes(totalSize)})
+                {pluralize(files.length, 'file')} ({formatSize(totalSize)})
               </div>
               <div style={{ fontSize: '12px', whiteSpace: 'nowrap' }}>
-                {quotaBytes > 0 ? `${formatBytes(quotaBytes)} target` : 'No target set'}
+                {quotaBytes > 0 ? `${formatSize(quotaBytes)} target` : 'No target set'}
               </div>
             </>
           )}

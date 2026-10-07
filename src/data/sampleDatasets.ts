@@ -29,18 +29,18 @@ function createSampleFile(
 }
 
 export const STUDENT_LAPTOP_DATASET: FileMetadata[] = [
-  createSampleFile('Algorithms_Final_Report.pdf', '/Documents/School/Algorithms_Final_Report.pdf', 8.4 * BYTE_UNITS.MB, 3, 10),
-  createSampleFile('Machine_Learning_Thesis.docx', '/Documents/School/Machine_Learning_Thesis.docx', 18.2 * BYTE_UNITS.MB, 5, 9),
+  createSampleFile('Algorithms_Final_Report.pdf', '/Documents/School/Algorithms_Final_Report.pdf', 8.4 * BYTE_UNITS.MB, 5, 10),
+  createSampleFile('Machine_Learning_Thesis.docx', '/Documents/School/Machine_Learning_Thesis.docx', 18.2 * BYTE_UNITS.MB, 10, 9),
   createSampleFile('Compiler_Project_Repo.zip', '/Code/Compiler_Project_Repo.zip', 320 * BYTE_UNITS.MB, 12, 9),
-  createSampleFile('Ubuntu_24_04_LTS.iso', '/Downloads/Ubuntu_24_04_LTS.iso', 9 * BYTE_UNITS.GB, 90, 4),
-  createSampleFile('WebDev_Node_Modules_Backup.tar.gz', '/Code/Backups/WebDev_Node_Modules_Backup.tar.gz', 2.7 * BYTE_UNITS.GB, 45, 3),
-  createSampleFile('Class_Lecture_Week10.mp4', '/Videos/Lectures/Class_Lecture_Week10.mp4', 5.5 * BYTE_UNITS.GB, 8, 7),
-  createSampleFile('Class_Lecture_Week09.mp4', '/Videos/Lectures/Class_Lecture_Week09.mp4', 4.8 * BYTE_UNITS.GB, 15, 6),
-  createSampleFile('VSCode_Setup_Installer.exe', '/Downloads/VSCode_Setup_Installer.exe', 98 * BYTE_UNITS.MB, 120, 2),
-  createSampleFile('Spotify_Offline_Cache.dat', '/AppData/Spotify/Spotify_Offline_Cache.dat', 12 * BYTE_UNITS.GB, 2, 2),
-  createSampleFile('Study_Group_Notes.md', '/Documents/Notes/Study_Group_Notes.md', 150 * BYTE_UNITS.KB, 1, 9),
-  createSampleFile('Campus_Festival_Photos.zip', '/Photos/Campus_Festival_Photos.zip', 4 * BYTE_UNITS.GB, 210, 6),
-  createSampleFile('Resume_Software_Intern.pdf', '/Documents/Career/Resume_Software_Intern.pdf', 1.1 * BYTE_UNITS.MB, 4, 10),
+  createSampleFile('Ubuntu_24_04_LTS.iso', '/Downloads/Ubuntu_24_04_LTS.iso', 4.8 * BYTE_UNITS.GB, 20, 4),
+  createSampleFile('WebDev_Node_Modules_Backup.tar.gz', '/Code/Backups/WebDev_Node_Modules_Backup.tar.gz', 1.2 * BYTE_UNITS.GB, 25, 3),
+  createSampleFile('Class_Lecture_Week10.mp4', '/Videos/Lectures/Class_Lecture_Week10.mp4', 1.8 * BYTE_UNITS.GB, 8, 7),
+  createSampleFile('Class_Lecture_Week09.mp4', '/Videos/Lectures/Class_Lecture_Week09.mp4', 1.6 * BYTE_UNITS.GB, 15, 6),
+  createSampleFile('Campus_Festival_Photos.zip', '/Photos/Campus_Festival_Photos.zip', 2.1 * BYTE_UNITS.GB, 30, 5),
+  createSampleFile('Spotify_Offline_Cache.dat', '/AppData/Spotify/Spotify_Offline_Cache.dat', 3.4 * BYTE_UNITS.GB, 2, 2),
+  createSampleFile('Project_Proposal.pdf', '/Documents/Work/Project_Proposal.pdf', 14 * BYTE_UNITS.MB, 14, 9),
+  createSampleFile('Expense_Report_Q3.docx', '/Documents/Finance/Expense_Report_Q3.docx', 15 * BYTE_UNITS.MB, 5, 8),
+  createSampleFile('System_Config_Backup.bin', '/Backups/System/System_Config_Backup.bin', 75 * BYTE_UNITS.MB, 20, 5),
 ];
 
 export const PHOTOGRAPHER_DATASET: FileMetadata[] = [
