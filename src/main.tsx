@@ -19,9 +19,10 @@ localStorage.removeItem('vaultline_landing_seen');
 sessionStorage.removeItem('vaultline_landing_seen_session');
 
 function Root() {
-  const [showLanding, setShowLanding] = useState(true);
+  const [showLanding, setShowLanding] = useState(() => !window.location.hash);
 
   const handleEnter = () => {
+    window.location.hash = '#/';
     setShowLanding(false);
   };
 

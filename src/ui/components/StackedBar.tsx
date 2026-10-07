@@ -1,5 +1,5 @@
 import React from 'react';
-import { formatBytes } from '../../utils/formatBytes';
+import { formatSize } from '../../lib/format';
 
 // A13: Extended category color map with correct file type mappings
 const FILE_CATEGORY_COLORS: Record<string, string> = {
@@ -79,7 +79,7 @@ export const StackedBar: React.FC<StackedBarProps> = ({ data, width = 280, heigh
                 {CATEGORY_LABELS[item.category] || item.category}
               </span>
               <span style={{ fontVariantNumeric: 'tabular-nums', color: 'var(--color-ink-3)', whiteSpace: 'nowrap', flexShrink: 0 }}>
-                {formatBytes(item.size)}
+                {formatSize(item.size)}
               </span>
               <span style={{ fontVariantNumeric: 'tabular-nums', color: 'var(--color-ink-3)', width: '44px', textAlign: 'right', flexShrink: 0 }}>
                 {pct}%

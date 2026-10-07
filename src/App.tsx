@@ -2,8 +2,9 @@ import React from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
 import { AppShell } from './ui/components/AppShell';
 
+import { DashboardPage } from './ui/pages/DashboardPage';
+
 // Placeholders for routes
-const Dashboard = () => <div className="page-container"><h1>Dashboard</h1></div>;
 const FilesPage = () => <div className="page-container"><h1>Files</h1></div>;
 const OptimizerPage = () => <div className="page-container"><h1>Optimizer</h1></div>;
 const AlgorithmPage = () => <div className="page-container"><h1>Algorithm Analysis</h1></div>;
@@ -14,7 +15,7 @@ export const App: React.FC = () => {
   return (
     <AppShell>
       <Routes>
-        <Route path="/" element={<Dashboard />} />
+        <Route path="/" element={<DashboardPage />} />
         <Route path="/files" element={<FilesPage />} />
         <Route path="/optimizer" element={<OptimizerPage />} />
         <Route path="/algorithm" element={<AlgorithmPage />} />
