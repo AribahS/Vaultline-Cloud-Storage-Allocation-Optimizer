@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Card } from '../components/Card';
 import { KpiCard } from '../components/KpiCard';
@@ -14,7 +14,13 @@ import { STUDENT_LAPTOP_DATASET } from '../../data/sampleDatasets';
 
 export const DashboardPage: React.FC = () => {
   const navigate = useNavigate();
-  const { files, quotaBytes, knapsackResult, setFiles } = useAppStore();
+  const { files, quotaBytes, knapsackResult, setFiles, isComputing, triggerRecompute, autoRunOptimizer, isPlanStale } = useAppStore();
+
+  useEffect(() => {
+    if (autoRunOptimizer && files.length > 0 && (!knapsackResult || isPlanStale) && !isComputing) {
+      triggerRecompute();
+    }
+  }, [autoRunOptimizer, files.length, knapsackResult, isComputing, isPlanStale, triggerRecompute]);
 
   const totalSize = useMemo(() => files.reduce((s, f) => s + f.size, 0), [files]);
   
@@ -64,15 +70,15 @@ export const DashboardPage: React.FC = () => {
         />
         <KpiCard
           label="Kept by plan"
-          value={knapsackResult ? pluralize(knapsackResult.keptItems.length, 'file') : '--'}
-          subtitle={knapsackResult ? formatSize(knapsackResult.totalSizeKept) : '--'}
+          value={knapsackResult ? pluralize(knapsackResult.keptItems.length, 'file') : (isComputing ? '...' : '--')}
+          subtitle={knapsackResult ? formatSize(knapsackResult.totalSizeKept) : (isComputing ? 'Computing...' : '--')}
           icon={<CheckCircle size={20} color="var(--color-semantic-keep)" />}
           accentColor="var(--color-semantic-keep)"
         />
         <KpiCard
           label="Importance retained"
-          value={knapsackResult ? `${importanceRetained}%` : '--'}
-          subtitle={knapsackResult ? `${knapsackResult.totalValue} of ${knapsackResult.maxPossibleValue}` : '--'}
+          value={knapsackResult ? `${importanceRetained}%` : (isComputing ? '...' : '--')}
+          subtitle={knapsackResult ? `${knapsackResult.totalValue} of ${knapsackResult.maxPossibleValue}` : (isComputing ? 'Computing...' : '--')}
           icon={<TrendingUp size={20} color="var(--color-brass)" />}
           accentColor="var(--color-brass)"
         />
@@ -86,12 +92,11 @@ export const DashboardPage: React.FC = () => {
               <h3 style={{ margin: '0 0 12px 0' }}>Optimised plan</h3>
               {knapsackResult ? (
                 <p className="text-body-small text-ink-2" style={{ margin: 0, lineHeight: 1.6 }}>
-                  Keep {pluralize(knapsackResult.keptItems.length, 'file')} ({formatSize(knapsackResult.totalSizeKept)}).<br />
-                  Move {pluralize(knapsackResult.droppedItems.length, 'file')} ({formatSize(knapsackResult.totalSizeDropped)}).
+                  {knapsackResult.keptItems.length} of {files.length} files fit in {formatSize(quotaBytes)}. {pluralize(knapsackResult.droppedItems.length, 'file')} ({formatSize(knapsackResult.totalSizeDropped)}) moves elsewhere.
                 </p>
               ) : (
                 <p className="text-body-small text-ink-2" style={{ margin: 0 }}>
-                  Run the optimizer to see your plan.
+                  Computing your plan...
                 </p>
               )}
             </div>
@@ -117,7 +122,7 @@ export const DashboardPage: React.FC = () => {
               <li>{largeFiles.length} files are over 10% of total space</li>
             )}
             {largestFile && (
-              <li>The largest file is {largestFile.name} ({formatSize(largestFile.size)})</li>
+              <li>Largest file: {largestFile.name} ({formatSize(largestFile.size)})</li>
             )}
             {knapsackResult && knapsackResult.droppedItems.length > 0 && (
               <li>Moving {pluralize(knapsackResult.droppedItems.length, 'file')} frees {formatSize(knapsackResult.totalSizeDropped)}</li>

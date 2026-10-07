@@ -14,7 +14,7 @@ const FILE_CATEGORY_COLORS: Record<string, string> = {
   database:   'var(--color-file-code)',
   disk_image: '#8B6E4E',
   cache:      '#B07A5A',
-  other:      'var(--color-file-other)',
+  other:      '#A8947A',
 };
 
 const CATEGORY_LABELS: Record<string, string> = {
@@ -43,13 +43,17 @@ export const StackedBar: React.FC<StackedBarProps> = ({ data, width = 280, heigh
   if (total === 0) return null;
 
   const sorted = [...data].sort((a, b) => b.size - a.size);
+  const MIN_WIDTH = 4;
+  const numItems = sorted.length;
+  // Make sure we don't reserve more than the total width, but normally width > numItems * 4
+  const availableWidth = Math.max(0, width - numItems * MIN_WIDTH);
   let offsetX = 0;
 
   return (
     <div>
       <svg width="100%" height={height} viewBox={`0 0 ${width} ${height}`} style={{ display: 'block', borderRadius: '6px', overflow: 'hidden' }}>
         {sorted.map(item => {
-          const w = (item.size / total) * width;
+          const w = MIN_WIDTH + (item.size / total) * availableWidth;
           const x = offsetX;
           offsetX += w;
           const color = FILE_CATEGORY_COLORS[item.category] || FILE_CATEGORY_COLORS.other;
