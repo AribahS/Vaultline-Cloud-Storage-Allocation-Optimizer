@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Box, HardDrive, Shield, Cpu, ChevronRight, ArrowRight } from 'lucide-react';
+import { useAppStore } from '../../store/useAppStore';
+import { STUDENT_LAPTOP_DATASET } from '../../data/sampleDatasets';
 
 /* ------------------------------------------------------------------ */
 /*  Animation variants                                                   */
@@ -44,7 +46,7 @@ const FEATURES = [
   {
     icon: HardDrive,
     title: 'Works on real folders',
-    body: 'Drop 100 000 files. The table stays smooth. The algorithm completes in milliseconds.',
+    body: 'Add your own files or a whole folder. Only names, sizes and dates are read, and the plan is computed right in your browser.',
   },
 ];
 
@@ -196,6 +198,8 @@ interface LandingPageProps {
 
 export const LandingPage: React.FC<LandingPageProps> = ({ onEnter }) => {
   const [ready, setReady] = useState(false);
+  const [skipFocused, setSkipFocused] = useState(false);
+  const setFiles = useAppStore((s) => s.setFiles);
 
   useEffect(() => {
     // Short timeout so fonts are loaded before we animate
@@ -219,10 +223,13 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onEnter }) => {
       <a
         href="#main-app"
         onClick={(e) => { e.preventDefault(); onEnter(); }}
+        onFocus={() => setSkipFocused(true)}
+        onBlur={() => setSkipFocused(false)}
         style={{
           position: 'absolute',
           top: 12,
-          left: 12,
+          left: '50%',
+          transform: skipFocused ? 'translateX(-50%)' : 'translate(-50%, -200%)',
           zIndex: 9999,
           padding: '6px 14px',
           borderRadius: 6,
@@ -231,8 +238,8 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onEnter }) => {
           fontWeight: 600,
           fontSize: 13,
           textDecoration: 'none',
-          opacity: 0.85,
-          transition: 'opacity 150ms',
+          opacity: skipFocused ? 1 : 0,
+          transition: 'transform 150ms, opacity 150ms',
         }}
         onMouseEnter={(e) => (e.currentTarget.style.opacity = '1')}
         onMouseLeave={(e) => (e.currentTarget.style.opacity = '0.85')}
@@ -394,7 +401,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onEnter }) => {
 
                 <button
                   id="landing-cta-secondary"
-                  onClick={onEnter}
+                  onClick={() => { setFiles(STUDENT_LAPTOP_DATASET); onEnter(); }}
                   style={{
                     display: 'flex', alignItems: 'center', gap: 8,
                     padding: '14px 24px',
@@ -432,9 +439,9 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onEnter }) => {
                 }}
               >
                 {[
-                  { num: '100k+', label: 'files handled' },
-                  { num: '<1 ms', label: 'typical runtime' },
                   { num: '0 bytes', label: 'uploaded' },
+                  { num: 'O(n x W)', label: 'dynamic programming' },
+                  { num: 'Provably', label: 'optimal' },
                 ].map((stat) => (
                   <div key={stat.label} style={{ display: 'flex', alignItems: 'baseline', gap: 6 }}>
                     <span style={{ fontSize: 18, fontWeight: 700, color: '#B8893C' }}>{stat.num}</span>
