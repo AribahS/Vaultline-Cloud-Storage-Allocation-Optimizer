@@ -2,8 +2,7 @@ import React, { useMemo, useRef, useState } from 'react';
 import { useReactTable, getCoreRowModel, getSortedRowModel, flexRender, ColumnDef, SortingState } from '@tanstack/react-table';
 import { useVirtualizer } from '@tanstack/react-virtual';
 import { FileMetadata } from '../../engine/types';
-import { FileCode, Image, FileVideo, Music, Archive, FileText, Settings, File } from 'lucide-react';
-
+import { FileCode, Image, FileVideo, Music, Archive, FileText, Settings, File, AlertTriangle } from 'lucide-react';
 import { useAppStore } from '../../store/useAppStore';
 
 import { formatSize } from '../../lib/format';
@@ -29,6 +28,7 @@ export const FilesTable: React.FC<{
   const updatePriority = useAppStore(state => state.updatePriority);
   const resetPrioritySuggestion = useAppStore(state => state.resetPrioritySuggestion);
   const knapsackResult = useAppStore(state => state.knapsackResult);
+  const quotaBytes = useAppStore(state => state.quotaBytes);
   const setFilePlacement = useAppStore(state => state.setFilePlacement);
   const bulkSetPlacement = useAppStore(state => state.bulkSetPlacement);
   const bulkSetImportance = useAppStore(state => state.bulkSetImportance);
@@ -75,7 +75,16 @@ export const FilesTable: React.FC<{
       accessorKey: 'size',
       header: 'Size',
       size: 120,
-      cell: info => <div style={{ textAlign: 'right', fontVariantNumeric: 'tabular-nums' }}>{formatSize(info.getValue<number>())}</div>,
+      cell: info => {
+        const size = info.getValue<number>();
+        const isWarning = size > quotaBytes * 0.1;
+        return (
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: '6px' }}>
+            {isWarning && <span title="Over 10% of target capacity" style={{ display: 'flex' }}><AlertTriangle size={14} color="var(--color-semantic-warning)" /></span>}
+            <div style={{ textAlign: 'right', fontVariantNumeric: 'tabular-nums' }}>{formatSize(size)}</div>
+          </div>
+        );
+      },
     },
     {
       accessorKey: 'priority',

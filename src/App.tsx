@@ -4,8 +4,7 @@ import { AppShell } from './ui/components/AppShell';
 
 import { DashboardPage } from './ui/pages/DashboardPage';
 
-// Placeholders for routes
-const FilesPage = () => <div className="page-container"><h1>Files</h1></div>;
+import { FilesPage } from './ui/pages/FilesPage';
 const OptimizerPage = () => <div className="page-container"><h1>Optimizer</h1></div>;
 const AlgorithmPage = () => <div className="page-container"><h1>Algorithm Analysis</h1></div>;
 const ToolsPage = () => <div className="page-container"><h1>Extra Tools</h1></div>;

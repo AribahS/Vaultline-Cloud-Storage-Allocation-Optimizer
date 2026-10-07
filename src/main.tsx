@@ -12,6 +12,9 @@ import App from './App.tsx'
 
 import { ErrorBoundary } from './ui/components/ErrorBoundary'
 import { LandingPage } from './ui/pages/LandingPage'
+import { deleteAutoSession } from './engine/storageDb'
+
+deleteAutoSession();
 
 // Landing page shows on every fresh page load.
 // sessionStorage/localStorage keys cleaned up.
