@@ -4,7 +4,7 @@ import { Drawer } from './Drawer';
 import { useAppStore } from '../../store/useAppStore';
 import { FileCode, Image, FileVideo, Music, Archive, FileText, Settings, File, Calendar, HardDrive, Tag, Pin, EyeOff } from 'lucide-react';
 
-import { formatBytes } from '../../utils/formatBytes';
+import { formatSize } from '../../lib/format';
 
 const getFileAge = (lastModified: number): string => {
   const diff = Date.now() - lastModified;
@@ -45,10 +45,26 @@ export const FileDetailDrawer: React.FC<FileDetailDrawerProps> = ({ file, onClos
 
   const detailRows: { label: string; value: React.ReactNode; icon: React.ReactNode }[] = [
     { label: 'Full path', value: file.path, icon: <File size={16} color="var(--color-ink-3)" /> },
-    { label: 'Size', value: `${formatBytes(file.size)} (${file.size.toLocaleString()} bytes)`, icon: <HardDrive size={16} color="var(--color-ink-3)" /> },
+    { label: 'Size', value: `${formatSize(file.size)} (${file.size.toLocaleString()} bytes)`, icon: <HardDrive size={16} color="var(--color-ink-3)" /> },
     { label: 'Type', value: `${file.type} / ${file.category}`, icon: <Tag size={16} color={getCategoryColor(file.category)} /> },
     { label: 'Modified', value: `${new Date(file.lastModified).toLocaleDateString()} (${getFileAge(file.lastModified)})`, icon: <Calendar size={16} color="var(--color-ink-3)" /> },
   ];
+
+  if (file.isPinned || file.isExcluded) {
+    detailRows.push({
+      label: 'Constraint',
+      value: file.isPinned ? 'Always keep' : 'Never keep',
+      icon: file.isPinned ? <Pin size={16} color="var(--color-semantic-keep)" /> : <EyeOff size={16} color="var(--color-semantic-move)" />
+    });
+  }
+
+  if (file.isDuplicate && file.duplicateGroup) {
+    detailRows.push({
+      label: 'Duplicate group',
+      value: file.duplicateGroup,
+      icon: <File size={16} color="var(--color-semantic-warning)" />
+    });
+  }
 
   return (
     <Drawer isOpen={!!file} onClose={onClose} title="File details" width="420px">
@@ -148,6 +164,28 @@ export const FileDetailDrawer: React.FC<FileDetailDrawerProps> = ({ file, onClos
               {p.label}
             </button>
           ))}
+        </div>
+      </div>
+
+      {/* Placement */}
+      <div style={{ marginTop: '16px', padding: '16px', backgroundColor: 'var(--color-surface-sunken)', borderRadius: 'var(--radius-card)', border: '1px solid var(--color-border-hairline)' }}>
+        <div style={{ fontWeight: 600, fontSize: '14px', marginBottom: '8px' }}>Placement</div>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+          {(() => {
+            const knapsackResult = useAppStore(state => state.knapsackResult);
+            if (!knapsackResult) return <span className="text-caption text-ink-3">Not planned</span>;
+            const isKept = knapsackResult.keptItems.some(i => i.id === file.id);
+            return (
+              <span style={{
+                display: 'inline-flex', padding: '4px 10px', borderRadius: '6px', fontSize: '13px', fontWeight: 600,
+                backgroundColor: isKept ? 'rgba(145,199,177,0.2)' : 'rgba(179,57,81,0.1)',
+                color: isKept ? 'var(--color-semantic-keep-stroke)' : 'var(--color-semantic-move)',
+                border: `1px solid ${isKept ? 'var(--color-semantic-keep-stroke)' : 'var(--color-semantic-move)'}`
+              }}>
+                {isKept ? 'Kept' : 'Moved'}
+              </span>
+            );
+          })()}
         </div>
       </div>
 

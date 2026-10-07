@@ -6,7 +6,7 @@ import { FileCode, Image, FileVideo, Music, Archive, FileText, Settings, File } 
 
 import { useAppStore } from '../../store/useAppStore';
 
-import { formatBytes } from '../../utils/formatBytes';
+import { formatSize } from '../../lib/format';
 import { suggestFileScore } from '../../lib/scoring';
 
 const getCategoryIcon = (category: string) => {
@@ -29,6 +29,10 @@ export const FilesTable: React.FC<{
   const updatePriority = useAppStore(state => state.updatePriority);
   const resetPrioritySuggestion = useAppStore(state => state.resetPrioritySuggestion);
   const knapsackResult = useAppStore(state => state.knapsackResult);
+  const setFilePlacement = useAppStore(state => state.setFilePlacement);
+  const bulkSetPlacement = useAppStore(state => state.bulkSetPlacement);
+  const bulkSetImportance = useAppStore(state => state.bulkSetImportance);
+  const removeFile = useAppStore(state => state.removeFile);
   const [selectedIds, setSelectedIds] = useState<Set<string>>(() => new Set());
   const keptIds = useMemo(() => new Set(knapsackResult?.keptItems.map(item => item.id) ?? []), [knapsackResult]);
   const [sorting, setSorting] = useState<SortingState>([]);
@@ -71,7 +75,7 @@ export const FilesTable: React.FC<{
       accessorKey: 'size',
       header: 'Size',
       size: 120,
-      cell: info => <div style={{ textAlign: 'right', fontVariantNumeric: 'tabular-nums' }}>{formatBytes(info.getValue<number>())}</div>,
+      cell: info => <div style={{ textAlign: 'right', fontVariantNumeric: 'tabular-nums' }}>{formatSize(info.getValue<number>())}</div>,
     },
     {
       accessorKey: 'priority',
@@ -112,7 +116,7 @@ export const FilesTable: React.FC<{
             {file.prioritySource === 'edited' && (
               <button type="button" onClick={() => resetPrioritySuggestion(file.id, suggested.score)} title="Reset to suggested" style={{ border: 0, background: 'transparent', color: 'var(--color-ink-2)', fontSize: 11, cursor: 'pointer' }}>Edited · Reset</button>
             )}
-            {file.prioritySource !== 'edited' && <span className="score-reasons" title={`Suggested scores, not ground truth. ${suggested.reasons.join(', ')}`}>{suggested.reasons.length ? suggested.reasons.map(reason => <span className="score-reason-chip" key={reason}>{reason}</span>) : <span className="score-reason-chip">Suggested</span>}</span>}
+            {file.prioritySource !== 'edited' && <span className="score-reasons" title={`Suggested scores, not ground truth. ${suggested.reasons.join(', ')}`}>{suggested.reasons.length ? suggested.reasons.map((reason: string) => <span className="score-reason-chip" key={reason}>{reason}</span>) : <span className="score-reason-chip">Suggested</span>}</span>}
           </div>
         );
       }
@@ -123,14 +127,31 @@ export const FilesTable: React.FC<{
       size: 100,
       cell: info => {
         const file = info.row.original;
-        return file.isExcluded ? 'Never keep' : file.isPinned ? 'Always keep' : !knapsackResult ? 'Not planned' : keptIds.has(file.id) ? 'Kept' : 'Moved';
+        if (!knapsackResult) return 'Not planned';
+        const isKept = keptIds.has(file.id);
+        return (
+          <span style={{
+            display: 'inline-flex', padding: '2px 8px', borderRadius: '12px', fontSize: '12px', fontWeight: 600,
+            backgroundColor: isKept ? 'rgba(145,199,177,0.2)' : 'rgba(179,57,81,0.1)',
+            color: isKept ? 'var(--color-semantic-keep-stroke)' : 'var(--color-semantic-move)',
+            border: `1px solid ${isKept ? 'var(--color-semantic-keep-stroke)' : 'var(--color-semantic-move)'}`
+          }}>
+            {isKept ? 'Kept' : 'Moved'}
+          </span>
+        );
       },
     },
     {
       id: 'status',
       header: 'Status',
       size: 105,
-      cell: info => info.row.original.isDuplicate ? 'Duplicate' : info.row.original.prioritySource === 'edited' ? 'Overridden' : 'Suggested',
+      cell: info => {
+        const file = info.row.original;
+        if (file.isPinned) return 'Always keep';
+        if (file.isExcluded) return 'Never keep';
+        if (file.isDuplicate) return 'Duplicate';
+        return 'none';
+      }
     },
     {
       accessorKey: 'lastModified',
@@ -144,8 +165,15 @@ export const FilesTable: React.FC<{
     }
   ], [updatePriority, resetPrioritySuggestion, selectedIds, knapsackResult, keptIds]);
 
+  const searchQuery = useAppStore(state => state.searchQuery);
+  const filteredFiles = useMemo(() => {
+    if (!searchQuery) return files;
+    const q = searchQuery.toLowerCase();
+    return files.filter(f => f.name.toLowerCase().includes(q) || f.path.toLowerCase().includes(q));
+  }, [files, searchQuery]);
+
   const table = useReactTable({
-    data: files,
+    data: filteredFiles,
     columns,
     state: { sorting },
     onSortingChange: setSorting,
@@ -170,11 +198,46 @@ export const FilesTable: React.FC<{
         overflow: 'auto', 
         border: '1px solid var(--color-border-hairline)', 
         borderRadius: '6px',
-        backgroundColor: 'var(--color-surface-raised)'
+        backgroundColor: 'var(--color-surface-raised)',
+        position: 'relative'
       }}
     >
+      {selectedIds.size > 0 && (
+        <div style={{
+          position: 'sticky', top: 0, zIndex: 10,
+          backgroundColor: 'var(--color-brass-soft)', padding: '12px 16px',
+          borderBottom: '1px solid var(--color-border-strong)',
+          display: 'flex', alignItems: 'center', gap: '12px'
+        }}>
+          <span style={{ fontWeight: 600, fontSize: '14px', color: 'var(--color-ink)' }}>
+            {selectedIds.size} selected
+          </span>
+          <div style={{ height: '24px', width: '1px', backgroundColor: 'var(--color-border-hairline)', margin: '0 4px' }} />
+          <button className="vault-btn btn-sm btn-secondary" onClick={() => { bulkSetPlacement(Array.from(selectedIds), 'always_keep'); setSelectedIds(new Set()); }}>Always keep</button>
+          <button className="vault-btn btn-sm btn-secondary" onClick={() => { bulkSetPlacement(Array.from(selectedIds), 'never_keep'); setSelectedIds(new Set()); }}>Never keep</button>
+          <button className="vault-btn btn-sm btn-secondary" onClick={() => { bulkSetPlacement(Array.from(selectedIds), 'auto'); setSelectedIds(new Set()); }}>Clear constraint</button>
+          <select 
+            className="vault-btn btn-sm btn-secondary"
+            style={{ WebkitAppearance: 'none', MozAppearance: 'none', appearance: 'none', paddingRight: '24px' }}
+            onChange={(e) => {
+              if (e.target.value) {
+                bulkSetImportance(Array.from(selectedIds), parseInt(e.target.value, 10));
+                setSelectedIds(new Set());
+                e.target.value = '';
+              }
+            }}
+          >
+            <option value="">Set importance...</option>
+            <option value="10">10 ★ High</option>
+            <option value="5">5 • Mid</option>
+            <option value="1">1 Low</option>
+          </select>
+          <div style={{ flex: 1 }} />
+          <button className="vault-btn btn-sm btn-danger" onClick={() => { Array.from(selectedIds).forEach(removeFile); setSelectedIds(new Set()); }}>Remove from list</button>
+        </div>
+      )}
       <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '14px', tableLayout: 'fixed' }}>
-        <thead style={{ backgroundColor: 'var(--color-surface-sunken)', position: 'sticky', top: 0, zIndex: 1, display: 'block' }}>
+        <thead style={{ backgroundColor: 'var(--color-surface-sunken)', position: 'sticky', top: selectedIds.size > 0 ? 53 : 0, zIndex: 1, display: 'block' }}>
           {table.getHeaderGroups().map(headerGroup => (
             <tr key={headerGroup.id} style={{ display: 'flex', width: '100%' }}>
               {headerGroup.headers.map(header => (

@@ -9,13 +9,7 @@ import { useAppStore, PresetType } from '../../store/useAppStore';
 import { scanFileList, scanWithFileSystemAccess } from '../../engine/fileScanner';
 import { FileMetadata } from '../../engine/types';
 
-const formatBytesHuman = (bytes: number) => {
-  if (bytes === 0) return '0 B';
-  const k = 1024;
-  const sizes = ['B', 'KB', 'MB', 'GB', 'TB'];
-  const i = Math.floor(Math.log(bytes) / Math.log(k));
-  return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
-};
+import { formatSize, pluralize } from '../../lib/format';
 
 export const FilesPage: React.FC = () => {
   const { files, addFiles, isScanning, setIsScanning, scanProgress, clearFiles, loadPreset, knapsackResult } = useAppStore();
@@ -32,7 +26,8 @@ export const FilesPage: React.FC = () => {
     try {
       const { scanFileList } = await import('../../engine/fileScanner');
       const newFiles = await scanFileList(e.target.files, (p) => setIsScanning(true, p));
-      addFiles(newFiles);
+      const withPriority = newFiles.map(f => ({ ...f, priority: 5, prioritySource: 'edited' as const }));
+      addFiles(withPriority);
     } catch (err) {
       console.error(err);
     } finally {
@@ -47,7 +42,8 @@ export const FilesPage: React.FC = () => {
     try {
       const { scanFileList } = await import('../../engine/fileScanner');
       const newFiles = await scanFileList(e.target.files, (p) => setIsScanning(true, p));
-      addFiles(newFiles);
+      const withPriority = newFiles.map(f => ({ ...f, priority: 5, prioritySource: 'edited' as const }));
+      addFiles(withPriority);
     } catch (err) {
       console.error(err);
     } finally {
@@ -61,7 +57,8 @@ export const FilesPage: React.FC = () => {
       setIsScanning(true, { count: 0 });
       try {
         const newFiles = await scanWithFileSystemAccess((p) => setIsScanning(true, p));
-        addFiles(newFiles);
+        const withPriority = newFiles.map(f => ({ ...f, priority: 5, prioritySource: 'edited' as const }));
+        addFiles(withPriority);
       } catch (err) {
         console.warn('Folder scan cancelled or failed', err);
       } finally {
@@ -80,6 +77,9 @@ export const FilesPage: React.FC = () => {
   // Get kept/moved status from knapsack result
   const keptIds = new Set(knapsackResult?.keptItems.map(i => i.id) || []);
 
+  const alwaysKeepSize = files.filter(f => f.isPinned).reduce((acc, f) => acc + f.size, 0);
+  const isOverQuota = alwaysKeepSize > useAppStore.getState().quotaBytes;
+  
   const selectedIndex = selectedFile ? files.findIndex(f => f.id === selectedFile.id) : -1;
 
   return (
@@ -88,24 +88,29 @@ export const FilesPage: React.FC = () => {
       <input type="file" multiple ref={fileInputRef} onChange={handleFileSelect} style={{ display: 'none' }} />
       <input type="file" ref={folderInputRef} onChange={handleFolderSelect} style={{ display: 'none' }} {...{ webkitdirectory: '', directory: '' } as any} />
 
+      {/* Warning */}
+      {isOverQuota && (
+        <div style={{ padding: '12px 16px', backgroundColor: 'rgba(179,57,81,0.1)', border: '1px solid var(--color-semantic-move)', borderRadius: '8px', color: 'var(--color-semantic-move)', marginBottom: '24px', fontWeight: 600 }}>
+          Warning: Always keep files ({formatSize(alwaysKeepSize)}) exceed target capacity ({formatSize(useAppStore.getState().quotaBytes)}).
+        </div>
+      )}
+
       {/* Header */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '24px', gap: '16px', flexWrap: 'wrap' }}>
         <div>
-          <h1 style={{ marginBottom: '4px' }}>Files</h1>
-          {files.length > 0 && (
-            <div style={{ display: 'flex', gap: '16px', flexWrap: 'wrap', marginTop: '8px' }}>
-              <span className="text-body-small text-ink-2" style={{ fontVariantNumeric: 'tabular-nums' }}>
-                {files.length.toLocaleString()} files
-              </span>
-              <span className="text-body-small text-ink-3">
-                {formatBytesHuman(totalSize)}
+          {files.length > 0 ? (
+            <div style={{ display: 'flex', gap: '16px', flexWrap: 'wrap', marginTop: '8px', alignItems: 'center' }}>
+              <span style={{ fontSize: '24px', fontWeight: 600, color: 'var(--color-forest)' }}>
+                {pluralize(files.length, 'file')}, {formatSize(totalSize)}
               </span>
               {dupCount > 0 && (
-                <span className="text-body-small" style={{ color: 'var(--color-semantic-warning)' }}>
+                <span className="text-body-small" style={{ color: 'var(--color-semantic-warning)', marginTop: '6px' }}>
                   {dupCount} possible duplicates
                 </span>
               )}
             </div>
+          ) : (
+            <h1 style={{ marginBottom: '4px' }}>Files</h1>
           )}
         </div>
         <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
@@ -148,7 +153,11 @@ export const FilesPage: React.FC = () => {
             )}
           </div>
           {files.length > 0 && (
-            <Button variant="danger" size="sm" icon={<Trash2 size={16} />} onClick={clearFiles}>
+            <Button variant="danger" size="sm" icon={<Trash2 size={16} />} onClick={() => {
+              if (window.confirm(`Remove all ${files.length} files?`)) {
+                clearFiles();
+              }
+            }}>
               Clear
             </Button>
           )}
@@ -179,11 +188,8 @@ export const FilesPage: React.FC = () => {
             Drop files or folders anywhere on this window, or use the buttons below to start a scan. Nothing leaves your device.
           </p>
           <div style={{ display: 'flex', justifyContent: 'center', gap: '12px', flexWrap: 'wrap' }}>
-            <Button variant="primary" icon={<FolderPlus size={16} />} onClick={handleAddFolder}>
-              Scan a folder
-            </Button>
             <Button variant="secondary" icon={<FilePlus size={16} />} onClick={() => fileInputRef.current?.click()}>
-              Select files
+              Add files
             </Button>
             <Button variant="ghost" icon={<Download size={16} />} onClick={() => loadPreset('student')}>
               Try sample data
@@ -216,14 +222,51 @@ export const FilesPage: React.FC = () => {
                 <div style={{ textAlign: 'center', padding: '48px 24px', color: 'var(--color-ink-3)' }}>
                   <p style={{ fontWeight: 600 }}>No duplicates detected</p>
                   <p className="text-body-small" style={{ marginTop: '8px' }}>
-                    Duplicates are matched by name and size. Enable content verification in Settings for exact matching.
+                    Duplicates are matched by name and size.
                   </p>
                 </div>
               ) : (
-                <FilesTable
-                  files={files.filter(f => f.isDuplicate)}
-                  onRowClick={(file) => setSelectedFile(file)}
-                />
+                <div style={{ padding: '24px' }}>
+                  {Object.entries(
+                    files.filter(f => f.isDuplicate).reduce((acc, f) => {
+                      if (!f.duplicateGroup) return acc;
+                      if (!acc[f.duplicateGroup]) acc[f.duplicateGroup] = [];
+                      acc[f.duplicateGroup].push(f);
+                      return acc;
+                    }, {} as Record<string, typeof files>)
+                  ).map(([groupId, groupFiles]) => (
+                    <div key={groupId} style={{ marginBottom: '24px', paddingBottom: '24px', borderBottom: '1px solid var(--color-border-hairline)' }}>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
+                        <div>
+                          <div style={{ fontWeight: 600 }}>{groupFiles[0].name}</div>
+                          <div className="text-caption text-ink-3">{formatSize(groupFiles[0].size)}</div>
+                        </div>
+                        <Button variant="secondary" size="sm" onClick={() => {
+                          const [keep, ...extras] = groupFiles;
+                          useAppStore.getState().bulkSetPlacement(extras.map(e => e.id), 'never_keep');
+                        }}>
+                          Keep one
+                        </Button>
+                      </div>
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                        {groupFiles.map(f => (
+                          <div key={f.id} style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '8px', backgroundColor: 'var(--color-surface-sunken)', borderRadius: '6px' }}>
+                            <div style={{ flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                              <div className="text-caption" style={{ fontFamily: 'var(--font-mono)' }}>{f.path}</div>
+                            </div>
+                            {f.isExcluded ? (
+                              <span style={{ fontSize: '12px', color: 'var(--color-semantic-move)', fontWeight: 600 }}>Never keep</span>
+                            ) : f.isPinned ? (
+                              <span style={{ fontSize: '12px', color: 'var(--color-semantic-keep)', fontWeight: 600 }}>Always keep</span>
+                            ) : (
+                              <span style={{ fontSize: '12px', color: 'var(--color-ink-3)' }}>Auto</span>
+                            )}
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  ))}
+                </div>
               )}
             </Card>
           )}
