@@ -151,9 +151,9 @@ export const OptimizerPage: React.FC = () => {
 
             {/* A6: Quick preset chips */}
             <div style={{ marginBottom: '14px' }}>
-              <label className="text-caption text-ink-3" style={{ display: 'block', marginBottom: '8px' }}>
+              <span className="text-caption text-ink-3" style={{ display: 'block', marginBottom: '8px' }}>
                 Quick presets
-              </label>
+              </span>
               <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
                 {PRESET_CHIPS.map(chip => {
                   const isActive = Math.abs(quotaBytes - chip.bytes) < 1;
@@ -180,11 +180,12 @@ export const OptimizerPage: React.FC = () => {
 
             {/* Manual input with unit select */}
             <div style={{ marginBottom: '12px' }}>
-              <label className="text-caption text-ink-3" style={{ display: 'block', marginBottom: '4px' }}>
+              <label className="text-caption text-ink-3" htmlFor="optimizer-custom-amount" style={{ display: 'block', marginBottom: '4px' }}>
                 Custom amount
               </label>
               <div style={{ display: 'flex', gap: '6px' }}>
                 <input
+                  id="optimizer-custom-amount"
                   type="number"
                   value={inputValue}
                   onChange={handleInputChange}
@@ -203,6 +204,8 @@ export const OptimizerPage: React.FC = () => {
                   }}
                 />
                 <select
+                  id="optimizer-custom-unit"
+                  aria-label="Custom amount unit"
                   value={inputUnit}
                   onChange={e => {
                     const newUnit = Number(e.target.value);
@@ -229,6 +232,7 @@ export const OptimizerPage: React.FC = () => {
 
             {/* Slider */}
             <input
+              aria-label="Storage capacity"
               type="range"
               min={0}
               max={totalFileBytes}
