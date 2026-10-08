@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { formatSize, pluralize } from './format';
+import { formatDateDmy, formatSize, pluralize } from './format';
 
 const MB = 1024 * 1024;
 const GB = 1024 * 1024 * 1024;
@@ -31,5 +31,11 @@ describe('pluralize', () => {
   it('singular', () => expect(pluralize(1, 'file')).toBe('1 file'));
   it('plural', () => expect(pluralize(2, 'file')).toBe('2 files'));
   it('zero plural', () => expect(pluralize(0, 'file')).toBe('0 files'));
+});
+
+describe('formatDateDmy', () => {
+  it('formats dates as dd/mm/yyyy', () => {
+    expect(formatDateDmy(new Date(2026, 9, 8).getTime())).toBe('08/10/2026');
+  });
 });
 

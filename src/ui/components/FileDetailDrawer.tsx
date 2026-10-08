@@ -2,21 +2,22 @@ import React from 'react';
 import { FileMetadata } from '../../engine/types';
 import { Drawer } from './Drawer';
 import { useAppStore } from '../../store/useAppStore';
-import { FileCode, Image, FileVideo, Music, Archive, FileText, Settings, File, Calendar, HardDrive, Tag, Pin, EyeOff } from 'lucide-react';
+import { File, Calendar, HardDrive, Tag, Pin, EyeOff } from 'lucide-react';
 
-import { formatSize } from '../../lib/format';
+import { formatDateDmy, formatSize, pluralize } from '../../lib/format';
+import { suggestFileScore } from '../../lib/scoring';
 
 const getFileAge = (lastModified: number): string => {
   const diff = Date.now() - lastModified;
   const days = Math.floor(diff / (1000 * 60 * 60 * 24));
   if (days < 1) return 'Today';
-  if (days < 30) return `${days} day${days !== 1 ? 's' : ''} ago`;
+  if (days < 30) return `${pluralize(days, 'day')} ago`;
   if (days < 365) {
     const months = Math.floor(days / 30);
-    return `${months} month${months !== 1 ? 's' : ''} ago`;
+    return `${pluralize(months, 'month')} ago`;
   }
   const years = Math.floor(days / 365);
-  return `${years} year${years !== 1 ? 's' : ''} ago`;
+  return `${pluralize(years, 'year')} ago`;
 };
 
 const getCategoryColor = (category: string): string => {
@@ -41,22 +42,23 @@ interface FileDetailDrawerProps {
 
 export const FileDetailDrawer: React.FC<FileDetailDrawerProps> = ({ file, onClose, onPrevious, onNext }) => {
   const updatePriority = useAppStore((state) => state.updatePriority);
+  const resetPrioritySuggestion = useAppStore((state) => state.resetPrioritySuggestion);
+  const knapsackResult = useAppStore((state) => state.knapsackResult);
   if (!file) return null;
+  const suggested = suggestFileScore(file, !!file.isDuplicate);
 
   const detailRows: { label: string; value: React.ReactNode; icon: React.ReactNode }[] = [
     { label: 'Full path', value: file.path, icon: <File size={16} color="var(--color-ink-3)" /> },
     { label: 'Size', value: `${formatSize(file.size)} (${file.size.toLocaleString()} bytes)`, icon: <HardDrive size={16} color="var(--color-ink-3)" /> },
     { label: 'Type', value: `${file.type} / ${file.category}`, icon: <Tag size={16} color={getCategoryColor(file.category)} /> },
-    { label: 'Modified', value: `${new Date(file.lastModified).toLocaleDateString()} (${getFileAge(file.lastModified)})`, icon: <Calendar size={16} color="var(--color-ink-3)" /> },
+    { label: 'Modified', value: `${formatDateDmy(file.lastModified)} (${getFileAge(file.lastModified)})`, icon: <Calendar size={16} color="var(--color-ink-3)" /> },
   ];
 
-  if (file.isPinned || file.isExcluded) {
-    detailRows.push({
-      label: 'Constraint',
-      value: file.isPinned ? 'Always keep' : 'Never keep',
-      icon: file.isPinned ? <Pin size={16} color="var(--color-semantic-keep)" /> : <EyeOff size={16} color="var(--color-semantic-move)" />
-    });
-  }
+  detailRows.push({
+    label: 'Constraint',
+    value: file.isPinned ? 'Always keep' : file.isExcluded ? 'Never keep' : 'Auto',
+    icon: file.isPinned ? <Pin size={16} color="var(--color-semantic-keep)" /> : file.isExcluded ? <EyeOff size={16} color="var(--color-semantic-move)" /> : <Tag size={16} color="var(--color-ink-3)" />
+  });
 
   if (file.isDuplicate && file.duplicateGroup) {
     detailRows.push({
@@ -126,6 +128,7 @@ export const FileDetailDrawer: React.FC<FileDetailDrawerProps> = ({ file, onClos
         {/* Slider input */}
         <input
           type="range"
+          aria-label={`Importance score for ${file.name}`}
           min={1}
           max={10}
           value={file.priority}
@@ -165,15 +168,24 @@ export const FileDetailDrawer: React.FC<FileDetailDrawerProps> = ({ file, onClos
             </button>
           ))}
         </div>
+        <div style={{ marginTop: '12px' }}>
+          <div className="text-caption text-ink-3">Suggested scores, a heuristic, not ground truth</div>
+          <div className="score-reasons" style={{ marginTop: '6px' }}>
+            {suggested.reasons.length ? suggested.reasons.map((reason) => <span className="score-reason-chip" key={reason}>{reason}</span>) : <span className="score-reason-chip">Suggested</span>}
+          </div>
+          {file.prioritySource === 'edited' && (
+            <button type="button" onClick={() => resetPrioritySuggestion(file.id, suggested.score)} title="Reset to suggested" style={{ marginTop: '8px', border: 0, padding: 0, background: 'transparent', color: 'var(--color-ink-2)', fontSize: 12, cursor: 'pointer' }}>
+              Reset to suggested
+            </button>
+          )}
+        </div>
       </div>
 
       {/* Placement */}
       <div style={{ marginTop: '16px', padding: '16px', backgroundColor: 'var(--color-surface-sunken)', borderRadius: 'var(--radius-card)', border: '1px solid var(--color-border-hairline)' }}>
         <div style={{ fontWeight: 600, fontSize: '14px', marginBottom: '8px' }}>Placement</div>
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-          {(() => {
-            const knapsackResult = useAppStore(state => state.knapsackResult);
-            if (!knapsackResult) return <span className="text-caption text-ink-3">Not planned</span>;
+          {!knapsackResult ? <span className="text-caption text-ink-3">Not planned</span> : (() => {
             const isKept = knapsackResult.keptItems.some(i => i.id === file.id);
             return (
               <span style={{

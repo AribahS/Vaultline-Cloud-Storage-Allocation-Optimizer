@@ -6,14 +6,13 @@ import { FileDetailDrawer } from '../components/FileDetailDrawer';
 import { SegmentedControl } from '../components/SegmentedControl';
 import { FilePlus, FolderPlus, UploadCloud, Trash2, Download, ChevronDown } from 'lucide-react';
 import { useAppStore, PresetType } from '../../store/useAppStore';
-import { scanFileList, scanWithFileSystemAccess } from '../../engine/fileScanner';
-import { FileMetadata } from '../../engine/types';
+import { scanWithFileSystemAccess } from '../../engine/fileScanner';
 
 import { formatSize, pluralize } from '../../lib/format';
 
 export const FilesPage: React.FC = () => {
-  const { files, addFiles, isScanning, setIsScanning, scanProgress, clearFiles, loadPreset, knapsackResult } = useAppStore();
-  const [selectedFile, setSelectedFile] = useState<FileMetadata | null>(null);
+  const { files, addFiles, isScanning, setIsScanning, scanProgress, clearFiles, loadPreset } = useAppStore();
+  const [selectedFileId, setSelectedFileId] = useState<string | null>(null);
   const [view, setView] = useState('Table');
   const [showPresetMenu, setShowPresetMenu] = useState(false);
 
@@ -74,13 +73,11 @@ export const FilesPage: React.FC = () => {
   files.forEach(f => categories.set(f.category, (categories.get(f.category) || 0) + 1));
   const dupCount = files.filter(f => f.isDuplicate).length;
 
-  // Get kept/moved status from knapsack result
-  const keptIds = new Set(knapsackResult?.keptItems.map(i => i.id) || []);
-
   const alwaysKeepSize = files.filter(f => f.isPinned).reduce((acc, f) => acc + f.size, 0);
   const isOverQuota = alwaysKeepSize > useAppStore.getState().quotaBytes;
   
-  const selectedIndex = selectedFile ? files.findIndex(f => f.id === selectedFile.id) : -1;
+  const selectedIndex = selectedFileId ? files.findIndex(f => f.id === selectedFileId) : -1;
+  const selectedFile = selectedIndex >= 0 ? files[selectedIndex] : null;
 
   return (
     <div className="page-container animate-page-enter">
@@ -209,10 +206,13 @@ export const FilesPage: React.FC = () => {
               Click a row to view details
             </span>
           </div>
+          <p className="text-caption text-ink-3" style={{ margin: '0 0 12px' }}>
+            Suggested scores, a heuristic, not ground truth
+          </p>
 
           {/* Table view */}
           {view === 'Table' && (
-            <FilesTable files={files} onRowClick={(file) => setSelectedFile(file)} />
+            <FilesTable files={files} onRowClick={(file) => setSelectedFileId(file.id)} />
           )}
 
           {/* Duplicates view */}
@@ -242,7 +242,7 @@ export const FilesPage: React.FC = () => {
                           <div className="text-caption text-ink-3">{formatSize(groupFiles[0].size)}</div>
                         </div>
                         <Button variant="secondary" size="sm" onClick={() => {
-                          const [keep, ...extras] = groupFiles;
+                          const [, ...extras] = groupFiles;
                           useAppStore.getState().bulkSetPlacement(extras.map(e => e.id), 'never_keep');
                         }}>
                           Keep one
@@ -276,9 +276,9 @@ export const FilesPage: React.FC = () => {
       {/* File detail drawer */}
       <FileDetailDrawer
         file={selectedFile}
-        onClose={() => setSelectedFile(null)}
-        onPrevious={selectedIndex > 0 ? () => setSelectedFile(files[selectedIndex - 1]) : undefined}
-        onNext={selectedIndex < files.length - 1 ? () => setSelectedFile(files[selectedIndex + 1]) : undefined}
+        onClose={() => setSelectedFileId(null)}
+        onPrevious={selectedIndex > 0 ? () => setSelectedFileId(files[selectedIndex - 1].id) : undefined}
+        onNext={selectedIndex < files.length - 1 ? () => setSelectedFileId(files[selectedIndex + 1].id) : undefined}
       />
     </div>
   );

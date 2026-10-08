@@ -5,7 +5,7 @@ import { FileMetadata } from '../../engine/types';
 import { FileCode, Image, FileVideo, Music, Archive, FileText, Settings, File, AlertTriangle } from 'lucide-react';
 import { useAppStore } from '../../store/useAppStore';
 
-import { formatSize } from '../../lib/format';
+import { formatDateDmy, formatSize } from '../../lib/format';
 import { suggestFileScore } from '../../lib/scoring';
 
 const getCategoryIcon = (category: string) => {
@@ -29,7 +29,6 @@ export const FilesTable: React.FC<{
   const resetPrioritySuggestion = useAppStore(state => state.resetPrioritySuggestion);
   const knapsackResult = useAppStore(state => state.knapsackResult);
   const quotaBytes = useAppStore(state => state.quotaBytes);
-  const setFilePlacement = useAppStore(state => state.setFilePlacement);
   const bulkSetPlacement = useAppStore(state => state.bulkSetPlacement);
   const bulkSetImportance = useAppStore(state => state.bulkSetImportance);
   const removeFile = useAppStore(state => state.removeFile);
@@ -123,9 +122,11 @@ export const FilesTable: React.FC<{
               ))}
             </select>
             {file.prioritySource === 'edited' && (
-              <button type="button" onClick={() => resetPrioritySuggestion(file.id, suggested.score)} title="Reset to suggested" style={{ border: 0, background: 'transparent', color: 'var(--color-ink-2)', fontSize: 11, cursor: 'pointer' }}>Edited · Reset</button>
+              <button type="button" onClick={() => resetPrioritySuggestion(file.id, suggested.score)} title="Reset to suggested" style={{ border: 0, background: 'transparent', color: 'var(--color-ink-2)', fontSize: 11, cursor: 'pointer' }}>Reset to suggested</button>
             )}
-            {file.prioritySource !== 'edited' && <span className="score-reasons" title={`Suggested scores, not ground truth. ${suggested.reasons.join(', ')}`}>{suggested.reasons.length ? suggested.reasons.map((reason: string) => <span className="score-reason-chip" key={reason}>{reason}</span>) : <span className="score-reason-chip">Suggested</span>}</span>}
+            <span className="score-reasons" title={`Suggested scores, a heuristic, not ground truth. ${suggested.reasons.join(', ')}`}>
+              {suggested.reasons.length ? suggested.reasons.map((reason: string) => <span className="score-reason-chip" key={reason}>{reason}</span>) : <span className="score-reason-chip">Suggested</span>}
+            </span>
           </div>
         );
       }
@@ -169,10 +170,10 @@ export const FilesTable: React.FC<{
       cell: info => {
         const val = info.getValue<number>();
         const d = new Date(val);
-        return <div>{d.toLocaleDateString()}</div>;
+        return <div>{formatDateDmy(d.getTime())}</div>;
       }
     }
-  ], [updatePriority, resetPrioritySuggestion, selectedIds, knapsackResult, keptIds]);
+  ], [updatePriority, resetPrioritySuggestion, selectedIds, knapsackResult, keptIds, quotaBytes]);
 
   const searchQuery = useAppStore(state => state.searchQuery);
   const filteredFiles = useMemo(() => {
@@ -226,6 +227,7 @@ export const FilesTable: React.FC<{
           <button className="vault-btn btn-sm btn-secondary" onClick={() => { bulkSetPlacement(Array.from(selectedIds), 'never_keep'); setSelectedIds(new Set()); }}>Never keep</button>
           <button className="vault-btn btn-sm btn-secondary" onClick={() => { bulkSetPlacement(Array.from(selectedIds), 'auto'); setSelectedIds(new Set()); }}>Clear constraint</button>
           <select 
+            aria-label="Set importance"
             className="vault-btn btn-sm btn-secondary"
             style={{ WebkitAppearance: 'none', MozAppearance: 'none', appearance: 'none', paddingRight: '24px' }}
             onChange={(e) => {
@@ -237,9 +239,9 @@ export const FilesTable: React.FC<{
             }}
           >
             <option value="">Set importance...</option>
-            <option value="10">10 ★ High</option>
-            <option value="5">5 • Mid</option>
-            <option value="1">1 Low</option>
+            {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((score) => (
+              <option key={score} value={score}>{score}/10 {score >= 8 ? '★ High' : score >= 5 ? '• Mid' : 'Low'}</option>
+            ))}
           </select>
           <div style={{ flex: 1 }} />
           <button className="vault-btn btn-sm btn-danger" onClick={() => { Array.from(selectedIds).forEach(removeFile); setSelectedIds(new Set()); }}>Remove from list</button>
