@@ -25,7 +25,7 @@ const heroLine = {
   show: {
     pathLength: 1,
     opacity: 1,
-    transition: { duration: 1.6, ease: 'easeInOut', delay: 0.3 },
+    transition: { duration: 1.6, ease: 'easeInOut' as const, delay: 0.3 },
   },
 };
 

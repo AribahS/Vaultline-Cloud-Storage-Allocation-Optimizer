@@ -1,7 +1,7 @@
 import React from 'react';
 import { formatSize } from '../../lib/format';
 
-// A13: Extended category color map with correct file type mappings
+// A13: Extended category color map — all use CSS variables (no hardcoded hex)
 const FILE_CATEGORY_COLORS: Record<string, string> = {
   document:   'var(--color-file-docs)',
   photo:      'var(--color-file-photos)',
@@ -10,11 +10,11 @@ const FILE_CATEGORY_COLORS: Record<string, string> = {
   archive:    'var(--color-file-archives)',
   code:       'var(--color-file-code)',
   system:     'var(--color-file-system)',
-  log_temp:   '#A8947A',
+  log_temp:   'var(--color-file-system)',
   database:   'var(--color-file-code)',
-  disk_image: '#8B6E4E',
-  cache:      '#B07A5A',
-  other:      '#A8947A',
+  disk_image: 'var(--color-file-archives)',
+  cache:      'var(--color-file-audio)',
+  other:      'var(--color-file-other)',
 };
 
 const CATEGORY_LABELS: Record<string, string> = {

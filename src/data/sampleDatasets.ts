@@ -14,7 +14,7 @@ function createSampleFile(
   const { priority } = suggestPriority(category, lastModified);
 
   return {
-    id: `sample-${name.replace(/[^a-zA-Z0-9]/g, '_')}-${Math.random().toString(36).slice(2, 7)}`,
+    id: `sample-${name.replace(/[^a-zA-Z0-9]/g, '_')}`,
     name,
     path,
     size: sizeBytes,

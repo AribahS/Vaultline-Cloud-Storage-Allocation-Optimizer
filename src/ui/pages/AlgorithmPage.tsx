@@ -359,7 +359,11 @@ export const AlgorithmPage: React.FC = () => {
 // --- Comparison sub-tab ---
 const ComparisonTab: React.FC<{ items: KnapsackItem[]; capacity: number }> = ({ items, capacity }) => {
   const dpResult = useMemo(() => solveTeachingKnapsack(items, capacity), [items, capacity]);
-  const greedyResult = useMemo(() => solveGreedy(items, capacity), [items, capacity]);
+  const greedyResult = useMemo(() => solveGreedy(items, {
+    quotaUnits: capacity,
+    quotaBytes: capacity,
+    unitBytes: 1,
+  }), [items, capacity]);
 
   const canBrute = items.length <= 20;
   const bruteResult = useMemo(() => canBrute ? solveBruteForce(items, capacity) : null, [items, capacity, canBrute]);
@@ -381,13 +385,13 @@ const ComparisonTab: React.FC<{ items: KnapsackItem[]; capacity: number }> = ({ 
             <td style={{ padding: '8px 12px' }}>Total value</td>
             <td style={{ padding: '8px 12px', textAlign: 'right', fontWeight: 600, fontVariantNumeric: 'tabular-nums' }}>{dpResult.totalValue}</td>
             <td style={{ padding: '8px 12px', textAlign: 'right', fontVariantNumeric: 'tabular-nums', color: greedyResult.totalValue < dpResult.totalValue ? 'var(--color-semantic-move)' : undefined }}>{greedyResult.totalValue}</td>
-            {canBrute && bruteResult && <td style={{ padding: '8px 12px', textAlign: 'right', fontVariantNumeric: 'tabular-nums' }}>{bruteResult.totalValue}</td>}
+            {canBrute && bruteResult && <td style={{ padding: '8px 12px', textAlign: 'right', fontVariantNumeric: 'tabular-nums' }}>{bruteResult.bestValue}</td>}
           </tr>
           <tr style={{ borderBottom: '1px solid var(--color-border-hairline)' }}>
             <td style={{ padding: '8px 12px' }}>Items chosen</td>
             <td style={{ padding: '8px 12px', textAlign: 'right', fontVariantNumeric: 'tabular-nums' }}>{dpResult.keptItemIds.length}</td>
             <td style={{ padding: '8px 12px', textAlign: 'right', fontVariantNumeric: 'tabular-nums' }}>{greedyResult.keptItems.length}</td>
-            {canBrute && bruteResult && <td style={{ padding: '8px 12px', textAlign: 'right', fontVariantNumeric: 'tabular-nums' }}>{bruteResult.keptItems.length}</td>}
+            {canBrute && bruteResult && <td style={{ padding: '8px 12px', textAlign: 'right', fontVariantNumeric: 'tabular-nums' }}>{bruteResult.bestSubset.length}</td>}
           </tr>
           <tr style={{ borderBottom: '1px solid var(--color-border-hairline)' }}>
             <td style={{ padding: '8px 12px' }}>Total weight</td>
@@ -398,7 +402,7 @@ const ComparisonTab: React.FC<{ items: KnapsackItem[]; capacity: number }> = ({ 
               {greedyResult.keptItems.reduce((s, it) => s + it.normalizedSize, 0)}
             </td>
             {canBrute && bruteResult && <td style={{ padding: '8px 12px', textAlign: 'right', fontVariantNumeric: 'tabular-nums' }}>
-              {bruteResult.keptItems.reduce((s, it) => s + it.normalizedSize, 0)}
+              {bruteResult.bestSubset.reduce((s, it) => s + it.normalizedSize, 0)}
             </td>}
           </tr>
         </tbody>
@@ -441,12 +445,12 @@ const CorrectnessTab: React.FC = () => {
       }
       const dp = solveTeachingKnapsack(items, W);
       const brute = solveBruteForce(items, W);
-      if (dp.totalValue === brute.totalValue) {
+      if (dp.totalValue === brute.bestValue) {
         passed++;
       } else {
         failed++;
         if (!firstFail) {
-          firstFail = `Test ${t}: n=${n}, W=${W}, DP=${dp.totalValue}, BF=${brute.totalValue}`;
+          firstFail = `Test ${t}: n=${n}, W=${W}, DP=${dp.totalValue}, BF=${brute.bestValue}`;
         }
       }
     }

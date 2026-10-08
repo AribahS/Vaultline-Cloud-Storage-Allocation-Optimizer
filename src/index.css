@@ -49,15 +49,15 @@
   --color-semantic-info: #54494B;
   --color-semantic-danger: #B33951;
 
-  /* File Types */
-  --color-file-docs: #54494B;
-  --color-file-photos: #91C7B1;
-  --color-file-videos: #E3D081;
-  --color-file-audio: #3B3335;
-  --color-file-archives: #4F8B74;
-  --color-file-code: #54494B;
-  --color-file-system: #91C7B1;
-  --color-file-other: #F1F7ED;
+  /* File Types — each must be clearly distinct from the paper (#F1F7ED) background */
+  --color-file-docs:     #4F8B74;  /* deep green */
+  --color-file-photos:   #91C7B1;  /* mint green */
+  --color-file-videos:   #C8A03A;  /* amber gold */
+  --color-file-audio:    #7A6E9A;  /* muted purple */
+  --color-file-archives: #B87333;  /* copper */
+  --color-file-code:     #3B7A8A;  /* teal */
+  --color-file-system:   #8A6A4A;  /* brown */
+  --color-file-other:    #B33951;  /* rust/rose – same as moved, clearly visible */
 
   /* Typography Scale */
   --text-caption: 12px;

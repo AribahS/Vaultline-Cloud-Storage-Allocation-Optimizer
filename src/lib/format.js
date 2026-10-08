@@ -8,9 +8,13 @@ export function formatSize(bytes) {
     }
     return gb.toFixed(2) + ' GB';
   } else if (Math.abs(bytes) >= k * k) {
-    return parseFloat((bytes / (k * k)).toFixed(1)) + ' MB';
+    let mb = bytes / (k * k);
+    if (Math.abs(Math.round(mb) - mb) < 0.0001) {
+       return Math.round(mb) + ' MB';
+    }
+    return mb.toFixed(1) + ' MB';
   } else if (Math.abs(bytes) >= k) {
-    return parseFloat((bytes / k).toFixed(2)) + ' KB';
+    return Math.round(bytes / k) + ' KB';
   }
   return bytes + ' B';
 }
