@@ -72,13 +72,13 @@ export const HelpModal: React.FC<HelpModalProps> = ({ onClose }) => {
         {/* What is Vaultline */}
         <Section title="What is Vaultline?">
           <p style={{ fontSize: "14px", color: "var(--color-ink)", lineHeight: 1.7, margin: "0 0 16px" }}>
-            Vaultline is a <strong>privacy-first storage optimizer</strong> that uses dynamic programming to find the provably best set of files to keep within your storage quota — maximising the value (importance) of retained files.
+            Vaultline is a <strong>privacy-first storage optimizer</strong> that uses dynamic programming to find the best plan for the selected size scale and constraints.
           </p>
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "10px" }}>
             {[
-              { icon: Shield, label: "Private by design", desc: "Nothing leaves your device. Ever." },
-              { icon: Cpu, label: "Optimal, not guessed", desc: "Dynamic programming, not heuristics." },
-              { icon: HardDrive, label: "Real scale", desc: "100k+ files handled smoothly." },
+              { icon: Shield, label: "Private by design", desc: "Nothing is uploaded: only names, sizes and dates are read." },
+              { icon: Cpu, label: "Dynamic programming", desc: "O(n × W) on the selected size scale." },
+              { icon: HardDrive, label: "Works with folders", desc: "Add files or choose a folder; planning runs in your browser." },
             ].map(({ icon: Icon, label, desc }) => (
               <div key={label} style={{
                 padding: "14px 12px", borderRadius: "10px",

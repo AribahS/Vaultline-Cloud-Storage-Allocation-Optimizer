@@ -81,7 +81,7 @@ export const PlayPage: React.FC = () => {
     setRevealed(false);
   };
 
-  return <div className="page-container play-page" data-testid="play-page">
+  return <div className="page-container responsive-page play-page" data-testid="play-page">
     <section className="vault-stage play-stage">
       <div className="play-heading">
         <div><p className="play-eyebrow">MAKE ROOM FOR WHAT MATTERS</p><h1 className="gold-mark">Play</h1><p>Explore the trade-offs, then try packing the files yourself.</p></div>

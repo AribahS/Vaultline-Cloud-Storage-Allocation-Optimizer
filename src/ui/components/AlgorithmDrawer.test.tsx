@@ -11,13 +11,13 @@ afterEach(() => { cleanup(); vi.unstubAllGlobals(); });
 const renderApp = (path = '/') => render(<MemoryRouter initialEntries={[path]}><App /></MemoryRouter>);
 
 describe('Algorithm drawer', () => {
-  it('opens from the top bar on Dashboard and Files, closes with Escape, and restores focus', () => {
+  it('opens from the top bar on Dashboard and Files, closes with Escape, and restores focus', async () => {
     useAppStore.setState({ files: [], knapsackResult: null, isPlanStale: false, isComputing: false });
     const dashboard = renderApp('/');
     const trigger = screen.getByRole('button', { name: 'Algorithm' });
     trigger.focus();
     fireEvent.click(trigger);
-    expect(screen.getByRole('dialog', { name: 'How the plan is built' })).toBeTruthy();
+    expect(await screen.findByRole('dialog', { name: 'How the plan is built' })).toBeTruthy();
     expect(document.activeElement).toBe(screen.getByRole('button', { name: 'Close algorithm drawer' }));
     fireEvent.keyDown(screen.getByRole('dialog'), { key: 'Escape' });
     expect(screen.queryByRole('dialog')).toBeNull();
@@ -26,17 +26,18 @@ describe('Algorithm drawer', () => {
 
     renderApp('/files');
     fireEvent.click(screen.getByRole('button', { name: 'Algorithm' }));
-    expect(screen.getByRole('dialog', { name: 'How the plan is built' })).toBeTruthy();
+    expect(await screen.findByRole('dialog', { name: 'How the plan is built' })).toBeTruthy();
     for (const label of ['Watch it think', 'Variations', 'Comparison', 'Complexity', 'Correctness']) {
       expect(screen.getByRole('tab', { name: label })).toBeTruthy();
     }
   });
 
-  it('traps focus inside and supports forward/back stepping and final-answer scrubbing', () => {
+  it('traps focus inside and supports forward/back stepping and final-answer scrubbing', async () => {
     useAppStore.setState({ files: [], knapsackResult: null, isPlanStale: false, isComputing: false });
     renderApp('/');
     fireEvent.click(screen.getByRole('button', { name: 'Algorithm' }));
-    const dialog = screen.getByRole('dialog');
+    const dialog = await screen.findByRole('dialog');
+    expect(dialog.classList.contains('responsive-surface')).toBe(true);
     expect(dialog.querySelector('.algorithm-drawer-content')).toBeTruthy();
     const slider = screen.getByRole('slider', { name: 'Walkthrough progress' }) as HTMLInputElement;
     expect(screen.getByTestId('walk-step-index').textContent).toBe('0');

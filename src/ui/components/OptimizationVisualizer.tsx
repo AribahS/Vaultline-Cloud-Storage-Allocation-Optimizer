@@ -5,7 +5,7 @@ import { useAppStore } from '../../store/useAppStore';
 import { KnapsackItem, TeachingStep, TableStep } from '../../engine/types';
 import { solveTeachingKnapsack } from '../../engine/knapsack';
 import { solveGreedy } from '../../engine/greedy';
-import { normaliseItemSize, formatBytes } from '../../engine/normalizer';
+import { normaliseItemSize } from '../../engine/normalizer';
 import { Play, Pause, SkipBack, SkipForward, RotateCcw, CheckCircle2, XCircle, ArrowRight, Lightbulb, Cpu, BarChart3, Layers } from 'lucide-react';
 
 export const OptimizationVisualizer: React.FC = () => {
@@ -110,7 +110,7 @@ export const OptimizationVisualizer: React.FC = () => {
             </span>
           </div>
           <p className="text-body-small text-ink-2" style={{ marginTop: '4px' }}>
-            Understand exactly how Vaultline evaluates file importance vs size to pick the provably best plan.
+            See how Vaultline weighs file importance against size to build a plan on the selected size scale.
           </p>
         </div>
 

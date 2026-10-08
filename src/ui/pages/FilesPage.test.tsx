@@ -270,6 +270,7 @@ describe('Files page Step D behavior', () => {
     expect(screen.getByText('Auto')).toBeTruthy();
     expect(screen.getAllByText('Not planned')).toHaveLength(3);
     expect(screen.getByText('alpha.txt___1024')).toBeTruthy();
+    expect(document.querySelector('.generic-drawer-panel.responsive-surface')).toBeTruthy();
     expect(screen.getAllByText('Suggested scores, a heuristic, not ground truth')).toHaveLength(2);
     expect(document.querySelectorAll('.score-reason-chip').length).toBeGreaterThan(0);
     fireEvent.change(screen.getByRole('slider', { name: 'Importance score for alpha.txt' }), { target: { value: '10' } });

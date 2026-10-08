@@ -148,7 +148,7 @@ export const AlgorithmDrawer: React.FC<AlgorithmDrawerProps> = ({ open, onClose 
 
   return <>
     <div className="algorithm-drawer-backdrop" aria-hidden="true" onMouseDown={onClose} />
-    <aside className="algorithm-drawer" role="dialog" aria-modal="true" aria-labelledby="algorithm-drawer-title" onKeyDown={onDialogKeyDown}>
+    <aside className="algorithm-drawer responsive-surface" role="dialog" aria-modal="true" aria-labelledby="algorithm-drawer-title" onKeyDown={onDialogKeyDown}>
       <header className="algorithm-drawer-header">
         <div><p className="algorithm-drawer-eyebrow">VAULTLINE</p><h2 id="algorithm-drawer-title">How the plan is built</h2></div>
         <button ref={closeButton} className="algorithm-close" aria-label="Close algorithm drawer" onClick={onClose}>Close <span aria-hidden="true">×</span></button>
@@ -292,5 +292,5 @@ const ComplexityPanel: React.FC<{ itemCount: number; capacity: number; cells: nu
   </div>
   <p><strong>Time: O(n × W).</strong> With n files and W capacity steps, the algorithm fills one cell for each file and capacity. The amount of work depends on the numeric capacity, not only on how many bits are needed to write it.</p>
   <p><strong>Teaching view storage: O(n × W).</strong> It keeps the whole table so every choice can be shown. The production solver keeps two rows of scores and a compact decision record for rebuilding the answer.</p>
-  <p>The 0/1 knapsack problem is weakly NP-complete: the table method is practical when capacity is kept to a manageable number of steps, while very large numeric capacities require more work.</p>
+  <p>The table method checks file choices across the selected capacity steps. Raising the capacity scale adds more work, even when the file count stays the same.</p>
 </section>;

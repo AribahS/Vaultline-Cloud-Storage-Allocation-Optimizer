@@ -41,7 +41,7 @@ export const DashboardPage: React.FC = () => {
   // --- EMPTY STATE ---
   if (files.length === 0) {
     return (
-      <div className="page-container animate-page-enter" style={{ padding: '40px 24px', display: 'flex', flexDirection: 'column', gap: '24px', alignItems: 'flex-start' }}>
+      <div className="page-container responsive-page dashboard-page animate-page-enter" style={{ padding: '40px 24px', display: 'flex', flexDirection: 'column', gap: '24px', alignItems: 'flex-start' }}>
         <h1 className="page-title">Dashboard</h1>
         <p style={{ fontSize: '16px', color: 'var(--color-ink-2)', margin: 0 }}>Decide what to keep.</p>
         <div style={{ display: 'flex', gap: '12px' }}>
@@ -54,10 +54,10 @@ export const DashboardPage: React.FC = () => {
 
   // --- ACTIVE STATE ---
   return (
-    <div className="page-container animate-page-enter">
+    <div className="page-container responsive-page dashboard-page animate-page-enter">
       <h1 className="page-title">Dashboard</h1>
       {/* KPI Row */}
-      <div className="dashboard-kpis" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '16px', marginBottom: '24px' }}>
+      <div className="dashboard-kpis responsive-stack" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '16px', marginBottom: '24px' }}>
         <KpiCard
           label="Total files"
           value={pluralize(files.length, 'file')}
@@ -86,7 +86,7 @@ export const DashboardPage: React.FC = () => {
         />
       </div>
 
-      <div className="dashboard-grid" style={{ marginBottom: '24px' }}>
+      <div className="dashboard-grid responsive-stack" style={{ marginBottom: '24px' }}>
         {/* Optimised plan card */}
         <Card>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
@@ -115,7 +115,7 @@ export const DashboardPage: React.FC = () => {
         </Card>
       </div>
 
-      <div className="dashboard-insights">
+      <div className="dashboard-insights responsive-stack">
         {/* Insights */}
         <Card>
           <h3 style={{ margin: '0 0 16px 0' }}>Insights</h3>

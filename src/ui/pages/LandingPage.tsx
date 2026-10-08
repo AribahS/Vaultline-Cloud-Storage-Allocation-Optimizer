@@ -1,8 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Box, HardDrive, Shield, Cpu, ChevronRight, ArrowRight } from 'lucide-react';
-import { useAppStore } from '../../store/useAppStore';
-import { STUDENT_LAPTOP_DATASET } from '../../data/sampleDatasets';
+import { Box, HardDrive, Shield, Cpu, ArrowRight } from 'lucide-react';
 
 /* ------------------------------------------------------------------ */
 /*  Animation variants                                                   */
@@ -36,17 +34,17 @@ const FEATURES = [
   {
     icon: Shield,
     title: 'Private by design',
-    body: 'Only file names, sizes and dates are read. Nothing leaves your device — ever.',
+    body: 'Nothing is uploaded: only names, sizes and dates are read.',
   },
   {
     icon: Cpu,
-    title: 'Optimal, not guessed',
-    body: 'Dynamic programming finds the provably best keep/move plan for your exact constraints.',
+    title: 'Dynamic programming',
+    body: 'Exact dynamic programming, O(n × W), finds the best plan on the selected size scale.',
   },
   {
     icon: HardDrive,
-    title: 'Works on real folders',
-    body: 'Add your own files or a whole folder. Only names, sizes and dates are read, and the plan is computed right in your browser.',
+    title: 'Works with folders',
+    body: 'Add files or choose a folder. Vaultline uses their names, sizes and dates to build a plan in your browser.',
   },
 ];
 
@@ -198,8 +196,6 @@ interface LandingPageProps {
 
 export const LandingPage: React.FC<LandingPageProps> = ({ onEnter }) => {
   const [ready, setReady] = useState(false);
-  const [skipFocused, setSkipFocused] = useState(false);
-  const setFiles = useAppStore((s) => s.setFiles);
 
   useEffect(() => {
     // Short timeout so fonts are loaded before we animate
@@ -209,6 +205,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onEnter }) => {
 
   return (
     <div
+      className="landing-page"
       style={{
         minHeight: '100vh',
         backgroundColor: 'var(--vault-bg)',
@@ -219,37 +216,9 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onEnter }) => {
         overflowX: 'hidden',
       }}
     >
-      {/* ── Skip to app link (always visible for accessibility) ── */}
-      <a
-        href="#main-app"
-        onClick={(e) => { e.preventDefault(); onEnter(); }}
-        onFocus={() => setSkipFocused(true)}
-        onBlur={() => setSkipFocused(false)}
-        style={{
-          position: 'absolute',
-          top: 12,
-          left: '50%',
-          transform: skipFocused ? 'translateX(-50%)' : 'translate(-50%, -200%)',
-          zIndex: 9999,
-          padding: '6px 14px',
-          borderRadius: 6,
-          backgroundColor: 'var(--gold)',
-          color: 'var(--vault-bg)',
-          fontWeight: 600,
-          fontSize: 13,
-          textDecoration: 'none',
-          opacity: skipFocused ? 1 : 0,
-          transition: 'transform 150ms, opacity 150ms',
-        }}
-        onMouseEnter={(e) => (e.currentTarget.style.opacity = '1')}
-        onMouseLeave={(e) => (e.currentTarget.style.opacity = '0.85')}
-        id="skip-to-app"
-      >
-        Skip to app
-      </a>
-
       {/* ── Top navigation bar ── */}
       <motion.nav
+        className="landing-nav"
         initial={{ opacity: 0, y: -16 }}
         animate={{ opacity: ready ? 1 : 0, y: ready ? 0 : -16 }}
         transition={{ duration: 0.5 }}
@@ -267,37 +236,13 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onEnter }) => {
             Vaultline
           </span>
         </div>
-        <button
-          onClick={() => onEnter()}
-          style={{
-            display: 'flex', alignItems: 'center', gap: 6,
-            padding: '8px 20px',
-            borderRadius: 8,
-            border: '1px solid rgba(184,137,60,0.5)',
-            backgroundColor: 'transparent',
-            color: 'var(--gold)',
-            fontSize: 14, fontWeight: 600,
-            cursor: 'pointer',
-            transition: 'all 150ms',
-          }}
-          onMouseEnter={(e) => {
-            e.currentTarget.style.backgroundColor = 'rgba(184,137,60,0.12)';
-            e.currentTarget.style.borderColor = 'var(--gold)';
-          }}
-          onMouseLeave={(e) => {
-            e.currentTarget.style.backgroundColor = 'transparent';
-            e.currentTarget.style.borderColor = 'rgba(184,137,60,0.5)';
-          }}
-          id="landing-open-app-btn"
-        >
-          Open app <ChevronRight size={14} />
-        </button>
       </motion.nav>
 
       {/* ── Hero section ── */}
       <AnimatePresence>
         {ready && (
           <motion.section
+            className="landing-hero"
             key="hero"
             variants={stagger}
             initial="hidden"
@@ -329,7 +274,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onEnter }) => {
                   textTransform: 'uppercase',
                 }}>
                   <span style={{ width: 6, height: 6, borderRadius: '50%', backgroundColor: 'var(--gold)' }} />
-                  Provably optimal file planning
+                  Make room for what matters
                 </span>
               </motion.div>
 
@@ -365,15 +310,13 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onEnter }) => {
                   maxWidth: 440,
                 }}
               >
-                Vaultline reads your file names, sizes and dates,
-                then uses dynamic programming to find the best
-                mix to fit any target device.{' '}
-                <strong style={{ color: 'var(--vault-text)' }}>Nothing leaves your device.</strong>
+                Vaultline reads file names, sizes and dates on this device. Dynamic programming, O(n × W), finds the best plan on the selected size scale.
               </motion.p>
 
               <motion.div variants={fadeUp} style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
                 <button
-                  onClick={() => onEnter()}
+                  className="landing-primary btn-primary"
+                  onClick={() => onEnter('/play')}
                   id="landing-cta-primary"
                   style={{
                     display: 'flex', alignItems: 'center', gap: 8,
@@ -396,12 +339,13 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onEnter }) => {
                     e.currentTarget.style.boxShadow = '0 4px 20px rgba(184,137,60,0.35)';
                   }}
                 >
-                  Get started <ArrowRight size={16} />
+                  Try sample data <ArrowRight size={16} />
                 </button>
 
                 <button
+                  className="landing-secondary"
                   id="landing-cta-secondary"
-                  onClick={() => { setFiles(STUDENT_LAPTOP_DATASET); onEnter('/play'); }}
+                  onClick={() => onEnter()}
                   style={{
                     display: 'flex', alignItems: 'center', gap: 8,
                     padding: '14px 24px',
@@ -422,7 +366,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onEnter }) => {
                     e.currentTarget.style.borderColor = 'rgba(246,241,228,0.2)';
                   }}
                 >
-                  Try sample data
+                  Open app
                 </button>
               </motion.div>
 
@@ -438,16 +382,8 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onEnter }) => {
                   fontSize: 13,
                 }}
               >
-                {[
-                  { num: '0 bytes', label: 'uploaded' },
-                  { num: 'O(n x W)', label: 'dynamic programming' },
-                  { num: 'Provably', label: 'optimal' },
-                ].map((stat) => (
-                  <div key={stat.label} style={{ display: 'flex', alignItems: 'baseline', gap: 6 }}>
-                    <span style={{ fontSize: 18, fontWeight: 700, color: 'var(--gold)' }}>{stat.num}</span>
-                    <span>{stat.label}</span>
-                  </div>
-                ))}
+                <span>Names, sizes and dates stay on this device.</span>
+                <span>Dynamic programming · O(n × W)</span>
               </motion.div>
             </div>
 
@@ -474,6 +410,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onEnter }) => {
       {/* ── Feature strip ── */}
       {ready && (
         <motion.section
+          className="landing-features"
           variants={stagger}
           initial="hidden"
           animate="show"
@@ -506,7 +443,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onEnter }) => {
                 marginBottom: 48,
               }}
             >
-              Not a guess. Not a heuristic. A mathematical guarantee.
+              A clear view of what fits your target.
             </motion.p>
 
             <div
@@ -578,6 +515,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onEnter }) => {
       {/* ── CTA footer ── */}
       {ready && (
         <motion.footer
+          className="landing-footer"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 0.6, delay: 0.8 }}
@@ -601,27 +539,8 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onEnter }) => {
           <p style={{ color: 'rgba(246,241,228,0.55)', marginBottom: 32, fontSize: 15 }}>
             Drop files anywhere — it runs entirely in your browser.
           </p>
-          <button
-            onClick={() => onEnter()}
-            id="landing-footer-cta"
-            style={{
-              padding: '14px 36px',
-              borderRadius: 10,
-              border: 'none',
-              background: 'linear-gradient(135deg, var(--gold), var(--gold))',
-              color: 'var(--vault-bg)',
-              fontSize: 16, fontWeight: 700,
-              cursor: 'pointer',
-              boxShadow: '0 4px 20px rgba(184,137,60,0.4)',
-              transition: 'transform 150ms',
-            }}
-            onMouseEnter={(e) => (e.currentTarget.style.transform = 'translateY(-2px)')}
-            onMouseLeave={(e) => (e.currentTarget.style.transform = 'translateY(0)')}
-          >
-            Open Vaultline
-          </button>
           <p style={{ marginTop: 24, fontSize: 12, color: 'rgba(246,241,228,0.3)' }}>
-            No sign-up · No upload · No tracking
+            Your plan is calculated in this browser from file metadata.
           </p>
         </motion.footer>
       )}

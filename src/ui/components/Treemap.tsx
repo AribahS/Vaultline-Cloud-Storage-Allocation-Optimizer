@@ -1,6 +1,6 @@
 import React, { useState, useMemo, useRef, useCallback } from 'react';
 import { ZoomIn, ZoomOut, RotateCcw, Maximize2, Move } from 'lucide-react';
-import { formatBytes } from '../../utils/formatBytes';
+import { formatSize } from '../../lib/format';
 import { groupSmallTreemapFiles, truncateTreemapLabel } from '../../lib/treemapLabels';
 
 export interface TreemapFile {
@@ -388,7 +388,7 @@ export const Treemap: React.FC<TreemapProps> = ({
                       fontFamily="var(--font-mono)"
                       style={{ pointerEvents: 'none' }}
                     >
-                      {formatBytes(tile.file.size)}
+                      {formatSize(tile.file.size)}
                     </text>
                   )}
                 </g>
@@ -422,7 +422,7 @@ export const Treemap: React.FC<TreemapProps> = ({
             </div>
             <div style={{ display: 'flex', justifyContent: 'space-between', gap: '8px', color: 'var(--color-ink-2)' }}>
               <span>Size:</span>
-              <strong style={{ fontFamily: 'var(--font-mono)' }}>{formatBytes(hoveredTile.tile.file.size)}</strong>
+              <strong style={{ fontFamily: 'var(--font-mono)' }}>{formatSize(hoveredTile.tile.file.size)}</strong>
             </div>
             <div style={{ display: 'flex', justifyContent: 'space-between', gap: '8px', color: 'var(--color-ink-2)' }}>
               <span>Category:</span>

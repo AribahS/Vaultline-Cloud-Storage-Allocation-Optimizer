@@ -1,10 +1,9 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { Suspense, lazy, useCallback, useEffect, useState } from 'react';
 import { TopBar } from './TopBar';
-import { PrintExecutiveSummary } from './PrintExecutiveSummary';
 import { scanDroppedItems } from '../../engine/fileScanner';
 import { useAppStore } from '../../store/useAppStore';
 import { AlgorithmDrawerContext } from './AlgorithmDrawerContext';
-import { AlgorithmDrawer } from './AlgorithmDrawer';
+const AlgorithmDrawer = lazy(() => import('./AlgorithmDrawer').then(module => ({ default: module.AlgorithmDrawer })));
 
 export const AppShell: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [dragging, setDragging] = useState(false);
@@ -30,8 +29,7 @@ export const AppShell: React.FC<{ children: React.ReactNode }> = ({ children }) 
       {dragging && <div className="drop-overlay">Drop to add to this scan</div>}
       <TopBar />
       <main id="main-app">{children}</main>
-      <PrintExecutiveSummary />
-      <AlgorithmDrawer open={algorithmOpen} onClose={() => setAlgorithmOpen(false)} />
+      <Suspense fallback={null}><AlgorithmDrawer open={algorithmOpen} onClose={() => setAlgorithmOpen(false)} /></Suspense>
     </div>
   </AlgorithmDrawerContext.Provider>;
 };

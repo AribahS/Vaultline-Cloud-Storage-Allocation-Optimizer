@@ -23,7 +23,7 @@ export const ReportsPage: React.FC = () => {
   const saveFile = (filename: string, content: string, mime: string) => downloadPlanFile(filename, content, mime);
   const printReport = () => window.print();
 
-  return <div className="page-container plan-page">
+  return <div className="page-container responsive-page plan-page">
     <style>{`
       @page { size: A4; margin: 16mm; }
       .plan-print { display: none; }
@@ -73,11 +73,11 @@ export const ReportsPage: React.FC = () => {
         </Card>
       </section>
 
-      <section className="plan-lists no-print">
+      <section className="plan-lists responsive-stack no-print">
         <FileList title="Keep" items={keptFiles} />
         <FileList title="Move" items={movedFiles} moved />
       </section>
-      <Card className="plan-constraints no-print"><h2>Constraints</h2><div className="plan-constraint-columns">
+      <Card className="plan-constraints no-print"><h2>Constraints</h2><div className="plan-constraint-columns responsive-stack">
         <ConstraintList title="Always keep" items={files.filter(file => file.isPinned)} />
         <ConstraintList title="Never keep" items={files.filter(file => file.isExcluded)} />
       </div></Card>

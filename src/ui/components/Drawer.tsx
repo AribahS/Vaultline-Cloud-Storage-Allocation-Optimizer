@@ -39,6 +39,7 @@ export const Drawer: React.FC<DrawerProps> = ({ isOpen, onClose, title, children
       />
       {/* Panel */}
       <div 
+        className="generic-drawer-panel responsive-surface"
         style={{
           position: 'fixed',
           top: 0, right: 0, bottom: 0,

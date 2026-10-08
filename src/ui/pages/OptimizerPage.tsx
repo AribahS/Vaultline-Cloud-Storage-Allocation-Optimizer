@@ -90,7 +90,7 @@ export const OptimizerPage: React.FC = () => {
   };
 
   return (
-    <div className="page-container animate-page-enter">
+    <div className="page-container responsive-page optimizer-page animate-page-enter">
       <h1 className="page-title">Optimizer</h1>
       {/* The main action stays with the plan controls below. */}
       {files.length > 2000 && (
@@ -142,7 +142,7 @@ export const OptimizerPage: React.FC = () => {
         </Card>
       )}
 
-      <div className="optimizer-layout" style={{ display: 'grid', gridTemplateColumns: 'minmax(240px, 300px) minmax(0, 1fr)', gap: '20px', alignItems: 'start' }}>
+      <div className="optimizer-layout responsive-stack" style={{ display: 'grid', gridTemplateColumns: 'minmax(240px, 300px) minmax(0, 1fr)', gap: '20px', alignItems: 'start' }}>
         {/* Left: Configuration pane */}
         <div style={{ position: 'sticky', top: '24px', display: 'flex', flexDirection: 'column', gap: '16px' }}>
           {/* Destination */}

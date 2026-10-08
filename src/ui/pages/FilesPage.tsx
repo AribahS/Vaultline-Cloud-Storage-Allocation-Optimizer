@@ -6,7 +6,7 @@ import { FileDetailDrawer } from '../components/FileDetailDrawer';
 import { SegmentedControl } from '../components/SegmentedControl';
 import { FilePlus, FolderPlus, UploadCloud, Trash2, Download, ChevronDown } from 'lucide-react';
 import { useAppStore, PresetType } from '../../store/useAppStore';
-import { scanWithFileSystemAccess } from '../../engine/fileScanner';
+import { scanFileList, scanWithFileSystemAccess } from '../../engine/fileScanner';
 
 import { formatSize, pluralize } from '../../lib/format';
 
@@ -23,7 +23,6 @@ export const FilesPage: React.FC = () => {
     if (!e.target.files?.length) return;
     setIsScanning(true, { count: 0 });
     try {
-      const { scanFileList } = await import('../../engine/fileScanner');
       const newFiles = await scanFileList(e.target.files, (p) => setIsScanning(true, p));
       addFiles(newFiles);
     } catch (err) {
@@ -38,7 +37,6 @@ export const FilesPage: React.FC = () => {
     if (!e.target.files?.length) return;
     setIsScanning(true, { count: 0 });
     try {
-      const { scanFileList } = await import('../../engine/fileScanner');
       const newFiles = await scanFileList(e.target.files, (p) => setIsScanning(true, p));
       addFiles(newFiles);
     } catch (err) {
@@ -77,7 +75,7 @@ export const FilesPage: React.FC = () => {
   const selectedFile = selectedIndex >= 0 ? files[selectedIndex] : null;
 
   return (
-    <div className="page-container animate-page-enter">
+    <div className="page-container responsive-page files-page animate-page-enter">
       {/* Hidden inputs */}
       <input type="file" multiple ref={fileInputRef} onChange={handleFileSelect} style={{ display: 'none' }} />
       <input type="file" ref={folderInputRef} onChange={handleFolderSelect} style={{ display: 'none' }} {...{ webkitdirectory: '', directory: '' } as any} />
@@ -142,9 +140,9 @@ export const FilesPage: React.FC = () => {
                     onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = 'var(--color-surface-sunken)')}
                     onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = 'transparent')}
                   >
-                    {preset === 'student' ? 'Student laptop (12 files)' :
-                     preset === 'photographer' ? 'Photographer (60 files)' :
-                     'Small office server (120 files)'}
+                    {preset === 'student' ? `Student laptop (${pluralize(12, 'file')})` :
+                     preset === 'photographer' ? `Photographer (${pluralize(60, 'file')})` :
+                     `Small office server (${pluralize(120, 'file')})`}
                   </button>
                 ))}
               </div>
