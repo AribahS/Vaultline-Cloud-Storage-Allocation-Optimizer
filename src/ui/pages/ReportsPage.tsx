@@ -2,12 +2,11 @@ import React, { useState, useMemo } from 'react';
 import { useAppStore } from '../../store/useAppStore';
 import { Card } from '../components/Card';
 import { Button } from '../components/Button';
-import { formatBytes } from '../../utils/formatBytes';
-import { pluralize } from '../../utils/pluralize';
+import { formatSize, pluralize } from '../../lib/format';
+import { generateReportSummary } from '../../lib/reportSummary';
 import {
   generateCsvExport,
   generateJsonExport,
-  generateTextSummary,
   generateActionPlanBash,
   generateActionPlanPowerShell,
   generateWordDocumentHtml,
@@ -36,7 +35,7 @@ export const ReportsPage: React.FC = () => {
     if (!optimizationResult || files.length === 0) return 'No optimization data available. Run the optimizer first on the Optimizer page.';
     switch (activeExportTab) {
       case 'pdf':
-      case 'summary': return generateTextSummary(files, optimizationResult);
+      case 'summary': return generateReportSummary(optimizationResult);
       case 'word':    return generateWordDocumentHtml(files, optimizationResult);
       case 'bash':    return generateActionPlanBash(files, optimizationResult);
       case 'ps1':     return generateActionPlanPowerShell(files, optimizationResult);
@@ -108,9 +107,9 @@ export const ReportsPage: React.FC = () => {
             </div>
           </div>
           <div className="print-grid">
-            <div className="print-card"><div className="print-card-label">Target</div><div className="print-card-val">{formatBytes(optimizationResult.quotaBytes)}</div></div>
-            <div className="print-card"><div className="print-card-label">Kept</div><div className="print-card-val" style={{ color: '#166534' }}>{formatBytes(optimizationResult.totalSizeKept)}</div></div>
-            <div className="print-card"><div className="print-card-label">Offloaded</div><div className="print-card-val" style={{ color: '#991b1b' }}>{formatBytes(optimizationResult.totalSizeDropped)}</div></div>
+            <div className="print-card"><div className="print-card-label">Target</div><div className="print-card-val">{formatSize(optimizationResult.quotaBytes)}</div></div>
+            <div className="print-card"><div className="print-card-label">Kept</div><div className="print-card-val" style={{ color: '#166534' }}>{formatSize(optimizationResult.totalSizeKept)}</div></div>
+            <div className="print-card"><div className="print-card-label">Offloaded</div><div className="print-card-val" style={{ color: '#991b1b' }}>{formatSize(optimizationResult.totalSizeDropped)}</div></div>
             <div className="print-card"><div className="print-card-label">Importance</div><div className="print-card-val" style={{ color: '#b8860b' }}>{importanceRetainedPct}%</div></div>
           </div>
           <h2 className="print-section-title">Kept {pluralize(optimizationResult.keptItems.length, 'file')}</h2>
@@ -118,7 +117,7 @@ export const ReportsPage: React.FC = () => {
             <thead><tr><th>File</th><th>Size</th><th>Importance</th><th>Category</th></tr></thead>
             <tbody>
               {optimizationResult.keptItems.slice(0, 30).map(item => (
-                <tr key={item.id}><td><strong>{item.name}</strong></td><td>{formatBytes(item.originalSize)}</td><td>{item.value}/10</td><td>{item.category || 'file'}</td></tr>
+                <tr key={item.id}><td><strong>{item.name}</strong></td><td>{formatSize(item.originalSize)}</td><td>{item.value}/10</td><td>{item.category || 'file'}</td></tr>
               ))}
             </tbody>
           </table>
@@ -127,7 +126,7 @@ export const ReportsPage: React.FC = () => {
             <thead><tr><th>File</th><th>Size</th><th>Importance</th><th>Category</th></tr></thead>
             <tbody>
               {optimizationResult.droppedItems.slice(0, 30).map(item => (
-                <tr key={item.id}><td>{item.name}</td><td>{formatBytes(item.originalSize)}</td><td>{item.value}/10</td><td>{item.category || 'file'}</td></tr>
+                <tr key={item.id}><td>{item.name}</td><td>{formatSize(item.originalSize)}</td><td>{item.value}/10</td><td>{item.category || 'file'}</td></tr>
               ))}
             </tbody>
           </table>
@@ -176,10 +175,10 @@ export const ReportsPage: React.FC = () => {
               <h3 style={{ margin: '0 0 14px 0' }}>Overview</h3>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
                 {[
-                  { label: 'Target capacity', value: formatBytes(optimizationResult.quotaBytes), color: undefined },
-                  { label: 'Kept payload', value: `${formatBytes(optimizationResult.totalSizeKept)} (${Math.round((optimizationResult.totalSizeKept / Math.max(1, optimizationResult.quotaBytes)) * 100)}%)`, color: 'var(--color-semantic-keep)' },
+                  { label: 'Target capacity', value: formatSize(optimizationResult.quotaBytes), color: undefined },
+                  { label: 'Kept payload', value: `${formatSize(optimizationResult.totalSizeKept)} (${Math.round((optimizationResult.totalSizeKept / Math.max(1, optimizationResult.quotaBytes)) * 100)}%)`, color: 'var(--color-semantic-keep)' },
                   { label: 'Importance retained', value: `${optimizationResult.totalValue} / ${optimizationResult.maxPossibleValue} (${importanceRetainedPct}%)`, color: 'var(--color-brass)' },
-                  { label: 'Move', value: `${formatBytes(optimizationResult.totalSizeDropped)} (${pluralize(optimizationResult.droppedItems.length, 'file')})`, color: 'var(--color-semantic-move)' },
+                  { label: 'Move', value: `${formatSize(optimizationResult.totalSizeDropped)} (${pluralize(optimizationResult.droppedItems.length, 'file')})`, color: 'var(--color-semantic-move)' },
                 ].map(row => (
                   <div key={row.label} style={{ padding: '10px 12px', background: 'var(--color-surface-sunken)', borderRadius: '8px' }}>
                     <div style={{ fontSize: '12px', color: 'var(--color-ink-3)' }}>{row.label}</div>

@@ -76,7 +76,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({ onClose }) => {
       <div style={{
         position: "relative", zIndex: 1,
         width: "460px", maxWidth: "calc(100vw - 32px)",
-        maxHeight: "85dvh",
+        maxHeight: "calc(100dvh - 24px)",
         display: "flex", flexDirection: "column",
         backgroundColor: "var(--color-surface-raised)",
         border: "1px solid var(--color-border-hairline)",
@@ -109,7 +109,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({ onClose }) => {
         </div>
 
         {/* Scrollable body */}
-        <div style={{ overflowY: "auto", flex: 1, padding: "16px 24px" }}>
+        <div style={{ overflowY: "auto", flex: 1, minHeight: 0, padding: "16px 24px", overscrollBehavior: "contain" }}>
           <SectionTitle>Appearance</SectionTitle>
           <Row label="Dark mode" description="Switch between light and dark colour schemes">
             <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>

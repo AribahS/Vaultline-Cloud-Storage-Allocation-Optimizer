@@ -19,6 +19,7 @@ export function formatSize(bytes) {
   return bytes + ' B';
 }
 
-export function pluralize(count, word) {
-  return `${count} ${count === 1 ? word : word + 's'}`;
+export function pluralize(count, singular, plural, formatter = (value) => value.toLocaleString()) {
+  const pluralForm = plural ?? `${singular}s`;
+  return `${formatter(count)} ${count === 1 ? singular : pluralForm}`;
 }

@@ -43,7 +43,7 @@ const wrap = (ui: React.ReactElement, route = '/') =>
 
 // ── pluralize tests (re-exported here for regression guard) ──────────────────
 
-import { pluralize } from './utils/pluralize';
+import { pluralize } from './lib/format';
 
 describe('pluralize helper (regression)', () => {
   it('1 file → singular', () => expect(pluralize(1, 'file')).toBe('1 file'));

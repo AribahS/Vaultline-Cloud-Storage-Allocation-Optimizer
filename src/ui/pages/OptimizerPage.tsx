@@ -9,7 +9,7 @@ import { SegmentedControl } from '../components/SegmentedControl';
 import { useAppStore } from '../../store/useAppStore';
 import { BYTE_UNITS } from '../../engine/normalizer';
 import { formatBytes } from '../../utils/formatBytes';
-import { pluralize } from '../../utils/pluralize';
+import { formatSize, pluralize } from '../../lib/format';
 import {
   Play, CheckCircle, ArrowRightLeft,
   TrendingUp, Clock, AlertTriangle, Pin, EyeOff, ChevronDown, ChevronUp
@@ -70,6 +70,8 @@ export const OptimizerPage: React.FC = () => {
   const importanceRetained = knapsackResult
     ? Math.round((knapsackResult.totalValue / knapsackResult.maxPossibleValue) * 100)
     : 0;
+  const totalFileBytes = files.reduce((total, file) => total + file.size, 0);
+  const sliderQuotaBytes = Math.min(quotaBytes, totalFileBytes);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setInputValue(e.target.value);
@@ -93,7 +95,7 @@ export const OptimizerPage: React.FC = () => {
         <Card style={{ marginBottom: '16px', backgroundColor: 'var(--color-surface-sunken)', border: '1px solid var(--color-border-hairline)' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: 'var(--color-ink-2)', fontSize: '13px' }}>
             <AlertTriangle size={16} color="var(--color-brass)" />
-            <span>Auto-recompute is disabled for large datasets ({files.length.toLocaleString()} files &gt; 2000). Manual recompute required.</span>
+                  <span>Auto-recompute is disabled for large datasets ({pluralize(files.length, 'file')} &gt; 2000). Manual recompute required.</span>
           </div>
         </Card>
       )}
@@ -226,19 +228,20 @@ export const OptimizerPage: React.FC = () => {
             {/* Slider */}
             <input
               type="range"
-              min={1}
-              max={inputUnit === BYTE_UNITS.TB ? 10 : inputUnit === BYTE_UNITS.GB ? 2000 : 100000}
-              step={1}
-              value={Math.round(quotaBytes / inputUnit)}
+              min={0}
+              max={totalFileBytes}
+              step="any"
+              value={sliderQuotaBytes}
+              disabled={totalFileBytes === 0}
               onChange={e => {
-                const val = parseInt(e.target.value);
-                setQuotaBytes(val * inputUnit);
-                setInputValue(String(val));
+                const val = parseFloat(e.target.value);
+                setQuotaBytes(val);
+                setInputValue(String(Math.round((val / inputUnit) * 10) / 10));
               }}
               style={{ width: '100%' }}
             />
             <div style={{ fontSize: '11px', color: 'var(--color-ink-3)', textAlign: 'center', marginTop: '4px' }}>
-              {formatBytes(quotaBytes)}
+              {formatSize(sliderQuotaBytes)}
             </div>
           </Card>
 
@@ -303,7 +306,7 @@ export const OptimizerPage: React.FC = () => {
             <>
               {/* Summary KPIs */}
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))', gap: '12px', marginBottom: '16px' }}>
-                <KpiCard label="How much you need" value={`${importanceRetained}%`} accentColor="var(--color-brass)" />
+                <KpiCard label="Importance kept" value={`${importanceRetained}%`} accentColor="var(--color-brass)" />
                 <KpiCard label="Kept" value={knapsackResult.keptItems.length.toLocaleString()} subtitle={formatBytes(knapsackResult.totalSizeKept)} />
                 <KpiCard label="Move" value={knapsackResult.droppedItems.length.toLocaleString()} subtitle={formatBytes(knapsackResult.totalSizeDropped)} accentColor="var(--color-semantic-move)" />
                 <KpiCard label="Runtime" value={`${knapsackResult.executionTimeMs < 1 ? '<1' : Math.round(knapsackResult.executionTimeMs)}ms`} subtitle={`${knapsackResult.cellsComputed.toLocaleString()} cells`} />

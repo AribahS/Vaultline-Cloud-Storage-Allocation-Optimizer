@@ -71,8 +71,8 @@ export const AppShell: React.FC<{ children: React.ReactNode }> = ({ children }) 
         </div>
       )}
 
-      {/* Sidebar hidden on mobile; replaced by bottom tabs */}
-      {!isMobile && <Sidebar />}
+      {/* Sidebar manages its mobile drawer internally; keep it mounted for Settings/Help. */}
+      <Sidebar />
 
       {/* Main column — flex column, overflow hidden so only <main> scrolls */}
       <div style={{ display: 'flex', flexDirection: 'column', flex: 1, minWidth: 0, height: '100vh', overflow: 'hidden' }}>

@@ -8,6 +8,7 @@ import { runFullKnapsackAsync } from '../workers/solverClient';
 import { saveAutoSession } from '../engine/storageDb';
 import { ProfileId, ProfileToggles, applyProfileToFiles } from '../engine/profiles';
 import { StoragePlace } from '../engine/multiPlace';
+import { pluralize } from '../lib/format';
 
 export type PresetType = 'student' | 'photographer' | 'company';
 
@@ -224,7 +225,8 @@ export const useAppStore = create<AppState>((set, get) => ({
   },
 
   clearFiles: () => {
-    set({ files: [], knapsackResult: null, manualKeptIds: [] });
+    if (computeTimer) clearTimeout(computeTimer);
+    set({ files: [], knapsackResult: null, manualKeptIds: [], isComputing: false, computeProgress: null, isPlanStale: false, lastComputeError: null });
   },
 
   togglePin: (id) => {
@@ -328,11 +330,13 @@ export const useAppStore = create<AppState>((set, get) => ({
       prof = 'work_first';
     }
 
+    const nextFiles = markDuplicates(dataset);
+    const nextQuotaBytes = Math.min(defaultQuota, nextFiles.reduce((total, file) => total + file.size, 0));
     set({
-      files: markDuplicates(dataset),
-      quotaBytes: defaultQuota,
+      files: nextFiles,
+      quotaBytes: nextQuotaBytes,
       profileId: prof,
-      places: [{ id: 'p1', name: 'Primary Storage', quotaBytes: defaultQuota, color: 'var(--color-primary)' }],
+      places: [{ id: 'p1', name: 'Primary Storage', quotaBytes: nextQuotaBytes, color: 'var(--color-primary)' }],
       searchQuery: '',
       categoryFilter: 'all',
       manualKeptIds: [],
@@ -366,11 +370,17 @@ export const useAppStore = create<AppState>((set, get) => ({
     }));
   },
 
-  setQuotaBytes: (quotaBytes) => {
-    set((state) => ({
-      quotaBytes,
-      places: state.places.map((p, idx) => idx === 0 ? { ...p, quotaBytes } : p),
-    }));
+  setQuotaBytes: (requestedBytes) => {
+    set((state) => {
+      const totalSize = state.files.reduce((total, file) => total + file.size, 0);
+      const quotaBytes = state.files.length > 0
+        ? Math.max(0, Math.min(requestedBytes, totalSize))
+        : Math.max(0, requestedBytes);
+      return {
+        quotaBytes,
+        places: state.places.map((p, idx) => idx === 0 ? { ...p, quotaBytes } : p),
+      };
+    });
     get().markPlanStale();
   },
 
@@ -501,7 +511,7 @@ export const useAppStore = create<AppState>((set, get) => ({
         const folders = aggregateFolders(files);
         itemsToSolve = folders.map((folder) => ({
           id: folder.id,
-          name: `${folder.name} (${folder.fileCount} files)`,
+          name: `${folder.name} (${pluralize(folder.fileCount, 'file')})`,
           path: folder.path,
           originalSize: folder.size,
           normalizedSize: normaliseItemSize(folder.size, unitBytes),

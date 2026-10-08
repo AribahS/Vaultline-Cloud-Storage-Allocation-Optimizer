@@ -17,7 +17,7 @@ export const DashboardPage: React.FC = () => {
   const { files, quotaBytes, knapsackResult, setFiles, isComputing, triggerRecompute, autoRunOptimizer, isPlanStale } = useAppStore();
 
   useEffect(() => {
-    if (autoRunOptimizer && files.length > 0 && (!knapsackResult || isPlanStale) && !isComputing) {
+    if (autoRunOptimizer && files.length > 0 && !knapsackResult && !isPlanStale && !isComputing) {
       triggerRecompute();
     }
   }, [autoRunOptimizer, files.length, knapsackResult, isComputing, isPlanStale, triggerRecompute]);
@@ -92,7 +92,7 @@ export const DashboardPage: React.FC = () => {
               <h3 style={{ margin: '0 0 12px 0' }}>Optimised plan</h3>
               {knapsackResult ? (
                 <p className="text-body-small text-ink-2" style={{ margin: 0, lineHeight: 1.6 }}>
-                  {knapsackResult.keptItems.length} of {files.length} files fit in {formatSize(quotaBytes)}. {pluralize(knapsackResult.droppedItems.length, 'file')} ({formatSize(knapsackResult.totalSizeDropped)}) moves elsewhere.
+                  {pluralize(knapsackResult.keptItems.length, 'file')} fit within {formatSize(quotaBytes)}. {pluralize(knapsackResult.droppedItems.length, 'file')} ({formatSize(knapsackResult.totalSizeDropped)}) {knapsackResult.droppedItems.length === 1 ? 'moves' : 'move'} elsewhere.
                 </p>
               ) : (
                 <p className="text-body-small text-ink-2" style={{ margin: 0 }}>
@@ -119,7 +119,7 @@ export const DashboardPage: React.FC = () => {
           <h3 style={{ margin: '0 0 16px 0' }}>Insights</h3>
           <ul style={{ margin: 0, paddingLeft: '20px', color: 'var(--color-ink-2)', fontSize: '14px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
             {largeFiles.length > 0 && (
-              <li>{largeFiles.length} files are over 10% of total space</li>
+              <li>{pluralize(largeFiles.length, 'file')} {largeFiles.length === 1 ? 'is' : 'are'} over 10% of total space</li>
             )}
             {largestFile && (
               <li>Largest file: {largestFile.name} ({formatSize(largestFile.size)})</li>

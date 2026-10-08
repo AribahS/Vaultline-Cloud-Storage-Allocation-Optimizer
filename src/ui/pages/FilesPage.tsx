@@ -105,7 +105,7 @@ export const FilesPage: React.FC = () => {
               </span>
               {dupCount > 0 && (
                 <span className="text-body-small" style={{ color: 'var(--color-semantic-warning)', marginTop: '6px' }}>
-                  {dupCount} possible duplicates
+                  {pluralize(dupCount, 'possible duplicate')}
                 </span>
               )}
             </div>
@@ -154,7 +154,7 @@ export const FilesPage: React.FC = () => {
           </div>
           {files.length > 0 && (
             <Button variant="danger" size="sm" icon={<Trash2 size={16} />} onClick={() => {
-              if (window.confirm(`Remove all ${files.length} files?`)) {
+              if (window.confirm(`Remove all ${pluralize(files.length, 'file')}?`)) {
                 clearFiles();
               }
             }}>
@@ -170,7 +170,7 @@ export const FilesPage: React.FC = () => {
           <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
             <div className="skeleton-shimmer" style={{ width: '36px', height: '36px', borderRadius: '8px', flexShrink: 0 }} />
             <div>
-              <div style={{ fontWeight: 600, fontSize: '14px' }}>Scanning... {scanProgress.count.toLocaleString()} files found</div>
+              <div style={{ fontWeight: 600, fontSize: '14px' }}>Scanning... {pluralize(scanProgress.count, 'file')} found</div>
               {scanProgress.currentFolder && (
                 <div className="text-caption text-ink-3" style={{ marginTop: '2px' }}>{scanProgress.currentFolder}</div>
               )}
