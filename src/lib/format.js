@@ -31,3 +31,9 @@ export function formatDateDmy(timestamp) {
   const month = String(date.getMonth() + 1).padStart(2, '0');
   return `${day}/${month}/${date.getFullYear()}`;
 }
+
+export function formatScore(value) {
+  if (!Number.isFinite(value)) return '—';
+  const rounded = Math.round((value + Number.EPSILON) * 10) / 10;
+  return String(Number(rounded.toFixed(1)));
+}

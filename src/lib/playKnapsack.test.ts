@@ -5,7 +5,7 @@ import { normaliseItemSize } from '../engine/normalizer';
 import { GREEDY_COUNTEREXAMPLE_DATASET } from '../engine/greedy';
 import { STUDENT_LAPTOP_DATASET } from '../data/sampleDatasets';
 import { checkContrastPairs } from './contrast';
-import { buildCapacityTable, canAdd, findKnee, greedyPlan, importanceCurve, kneeSentence, planForCapacity, scoreSelection, type PlayItem } from './playKnapsack';
+import { buildCapacityTable, buildUserPlayItems, canAdd, choosePlayScale, findKnee, greedyPlan, importanceCurve, kneeSentence, mapCapacityToUnits, planForCapacity, scoreSelection, selectChallengeItems, type PlayItem } from './playKnapsack';
 import { createTightPlayDataset } from './tightPlayDataset';
 
 const MB = 1024 ** 2;
@@ -68,6 +68,45 @@ describe('Play DP helpers', () => {
     const items: PlayItem[] = [{ id: 'a', name: 'A', size: 8, weight: 8, importance: 7 }, { id: 'b', name: 'B', size: 5, weight: 5, importance: 4 }];
     expect(canAdd(items, ['a'], 'b', 10, 1024 ** 3)).toEqual({ allowed: false, reason: 'Needs 5 GB, only 2 GB left.' });
     expect(scoreSelection(items, ['a', 'b'])).toEqual({ totalImportance: 11, totalSize: 13, count: 2 });
+  });
+
+  it('builds the interactive table from user metadata and maps the full slider range', () => {
+    const files = STUDENT_LAPTOP_DATASET.slice(0, 2).map(file => ({ ...file, isPinned: file.id === STUDENT_LAPTOP_DATASET[0].id, isExcluded: file.id === STUDENT_LAPTOP_DATASET[1].id }));
+    const total = files.reduce((sum, file) => sum + file.size, 0);
+    const scale = choosePlayScale(total, files.length);
+    const items = buildUserPlayItems(files, scale.unitBytes);
+    expect(items.map(item => item.id)).toEqual(files.map(file => file.id));
+    expect(items[0].pinned).toBe(true);
+    expect(items[1].excluded).toBe(true);
+    expect(mapCapacityToUnits(total, total, items.reduce((sum, item) => sum + item.weight, 0))).toBe(items.reduce((sum, item) => sum + item.weight, 0));
+  });
+
+  it('keeps all small files at the target and returns the full sample size at the slider maximum', () => {
+    const file = { ...STUDENT_LAPTOP_DATASET[0], size: 1.4 * MB };
+    const items = buildUserPlayItems([file], choosePlayScale(file.size, 1).unitBytes);
+    const table = buildCapacityTable(items, items.reduce((sum, item) => sum + item.weight, 0));
+    const max = items[0].weight;
+    expect(planForCapacity(table, max).keptIds).toEqual([file.id]);
+    expect(planForCapacity(table, max).totalSize).toBe(file.size);
+  });
+
+  it('selects no more than fourteen challenge files deterministically by importance, size, then id', () => {
+    const files = Array.from({ length: 20 }, (_, index) => ({ id: `id-${index}`, name: `File ${index}`, size: index + 1, weight: index + 1, importance: index % 3 }));
+    const first = selectChallengeItems(files);
+    expect(first).toHaveLength(14);
+    expect(first).toEqual(selectChallengeItems(files));
+    expect(first.map(item => item.id)).toContain('id-19');
+    expect(first.map(item => item.id)).not.toContain('id-0');
+  });
+
+  it('challenge greedy and optimal totals agree with the exact solver on the challenge set', () => {
+    const challenge = selectChallengeItems(createTightPlayDataset(), 14);
+    const capacity = Math.floor(challenge.reduce((sum, item) => sum + item.weight, 0) * .4);
+    const optimal = planForCapacity(buildCapacityTable(challenge, capacity), capacity);
+    const greedy = greedyPlan(challenge, capacity);
+    const exact = solveFullKnapsack(challenge.map(item => ({ id: item.id, name: item.name, originalSize: item.size, normalizedSize: item.weight, value: item.importance })), { quotaUnits: capacity, quotaBytes: capacity * MB, unitBytes: MB });
+    expect(optimal.totalImportance).toBe(exact.totalValue);
+    expect(greedy.totalImportance).toBeLessThanOrEqual(optimal.totalImportance);
   });
 
   it('keeps the new violet, mint, crimson and gold text contrast above 4.5:1', () => {

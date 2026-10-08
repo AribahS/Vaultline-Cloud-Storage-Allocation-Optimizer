@@ -115,7 +115,8 @@ export interface AppState {
 }
 
 // Default initial dataset
-const initialFiles = markDuplicates(STUDENT_LAPTOP_DATASET);
+// The app starts without a scan. Sample data is loaded only when the user asks for it.
+const initialFiles: FileMetadata[] = [];
 const initialQuota = 15 * BYTE_UNITS.GB;
 
 let computeTimer: any = null;

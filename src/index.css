@@ -135,6 +135,14 @@
 .play-page { max-width: 1280px; }
 .play-controls { display: flex; justify-content: space-between; align-items: center; gap: 12px; margin-top: 20px; color: var(--paper); font-size: 13px; }
 .play-controls label { display: inline-flex; align-items: center; gap: 8px; }
+.play-data-hint { margin: 10px 0; color: var(--text-muted-on-dark); line-height: 1.5; }
+.play-inline-link { padding: 0; border: 0; background: transparent; color: var(--highlight); font: inherit; text-decoration: underline; cursor: pointer; }
+.play-range-wrap { position: relative; padding-bottom: 24px; }
+.play-range-wrap input[type="range"] { display: block; }
+.play-target-marker { position: absolute; top: 15px; transform: translateX(-50%); white-space: nowrap; color: var(--text-muted-on-dark); font-size: 10px; }
+.play-target-marker::before { position: absolute; top: -12px; left: 50%; width: 2px; height: 8px; background: var(--highlight); content: ''; }
+.play-slider-footer { display: flex; justify-content: space-between; color: var(--text-muted-on-dark); font: 10px var(--font-mono); }
+.play-target-button { margin: 0 0 8px; }
 .play-controls select { border: 1px solid color-mix(in srgb,var(--paper) 40%,transparent); border-radius: 7px; background: var(--vault); color: var(--paper); padding: 7px 10px; }
 .play-stage { border-radius: 20px; padding: clamp(20px, 4vw, 40px); box-shadow: 0 14px 36px color-mix(in srgb,var(--ink) 16%,transparent); }
 .play-heading, .capacity-label, .play-scoreline { display: flex; align-items: center; justify-content: space-between; gap: 20px; }

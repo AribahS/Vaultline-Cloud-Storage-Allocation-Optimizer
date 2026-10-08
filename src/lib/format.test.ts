@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { formatDateDmy, formatSize, pluralize } from './format';
+import { formatDateDmy, formatScore, formatSize, pluralize } from './format';
 
 const MB = 1024 * 1024;
 const GB = 1024 * 1024 * 1024;
@@ -36,6 +36,18 @@ describe('pluralize', () => {
 describe('formatDateDmy', () => {
   it('formats dates as dd/mm/yyyy', () => {
     expect(formatDateDmy(new Date(2026, 9, 8).getTime())).toBe('08/10/2026');
+  });
+});
+
+describe('formatScore', () => {
+  it('rounds to at most one decimal without binary float noise', () => {
+    expect(formatScore(26.400000000000006)).toBe('26.4');
+    expect(formatScore(14.24)).toBe('14.2');
+    expect(formatScore(14.26)).toBe('14.3');
+  });
+  it('drops unnecessary decimal zeros and handles invalid values', () => {
+    expect(formatScore(10)).toBe('10');
+    expect(formatScore(Number.NaN)).toBe('—');
   });
 });
 

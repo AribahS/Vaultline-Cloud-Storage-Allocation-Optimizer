@@ -99,8 +99,8 @@ describe('Phase 9 solver and formatting regression', () => {
     expect(pluralize(2, 'file')).toBe('2 files');
   });
 
-  it('starts with the bundled sample count and clears stale persisted session data', async () => {
-    expect(useAppStore.getState().files).toHaveLength(12);
+  it('starts without a bundled scan and clears stale persisted session data', async () => {
+    expect(useAppStore.getState().files).toHaveLength(0);
     const remove = vi.fn();
     const close = vi.fn();
     const db = {
