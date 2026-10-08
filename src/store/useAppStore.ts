@@ -362,10 +362,7 @@ export const useAppStore = create<AppState>((set, get) => ({
 
   setQuotaBytes: (requestedBytes) => {
     set((state) => {
-      const totalSize = state.files.reduce((total, file) => total + file.size, 0);
-      const quotaBytes = state.files.length > 0
-        ? Math.max(0, Math.min(requestedBytes, totalSize))
-        : Math.max(0, requestedBytes);
+      const quotaBytes = Math.max(0, requestedBytes);
       return {
         quotaBytes,
         places: state.places.map((p, idx) => idx === 0 ? { ...p, quotaBytes } : p),

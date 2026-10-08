@@ -4,7 +4,6 @@
  * These tests prevent regressions on:
  *  - pluralize() helper correctness
  *  - Store actions: addFiles, clearFiles, setQuotaBytes, triggerRecompute debounce
- *  - KpiCard renders values without overflow
  *  - TopBar renders without crash
  */
 
@@ -88,34 +87,5 @@ describe('useAppStore regression', () => {
     useAppStore.getState().cancelCompute();
     expect(useAppStore.getState().isComputing).toBe(false);
     expect(useAppStore.getState().computeProgress).toBeNull();
-  });
-});
-
-// ── KpiCard ──────────────────────────────────────────────────────────────────
-
-import { KpiCard } from './ui/components/KpiCard';
-
-describe('KpiCard (regression)', () => {
-  it('renders label and value', () => {
-    render(<KpiCard label="Total files" value="42" />);
-    expect(screen.getByText('Total files')).toBeTruthy();
-    expect(screen.getByText('42')).toBeTruthy();
-  });
-
-  it('renders subtitle when provided', () => {
-    render(<KpiCard label="Size" value="1.2 GB" subtitle="of 15 GB" />);
-    expect(screen.getByText('of 15 GB')).toBeTruthy();
-  });
-});
-
-// ── DashboardPage empty state ─────────────────────────────────────────────────
-
-import { DashboardPage } from './ui/pages/DashboardPage';
-
-describe('DashboardPage (regression)', () => {
-  it('shows empty-state CTA when no files', () => {
-    useAppStore.setState({ files: [], knapsackResult: null });
-    wrap(<DashboardPage />, '/');
-    expect(screen.getByText('Decide what to keep.')).toBeTruthy();
   });
 });

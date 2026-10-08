@@ -1,31 +1,14 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { useAppStore } from '../../store/useAppStore';
-import { BYTE_UNITS } from '../../engine/normalizer';
-import { solveGreedy } from '../../engine/greedy';
-import { solveBruteForce } from '../../engine/bruteForce';
+import { BYTE_UNITS, resolveUnitBytes, normaliseQuota } from '../../engine/normalizer';
 import { formatSize, pluralize } from '../../lib/format';
 import { buildTeachingWalkthrough, buildYourPlanDataset, cellSentences, type WalkStep } from '../../lib/walkthrough';
 import { GREEDY_COUNTER_ITEMS, TUTORIAL_ITEMS } from '../../lib/walkthroughDatasets';
-import { LabFptas } from '../../legacy/lab/LabFptas';
-import { LabFractional } from '../../legacy/lab/LabFractional';
-import { LabMultiBucket } from '../../legacy/lab/LabMultiBucket';
-import { LabTwoConstraints } from '../../legacy/lab/LabTwoConstraints';
-import { LabBenchmark } from '../../legacy/lab/LabBenchmark';
-import { CorrectnessTab } from '../pages/AlgorithmPage';
-import type { KnapsackItem } from '../../engine/types';
 
-type DrawerTab = 'Watch it think' | 'Variations' | 'Comparison' | 'Complexity' | 'Correctness';
+type DrawerTab = 'Watch it think' | 'Cost';
 type DatasetName = 'tutorial' | 'greedy' | 'your';
-type VariationName = 'approximate' | 'split' | 'pools' | 'limits' | 'benchmark';
 
-const tabs: DrawerTab[] = ['Watch it think', 'Variations', 'Comparison', 'Complexity', 'Correctness'];
-const variationOptions: { id: VariationName; label: string; description: string }[] = [
-  { id: 'approximate', label: 'Faster approximate answer', description: 'Find a near-best answer with less work.' },
-  { id: 'split', label: 'Files can be split', description: 'Compare whole-file choices with a version that can take part of a file.' },
-  { id: 'pools', label: 'Several storage pools', description: 'Place files across more than one storage location.' },
-  { id: 'limits', label: 'Storage and bandwidth limits', description: 'Choose files while respecting two limits at once.' },
-  { id: 'benchmark', label: 'Measure run time', description: 'Run a local benchmark and show the measured result.' },
-];
+const tabs: DrawerTab[] = ['Watch it think', 'Cost'];
 
 export interface AlgorithmDrawerProps { open: boolean; onClose: () => void }
 
@@ -33,12 +16,13 @@ export const AlgorithmDrawer: React.FC<AlgorithmDrawerProps> = ({ open, onClose 
   const closeButton = useRef<HTMLButtonElement>(null);
   const [tab, setTab] = useState<DrawerTab>('Watch it think');
   const [datasetName, setDatasetName] = useState<DatasetName>('tutorial');
-  const [variation, setVariation] = useState<VariationName>('approximate');
   const [stepIndex, setStepIndex] = useState(0);
   const [isPlaying, setIsPlaying] = useState(false);
   const [speed, setSpeed] = useState<'slow' | 'normal' | 'fast'>('normal');
   const [reducedMotion, setReducedMotion] = useState(false);
-  const { files, quotaBytes } = useAppStore();
+  const { files, quotaBytes, quotaUnitOption, knapsackResult } = useAppStore();
+  const unitBytes = knapsackResult?.unitBytes ?? resolveUnitBytes(quotaBytes, quotaUnitOption);
+  const capacityUnits = normaliseQuota(quotaBytes, unitBytes);
   const yourPlan = useMemo(() => buildYourPlanDataset(files, quotaBytes), [files, quotaBytes]);
   const selected = datasetName === 'tutorial'
     ? { items: TUTORIAL_ITEMS, capacity: 5, columnBytes: BYTE_UNITS.GB }
@@ -135,16 +119,6 @@ export const AlgorithmDrawer: React.FC<AlgorithmDrawerProps> = ({ open, onClose 
     : [];
   const tracePoints = traceCells.map(cell => tablePoint(cell.row, cell.column));
   const tracePath = tracePoints.map(point => `${point.x},${point.y}`).join(' ');
-
-  const renderVariation = () => {
-    switch (variation) {
-      case 'approximate': return <LabFptas />;
-      case 'split': return <LabFractional />;
-      case 'pools': return <LabMultiBucket />;
-      case 'limits': return <LabTwoConstraints />;
-      case 'benchmark': return <LabBenchmark />;
-    }
-  };
 
   return <>
     <div className="algorithm-drawer-backdrop" aria-hidden="true" onMouseDown={onClose} />
@@ -249,48 +223,20 @@ export const AlgorithmDrawer: React.FC<AlgorithmDrawerProps> = ({ open, onClose 
           </div>
         </>}
 
-        {tab === 'Variations' && <VariationsPanel selected={variation} onSelect={setVariation} render={renderVariation} />}
-        {tab === 'Comparison' && <ComparisonPanel items={selected.items} capacity={selected.capacity} columnBytes={selected.columnBytes} />}
-        {tab === 'Complexity' && <ComplexityPanel itemCount={selected.items.length} capacity={selected.capacity} cells={selected.items.length * (selected.capacity + 1)} tableCells={(selected.items.length + 1) * (selected.capacity + 1)} />}
-        {tab === 'Correctness' && <CorrectnessTab />}
+        {tab === 'Cost' && <CostPanel fileCount={files.filter(file => !file.isExcluded && !file.isPinned).length} capacityUnits={capacityUnits} cells={knapsackResult?.cellsComputed ?? 0} />}
       </div>
     </aside>
   </>;
 };
 
-const VariationsPanel: React.FC<{ selected: VariationName; onSelect: (value: VariationName) => void; render: () => React.ReactNode }> = ({ selected, onSelect, render }) => <section className="variation-panel">
-  <h3>Other ways to solve the storage problem</h3>
-  <p>Each example uses its matching solver and sample data. Run time is measured in this browser where shown.</p>
-  <div className="variation-selectors" role="group" aria-label="Choose a variation">
-    {variationOptions.map(option => <button key={option.id} type="button" aria-pressed={selected === option.id} onClick={() => onSelect(option.id)}><strong>{option.label}</strong><span>{option.description}</span></button>)}
-  </div>
-  <div className="variation-content">{render()}</div>
-</section>;
-
-const ComparisonPanel: React.FC<{ items: KnapsackItem[]; capacity: number; columnBytes: number }> = ({ items, capacity, columnBytes }) => {
-  const dp = useMemo(() => buildTeachingWalkthrough(items, capacity).result, [items, capacity]);
-  const greedy = useMemo(() => solveGreedy(items, { quotaUnits: capacity, quotaBytes: capacity * columnBytes, unitBytes: columnBytes }), [items, capacity, columnBytes]);
-  const brute = useMemo(() => items.length <= 20 ? solveBruteForce(items, capacity) : null, [items, capacity]);
-  return <section className="algorithm-info-panel">
-    <h3>Compare complete search with shortcuts</h3>
-    <p>The table checks every file and capacity choice. Greedy takes the highest importance per unit of size first; checking every possible set is slower as files are added.</p>
-    <div className="algorithm-comparison-cards">
-      {[{ label: 'Dynamic programming', score: dp.totalValue, count: dp.keptItemIds.length }, { label: 'Greedy', score: greedy.totalValue, count: greedy.keptItems.length }, ...(brute ? [{ label: 'Check every set', score: brute.bestValue, count: brute.bestSubset.length }] : [])].map(result => <article key={result.label}><span>{result.label}</span><strong>{result.score} importance</strong><small>{pluralize(result.count, 'file')} kept</small></article>)}
-    </div>
-    <p>{greedy.totalValue < dp.totalValue ? `For this data, the table finds ${dp.totalValue - greedy.totalValue} more importance than the greedy shortcut.` : `For this data, both methods reach ${dp.totalValue} importance.`}</p>
-    {dp.keptItemIds.length > 0 && <p>Best set: {dp.keptItemIds.map(id => items.find(item => item.id === id)?.name).filter(Boolean).join(', ')}.</p>}
+const CostPanel: React.FC<{ fileCount: number; capacityUnits: number; cells: number }> = ({ fileCount, capacityUnits, cells }) => {
+  const teachingTableCells = (fileCount + 1) * (capacityUnits + 1);
+  const productionBytes = 20 * (capacityUnits + 1) + Math.ceil(fileCount * (capacityUnits + 1) / 8);
+  return <section className="algorithm-info-panel" aria-label="Solver cost">
+    <h3>What the calculation costs</h3>
+    <p><strong>Time: O(n × W).</strong> The solver compares each eligible file against each available capacity step.</p>
+    <p>Current scan: {pluralize(fileCount, 'file')} and {capacityUnits.toLocaleString()} capacity steps ({cells.toLocaleString()} production decisions in the last plan).</p>
+    <p>The teaching view shows {teachingTableCells.toLocaleString()} table cells. The production solver uses two rolling rows plus a compact decision record (about {formatSize(productionBytes)} of numeric storage for this scale).</p>
+    <p>The production solver is checked against brute force in the project test suite.</p>
   </section>;
 };
-
-const ComplexityPanel: React.FC<{ itemCount: number; capacity: number; cells: number; tableCells: number }> = ({ itemCount, capacity, cells, tableCells }) => <section className="algorithm-info-panel">
-  <h3>How the work grows</h3>
-  <div className="complexity-stats">
-    <article><span>Files</span><strong>{itemCount}</strong></article>
-    <article><span>Capacity columns</span><strong>{capacity + 1}</strong></article>
-    <article><span>Cell decisions</span><strong>{cells}</strong></article>
-    <article><span>Table cells including starting row</span><strong>{tableCells}</strong></article>
-  </div>
-  <p><strong>Time: O(n × W).</strong> With n files and W capacity steps, the algorithm fills one cell for each file and capacity. The amount of work depends on the numeric capacity, not only on how many bits are needed to write it.</p>
-  <p><strong>Teaching view storage: O(n × W).</strong> It keeps the whole table so every choice can be shown. The production solver keeps two rows of scores and a compact decision record for rebuilding the answer.</p>
-  <p>The table method checks file choices across the selected capacity steps. Raising the capacity scale adds more work, even when the file count stays the same.</p>
-</section>;

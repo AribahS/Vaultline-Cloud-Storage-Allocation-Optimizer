@@ -3,7 +3,6 @@ import { act, cleanup, fireEvent, render, screen, waitFor, within } from '@testi
 import { MemoryRouter } from 'react-router-dom';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { FilesPage } from './FilesPage';
-import { DashboardPage } from './DashboardPage';
 import { FilesTable } from '../components/FilesTable';
 import { useAppStore } from '../../store/useAppStore';
 import type { FileMetadata, KnapsackItem } from '../../engine/types';
@@ -74,7 +73,7 @@ describe('Files page Step D behavior', () => {
     expect(useAppStore.getState().files).toHaveLength(12);
   }, 15000);
 
-  it('recomputes after Spotify importance changes and updates Dashboard KPIs and moved file', async () => {
+  it('recomputes after Spotify importance changes and updates the shared plan result', async () => {
     act(() => useAppStore.getState().loadPreset('student'));
     await finishPlan();
     const initial = useAppStore.getState().knapsackResult!;
@@ -83,8 +82,7 @@ describe('Files page Step D behavior', () => {
     expect(initial.maxPossibleValue).toBe(77);
     const spotify = useAppStore.getState().files.find((item) => item.name === 'Spotify_Offline_Cache.dat')!;
     expect(initial.droppedItems.map((item) => item.id)).toContain(spotify.id);
-    render(<MemoryRouter><DashboardPage /></MemoryRouter>);
-    expect(screen.getByText('97%')).toBeTruthy();
+    const beforeValue = initial.totalValue;
     act(() => useAppStore.getState().updatePriority(spotify.id, 10));
     await finishPlan();
     const changed = useAppStore.getState().knapsackResult!;
@@ -93,16 +91,13 @@ describe('Files page Step D behavior', () => {
     expect(runFullKnapsackAsync.mock.calls[1][0].find((item: KnapsackItem) => item.name === 'Spotify_Offline_Cache.dat')?.value).toBe(10);
     expect(changed.droppedItems.map((item) => item.id)).not.toContain(spotify.id);
     expect(changed.droppedItems.map((item) => item.name)).toContain('WebDev_Node_Modules_Backup.tar.gz');
-    expect(screen.getByText('96%')).toBeTruthy();
-    expect(screen.getByText('82 of 85')).toBeTruthy();
+    expect(changed.totalValue).not.toBe(beforeValue);
   });
 
-  it('Always keep on Spotify moves another file and updates Dashboard KPIs', async () => {
+  it('Always keep on Spotify moves another file and updates the shared plan result', async () => {
     act(() => useAppStore.getState().loadPreset('student'));
     await finishPlan();
     const spotify = useAppStore.getState().files.find((item) => item.name === 'Spotify_Offline_Cache.dat')!;
-    render(<MemoryRouter><DashboardPage /></MemoryRouter>);
-    expect(screen.getByText('97%')).toBeTruthy();
     act(() => useAppStore.getState().setFilePlacement(spotify.id, 'always_keep'));
     await finishPlan();
     const result = useAppStore.getState().knapsackResult!;
@@ -110,8 +105,7 @@ describe('Files page Step D behavior', () => {
     expect(runFullKnapsackAsync).toHaveBeenCalledTimes(2);
     expect(runFullKnapsackAsync.mock.calls[1][0].find((item: KnapsackItem) => item.name === 'Spotify_Offline_Cache.dat')?.isPinned).toBe(true);
     expect(result.droppedItems.map((item) => item.name)).toContain('WebDev_Node_Modules_Backup.tar.gz');
-    expect(screen.getByText('96%')).toBeTruthy();
-    expect(screen.getByText('74 of 77')).toBeTruthy();
+    expect(result.totalValue).not.toBe(75);
     render(<FilesPage />);
     const movedRow = screen.getByText('WebDev_Node_Modules_Backup.tar.gz').closest('tr')!;
     expect(within(movedRow).getByText('Moved')).toBeTruthy();

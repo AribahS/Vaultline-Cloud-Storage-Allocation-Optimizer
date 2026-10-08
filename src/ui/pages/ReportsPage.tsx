@@ -1,8 +1,10 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useState } from 'react';
 import { FileJson2, FileSpreadsheet, Printer, Terminal } from 'lucide-react';
+import { Link } from 'react-router-dom';
 import { useAppStore } from '../../store/useAppStore';
 import { Button } from '../components/Button';
 import { Card } from '../components/Card';
+import { PlanSummary } from '../components/PlanSummary';
 import { Treemap } from '../components/Treemap';
 import { formatSize, pluralize } from '../../lib/format';
 import { buildExportPlan, downloadPlanFile, generatePlanCsv, generatePlanJson, generateShellMigrationScript, planFileMetadata } from '../../lib/planExports';
@@ -10,7 +12,8 @@ import { buildExportPlan, downloadPlanFile, generatePlanCsv, generatePlanJson, g
 const sortForPlan = <T extends { priority: number; size: number }>(items: T[]) => [...items].sort((left, right) => right.priority - left.priority || right.size - left.size);
 
 export const ReportsPage: React.FC = () => {
-  const { files, knapsackResult, quotaBytes } = useAppStore();
+  const { files, knapsackResult, quotaBytes, setQuotaBytes } = useAppStore();
+  const [customGb, setCustomGb] = useState(String(Number((quotaBytes / 1024 ** 3).toFixed(2))));
   const plan = useMemo(() => knapsackResult ? buildExportPlan(files, knapsackResult) : null, [files, knapsackResult]);
   const keptIds = useMemo(() => new Set(knapsackResult?.keptItems.map(item => item.id) ?? []), [knapsackResult]);
   const keptFiles = useMemo(() => sortForPlan(planFileMetadata(files, knapsackResult?.keptItems.map(item => item.id) ?? [])), [files, knapsackResult]);
@@ -48,18 +51,20 @@ export const ReportsPage: React.FC = () => {
       <div><h1>Plan</h1><p>Your storage decision, with files and totals you can save or print.</p></div>
       <Button variant="primary" onClick={printReport} disabled={!knapsackResult}><Printer size={16} />Print / Save PDF</Button>
     </header>
-    <p className="plan-score-note no-print">Suggested scores, a heuristic, not ground truth</p>
+    <section className="plan-capacity no-print" aria-label="Target capacity">
+      <strong>Target capacity</strong>
+      <div className="plan-capacity-presets">{[5, 15, 64].map(gb => <button type="button" className="btn-secondary" key={gb} aria-pressed={quotaBytes === gb * 1024 ** 3} onClick={() => { setQuotaBytes(gb * 1024 ** 3); setCustomGb(String(gb)); }}>{gb} GB</button>)}</div>
+      <label htmlFor="plan-custom-capacity">Custom (GB)</label>
+      <input id="plan-custom-capacity" type="number" min="0" step="0.1" value={customGb} onChange={event => {
+        setCustomGb(event.target.value);
+        const parsed = Number(event.target.value);
+        if (Number.isFinite(parsed) && parsed >= 0) setQuotaBytes(parsed * 1024 ** 3);
+      }} />
+    </section>
 
     {!knapsackResult ? <Card className="no-print"><div className="plan-empty"><h2>No plan yet</h2><p>Add files and run the optimizer to see a plan here.</p></div></Card> : <>
-      <section className="plan-kpis no-print" aria-label="Plan summary">
-        <Kpi label="Files kept" value={pluralize(knapsackResult.keptItems.length, 'file')} />
-        <Kpi label="Files moved" value={pluralize(knapsackResult.droppedItems.length, 'file')} moved />
-        <Kpi label="Space kept" value={formatSize(knapsackResult.totalSizeKept)} />
-        <Kpi label="Space moved" value={formatSize(knapsackResult.totalSizeDropped)} moved />
-        <Kpi label="Importance retained" value={`${importancePct}% (${knapsackResult.totalValue} of ${knapsackResult.maxPossibleValue})`} />
-        <Kpi label="Target capacity" value={formatSize(knapsackResult.quotaBytes || quotaBytes)} />
-        <Kpi label="Solver runtime" value={runtime} />
-      </section>
+      <PlanSummary values={{ keptCount: knapsackResult.keptItems.length, movedCount: knapsackResult.droppedItems.length, keptBytes: knapsackResult.totalSizeKept, movedBytes: knapsackResult.totalSizeDropped, importanceKept: knapsackResult.totalValue, importancePossible: knapsackResult.maxPossibleValue }} />
+      <p className="plan-runtime no-print">Solver runtime: {runtime}</p>
 
       <section className="plan-export-actions no-print" aria-label="Save plan">
         <Button variant="secondary" onClick={() => saveFile('vaultline-plan.csv', generatePlanCsv(plan!), 'text/csv;charset=utf-8')}><FileSpreadsheet size={16} />Download CSV</Button>
@@ -77,13 +82,14 @@ export const ReportsPage: React.FC = () => {
         <FileList title="Keep" items={keptFiles} />
         <FileList title="Move" items={movedFiles} moved />
       </section>
-      <Card className="plan-constraints no-print"><h2>Constraints</h2><div className="plan-constraint-columns responsive-stack">
+      <Card className="plan-constraints no-print"><h2>Constraints</h2><Link to="/files" className="plan-manage-link">Manage constraints in Files</Link><div className="plan-constraint-columns responsive-stack">
         <ConstraintList title="Always keep" items={files.filter(file => file.isPinned)} />
         <ConstraintList title="Never keep" items={files.filter(file => file.isExcluded)} />
       </div></Card>
 
       <article className="plan-print" aria-label="Printable storage plan">
         <header className="plan-print-header"><h1>Vaultline storage plan</h1><p>Generated {plan!.generatedAt}</p></header>
+        <p>Suggested scores, a heuristic, not ground truth.</p>
         <div className="plan-print-kpis">
           <PrintCard title="Files kept" value={String(knapsackResult.keptItems.length)} />
           <PrintCard title="Files moved" value={String(knapsackResult.droppedItems.length)} />
@@ -100,8 +106,6 @@ export const ReportsPage: React.FC = () => {
     </>}
   </div>;
 };
-
-const Kpi: React.FC<{ label: string; value: string; moved?: boolean }> = ({ label, value, moved = false }) => <Card className={`plan-kpi ${moved ? 'plan-kpi-moved' : ''}`}><span>{label}</span><strong>{value}</strong><i aria-hidden="true" /></Card>;
 
 const FileList: React.FC<{ title: string; items: ReturnType<typeof planFileMetadata>; moved?: boolean }> = ({ title, items, moved = false }) => <Card className={`plan-file-list ${moved ? 'plan-file-list-moved' : ''}`}><h2>{title} <span>{pluralize(items.length, 'file')}</span></h2><div className="plan-file-scroll">{items.length ? items.map(file => <div key={file.id} className="plan-file-row"><span title={file.path}><strong>{file.name}</strong><small>{file.path}</small></span><b>{formatSize(file.size)}</b><em>{file.priority}/10</em></div>) : <p>No files in this list.</p>}</div></Card>;
 

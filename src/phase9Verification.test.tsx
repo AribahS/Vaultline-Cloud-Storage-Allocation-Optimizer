@@ -12,10 +12,8 @@ import { formatSize, pluralize } from './lib/format';
 import { useAppStore } from './store/useAppStore';
 import { clearStaleSession } from './lib/clearSession';
 import { normaliseItemSize, normaliseQuota, resolveUnitBytes } from './engine/normalizer';
-import { DashboardPage } from './ui/pages/DashboardPage';
 import { FilesPage } from './ui/pages/FilesPage';
 import { LandingPage } from './ui/pages/LandingPage';
-import { OptimizerPage } from './ui/pages/OptimizerPage';
 import { PlayPage } from './ui/pages/PlayPage';
 import { ReportsPage } from './ui/pages/ReportsPage';
 import { AlgorithmDrawer } from './ui/components/AlgorithmDrawer';
@@ -131,9 +129,7 @@ describe('Phase 9 accessibility smoke checks', () => {
     expect(result.violations.map(violation => ({ id: violation.id, nodes: violation.nodes.map(node => node.target) }))).toEqual([]);
   };
 
-  it('checks Dashboard', async () => { await runAxe(<DashboardPage />); });
   it('checks Files', async () => { await runAxe(<FilesPage />); }, 15000);
-  it('checks Optimizer', async () => { await runAxe(<OptimizerPage />); }, 15000);
   it('checks Plan', async () => { await runAxe(<ReportsPage />); }, 15000);
   it('checks Play', async () => { await runAxe(<PlayPage />); }, 15000);
   it('checks Landing', async () => { await runAxe(<LandingPage onEnter={() => undefined} />); }, 15000);

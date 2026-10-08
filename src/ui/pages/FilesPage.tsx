@@ -63,7 +63,6 @@ export const FilesPage: React.FC = () => {
     }
   };
 
-  const totalSize = files.reduce((acc, f) => acc + f.size, 0);
   const categories = new Map<string, number>();
   files.forEach(f => categories.set(f.category, (categories.get(f.category) || 0) + 1));
   const dupCount = files.filter(f => f.isDuplicate).length;
@@ -91,20 +90,7 @@ export const FilesPage: React.FC = () => {
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '24px', gap: '16px', flexWrap: 'wrap' }}>
         <div>
           <h1 style={{ fontSize: '28px', margin: 0 }}>Files</h1>
-          {files.length > 0 ? (
-            <div style={{ display: 'flex', gap: '16px', flexWrap: 'wrap', marginTop: '8px', alignItems: 'center' }}>
-              <span style={{ fontSize: '24px', fontWeight: 600, color: 'var(--ink)' }}>
-                {pluralize(files.length, 'file')}, {formatSize(totalSize)}
-              </span>
-              {dupCount > 0 && (
-                <span className="text-body-small" style={{ color: 'var(--color-semantic-warning)', marginTop: '6px' }}>
-                  {pluralize(dupCount, 'possible duplicate')}
-                </span>
-              )}
-            </div>
-          ) : (
-            <h1 style={{ marginBottom: '4px' }}>Files</h1>
-          )}
+          {dupCount > 0 && <p className="text-body-small" style={{ color: 'var(--color-semantic-warning)', margin: '8px 0 0' }}>{pluralize(dupCount, 'possible duplicate')}</p>}
         </div>
         <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
           {files.some(file => file.prioritySource === 'edited') && <Button variant="secondary" size="sm" onClick={() => {

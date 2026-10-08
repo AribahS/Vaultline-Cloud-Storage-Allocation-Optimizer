@@ -30,6 +30,6 @@ describe('Landing page', () => {
     useAppStore.setState({ files: [], knapsackResult: null, autoRunOptimizer: false, isPlanStale: false });
     render(<MemoryRouter initialEntries={['/landing']}><App /></MemoryRouter>);
     fireEvent.click(await screen.findByRole('button', { name: 'Open app' }));
-    await waitFor(() => expect(screen.getByRole('heading', { name: 'Dashboard' })).toBeTruthy());
+    await waitFor(() => expect(screen.getByRole('heading', { name: 'Files', level: 1 })).toBeTruthy());
   });
 });

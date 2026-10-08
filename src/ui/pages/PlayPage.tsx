@@ -142,7 +142,7 @@ export const PlayPage: React.FC = () => {
         <p className="challenge-hint">Your pack: {pluralize(selection.count, 'file')} · {formatSize(selection.totalSize)} · {selection.totalImportance} importance</p>
         <div className="challenge-actions">
           {!revealed ? <button className="reveal-button btn-primary" onClick={() => setRevealed(true)}>Reveal answers</button> : <button className="reveal-button btn-primary" onClick={() => { setSelectedIds([]); setRevealed(false); setNotice(''); }}>Try again</button>}
-          <button className="play-outline" onClick={() => navigate('/optimizer')}>Open optimizer</button>
+          <button className="play-outline" onClick={() => navigate('/plan')}>Open plan</button>
         </div>
         {revealed && <section className="score-comparison" aria-label="Challenge answers" data-testid="challenge-results">
           <article><span>Your pack</span><strong data-testid="your-score">{selection.totalImportance}</strong><small>{formatSize(selection.totalSize)}</small></article>

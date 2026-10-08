@@ -1,5 +1,6 @@
 import React from 'react';
-import { cleanup, render, screen } from '@testing-library/react';
+import { cleanup, fireEvent, render, screen } from '@testing-library/react';
+import { MemoryRouter } from 'react-router-dom';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { solveFullKnapsack } from '../../engine/knapsack';
 import type { FileMetadata } from '../../engine/types';
@@ -47,11 +48,20 @@ describe('Plan screen exports', () => {
 
   it('renders a designed A4 print report with exactly one primary button and no text dump', () => {
     useAppStore.setState({ files, knapsackResult: result, quotaBytes: 10 });
-    const { container } = render(<ReportsPage />);
+    const { container } = render(<MemoryRouter><ReportsPage /></MemoryRouter>);
     expect(screen.getByRole('heading', { name: 'Plan' })).toBeTruthy();
     expect(container.querySelector('style')?.textContent).toContain('@page { size: A4;');
     expect(container.querySelector('.plan-print-table')).toBeTruthy();
     expect(container.textContent).not.toContain('=====');
     expect(container.querySelectorAll('button.btn-primary')).toHaveLength(1);
+  });
+
+  it('edits the shared target capacity only on Plan', () => {
+    useAppStore.setState({ files, knapsackResult: result, quotaBytes: 15 * 1024 ** 3 });
+    render(<MemoryRouter><ReportsPage /></MemoryRouter>);
+    fireEvent.click(screen.getByRole('button', { name: '64 GB' }));
+    expect(useAppStore.getState().quotaBytes).toBe(64 * 1024 ** 3);
+    fireEvent.change(screen.getByLabelText('Custom (GB)'), { target: { value: '8.5' } });
+    expect(useAppStore.getState().quotaBytes).toBe(8.5 * 1024 ** 3);
   });
 });
