@@ -9,9 +9,10 @@ import { useAppStore, PresetType } from '../../store/useAppStore';
 import { scanWithFileSystemAccess } from '../../engine/fileScanner';
 
 import { formatSize, pluralize } from '../../lib/format';
+import { suggestFileScore } from '../../lib/scoring.js';
 
 export const FilesPage: React.FC = () => {
-  const { files, addFiles, isScanning, setIsScanning, scanProgress, clearFiles, loadPreset } = useAppStore();
+  const { files, addFiles, isScanning, setIsScanning, scanProgress, clearFiles, loadPreset, resetAllPrioritySuggestions } = useAppStore();
   const [selectedFileId, setSelectedFileId] = useState<string | null>(null);
   const [view, setView] = useState('Table');
   const [showPresetMenu, setShowPresetMenu] = useState(false);
@@ -25,8 +26,7 @@ export const FilesPage: React.FC = () => {
     try {
       const { scanFileList } = await import('../../engine/fileScanner');
       const newFiles = await scanFileList(e.target.files, (p) => setIsScanning(true, p));
-      const withPriority = newFiles.map(f => ({ ...f, priority: 5, prioritySource: 'edited' as const }));
-      addFiles(withPriority);
+      addFiles(newFiles);
     } catch (err) {
       console.error(err);
     } finally {
@@ -41,8 +41,7 @@ export const FilesPage: React.FC = () => {
     try {
       const { scanFileList } = await import('../../engine/fileScanner');
       const newFiles = await scanFileList(e.target.files, (p) => setIsScanning(true, p));
-      const withPriority = newFiles.map(f => ({ ...f, priority: 5, prioritySource: 'edited' as const }));
-      addFiles(withPriority);
+      addFiles(newFiles);
     } catch (err) {
       console.error(err);
     } finally {
@@ -56,8 +55,7 @@ export const FilesPage: React.FC = () => {
       setIsScanning(true, { count: 0 });
       try {
         const newFiles = await scanWithFileSystemAccess((p) => setIsScanning(true, p));
-        const withPriority = newFiles.map(f => ({ ...f, priority: 5, prioritySource: 'edited' as const }));
-        addFiles(withPriority);
+        addFiles(newFiles);
       } catch (err) {
         console.warn('Folder scan cancelled or failed', err);
       } finally {
@@ -112,6 +110,9 @@ export const FilesPage: React.FC = () => {
           )}
         </div>
         <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+          {files.some(file => file.prioritySource === 'edited') && <Button variant="secondary" size="sm" onClick={() => {
+            if (window.confirm('Reset every edited importance score to its suggested value?')) resetAllPrioritySuggestions();
+          }}>Reset all to suggested</Button>}
           <Button variant="primary" size="sm" icon={<FilePlus size={16} />} onClick={() => fileInputRef.current?.click()}>
             Add files
           </Button>

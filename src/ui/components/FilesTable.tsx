@@ -31,11 +31,14 @@ export const FilesTable: React.FC<{
   const quotaBytes = useAppStore(state => state.quotaBytes);
   const bulkSetPlacement = useAppStore(state => state.bulkSetPlacement);
   const bulkSetImportance = useAppStore(state => state.bulkSetImportance);
+  const resetPrioritySuggestions = useAppStore(state => state.resetPrioritySuggestions);
   const removeFile = useAppStore(state => state.removeFile);
   const [selectedIds, setSelectedIds] = useState<Set<string>>(() => new Set());
   const keptIds = useMemo(() => new Set(knapsackResult?.keptItems.map(item => item.id) ?? []), [knapsackResult]);
   const [sorting, setSorting] = useState<SortingState>([]);
   const tableContainerRef = useRef<HTMLDivElement>(null);
+  const selectedFiles = files.filter(file => selectedIds.has(file.id));
+  const selectedSuggested = selectedFiles.map(file => ({ file, suggestion: suggestFileScore(file, !!file.isDuplicate, Date.now()) }));
 
   const columns = useMemo<ColumnDef<FileMetadata>[]>(() => [
     {
@@ -122,9 +125,10 @@ export const FilesTable: React.FC<{
               ))}
             </select>
             {file.prioritySource === 'edited' && (
-              <button type="button" onClick={() => resetPrioritySuggestion(file.id, suggested.score)} title="Reset to suggested" style={{ border: 0, background: 'transparent', color: 'var(--color-ink-2)', fontSize: 11, cursor: 'pointer' }}>Reset to suggested</button>
+              <><span className="score-edited-mark">Edited</span><button type="button" onClick={() => resetPrioritySuggestion(file.id, suggested.score)} title="Reset to suggested" style={{ border: 0, background: 'transparent', color: 'var(--color-ink-2)', fontSize: 11, cursor: 'pointer' }}>Reset to suggested</button></>
             )}
             <span className="score-reasons" title={`Suggested scores, a heuristic, not ground truth. ${suggested.reasons.join(', ')}`}>
+              <span className="score-suggested-value">Suggested {suggested.score}/10</span>
               {suggested.reasons.length ? suggested.reasons.map((reason: string) => <span className="score-reason-chip" key={reason}>{reason}</span>) : <span className="score-reason-chip">Suggested</span>}
             </span>
           </div>
@@ -227,6 +231,7 @@ export const FilesTable: React.FC<{
           <button className="vault-btn btn-sm btn-secondary" onClick={() => { bulkSetPlacement(Array.from(selectedIds), 'always_keep'); setSelectedIds(new Set()); }}>Always keep</button>
           <button className="vault-btn btn-sm btn-secondary" onClick={() => { bulkSetPlacement(Array.from(selectedIds), 'never_keep'); setSelectedIds(new Set()); }}>Never keep</button>
           <button className="vault-btn btn-sm btn-secondary" onClick={() => { bulkSetPlacement(Array.from(selectedIds), 'auto'); setSelectedIds(new Set()); }}>Clear constraint</button>
+          <button className="vault-btn btn-sm btn-secondary" onClick={() => { resetPrioritySuggestions(Array.from(selectedIds)); setSelectedIds(new Set()); }}>Reset to suggested</button>
           <select 
             aria-label="Set importance"
             className="vault-btn btn-sm btn-secondary"
@@ -244,6 +249,13 @@ export const FilesTable: React.FC<{
               <option key={score} value={score}>{score}/10 {score >= 8 ? '★ High' : score >= 5 ? '• Mid' : 'Low'}</option>
             ))}
           </select>
+          <div className="bulk-score-suggestions" aria-label="Suggested scores for selected files">
+            {selectedSuggested.map(({ file, suggestion }) => <div key={file.id}>
+              <span>{file.name}: suggested {suggestion.score}/10</span>{file.prioritySource === 'edited' && <span className="score-edited-mark">Edited</span>}
+              <span className="score-reasons">{suggestion.reasons.map(reason => <span className="score-reason-chip" key={reason}>{reason}</span>)}</span>
+            </div>)}
+            <small>Suggested scores, a heuristic, not ground truth</small>
+          </div>
           <div style={{ flex: 1 }} />
           <button className="vault-btn btn-sm btn-danger" onClick={() => { Array.from(selectedIds).forEach(removeFile); setSelectedIds(new Set()); }}>Remove from list</button>
         </div>

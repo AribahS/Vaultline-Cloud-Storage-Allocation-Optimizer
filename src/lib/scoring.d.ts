@@ -10,3 +10,6 @@ export function suggestFileScore(
   isDuplicate?: boolean,
   now?: number,
 ): SuggestedFileScore;
+
+export function scoreIncomingFiles(existingFiles: FileMetadata[], incomingFiles: FileMetadata[], now?: number): FileMetadata[];
+export function resetScoresToSuggested(files: FileMetadata[], now?: number): FileMetadata[];

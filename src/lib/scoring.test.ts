@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import type { FileMetadata } from '../engine/types';
-import { suggestFileScore } from './scoring.js';
+import { resetScoresToSuggested, scoreIncomingFiles, suggestFileScore } from './scoring.js';
+import { readFileSync } from 'node:fs';
 
 const now = 1_800_000_000_000;
 const file: Pick<FileMetadata, 'name' | 'path' | 'category' | 'lastModified'> = {
@@ -32,5 +33,40 @@ describe('suggestFileScore', () => {
 
   it('does not depend on the wall clock when now is injected', () => {
     expect(suggestFileScore(file, false, now)).toEqual(suggestFileScore(file, false, now));
+  });
+});
+
+const metadata = (overrides: Partial<FileMetadata> = {}): FileMetadata => ({
+  id: 'one', name: 'notes.txt', path: '/Documents/notes.txt', size: 120,
+  type: 'text/plain', category: 'document', lastModified: 1_000,
+  priority: 5, prioritySource: 'auto', isPinned: false, isExcluded: false,
+  ...overrides,
+});
+
+describe('metadata-only scoring integration', () => {
+  it('ranks duplicate imported copies below the original with deterministic integer scores from 1 to 10', () => {
+    const injectedNow = 20_000_000;
+    const original = metadata({ priority: suggestFileScore(file, false, injectedNow).score });
+    const incoming = [metadata({ id: 'copy-a' }), metadata({ id: 'copy-b' })];
+    const scored = scoreIncomingFiles([original], incoming, injectedNow);
+    expect(scored[0].priority).toBeLessThan(original.priority);
+    expect(scored.map(item => item.priority)).toEqual(scoreIncomingFiles([original], incoming, injectedNow).map(item => item.priority));
+    for (const item of [original, ...scored]) {
+      expect(Number.isInteger(item.priority)).toBe(true);
+      expect(item.priority).toBeGreaterThanOrEqual(1);
+      expect(item.priority).toBeLessThanOrEqual(10);
+    }
+  });
+
+  it('falls back to 5 when the metadata has no usable scoring signal', () => {
+    const unknown = metadata({ name: 'blob', path: '/blob', type: '', category: 'other', lastModified: 0 });
+    expect(scoreIncomingFiles([], [unknown], 20_000_000)[0].priority).toBe(5);
+  });
+
+  it('resets scores and never reads file contents or calls network APIs', () => {
+    const edited = metadata({ priority: 1, prioritySource: 'edited' });
+    expect(resetScoresToSuggested([edited], 20_000_000)[0]).toMatchObject({ prioritySource: 'auto', priority: suggestFileScore(edited, false, 20_000_000).score });
+    const scoringSource = readFileSync('src/lib/scoring.js', 'utf8');
+    expect(scoringSource).not.toMatch(/\bfetch\s*\(|\bFileReader\b/);
   });
 });

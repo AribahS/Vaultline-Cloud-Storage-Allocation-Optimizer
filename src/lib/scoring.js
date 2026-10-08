@@ -27,7 +27,7 @@ export function suggestFileScore(file, isDuplicate = false, now) {
     reasons.push(path.includes('/downloads/') ? 'Downloads folder' : path.includes('/cache/') ? 'Cache folder' : 'Backups folder');
   }
 
-  if (Number.isFinite(now) && Number.isFinite(file.lastModified)) {
+  if (Number.isFinite(now) && Number.isFinite(file.lastModified) && file.lastModified > 0) {
     const age = Math.max(0, now - file.lastModified);
     if (age <= 30 * DAY_MS) {
       score += 1;
@@ -45,4 +45,31 @@ export function suggestFileScore(file, isDuplicate = false, now) {
     reasons.unshift('Duplicate');
   }
   return { score, reasons: reasons.slice(0, 3) };
+}
+
+const duplicateKey = (file) => `${String(file.name ?? '').toLowerCase()}___${Number(file.size) || 0}`;
+
+/** Score incoming file metadata only; the first copy keeps its suggestion and later copies rank below it. */
+export function scoreIncomingFiles(existingFiles, incomingFiles, now = Date.now()) {
+  const firstScores = new Map();
+  for (const file of existingFiles) {
+    const key = duplicateKey(file);
+    if (!firstScores.has(key)) firstScores.set(key, file.priority);
+  }
+  return incomingFiles.map((file) => {
+    const key = duplicateKey(file);
+    const duplicate = firstScores.has(key);
+    const suggested = suggestFileScore(file, duplicate, now).score;
+    const score = duplicate ? Math.max(1, Math.min(suggested, firstScores.get(key) - 1)) : suggested;
+    if (!firstScores.has(key)) firstScores.set(key, score);
+    return { ...file, priority: score, prioritySource: 'auto' };
+  });
+}
+
+export function resetScoresToSuggested(files, now = Date.now()) {
+  return files.map((file) => ({
+    ...file,
+    priority: suggestFileScore(file, !!file.isDuplicate, now).score,
+    prioritySource: 'auto',
+  }));
 }

@@ -151,6 +151,7 @@ export const ReportsPage: React.FC = () => {
           {downloadLabel}
         </Button>
       </div>
+      <p className="no-print text-caption text-ink-3" style={{ marginTop: '-16px', marginBottom: '16px' }}>Suggested scores, a heuristic, not ground truth</p>
 
       {!optimizationResult ? (
         <Card className="no-print">

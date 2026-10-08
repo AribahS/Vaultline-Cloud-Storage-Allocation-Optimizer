@@ -213,7 +213,7 @@ describe('Files page Step D behavior', () => {
     expect(screen.getByText(/Always keep files \(120 B\) exceed target capacity \(100 B\)/)).toBeTruthy();
   });
 
-  it('adds two picker files at importance 5 using metadata only', async () => {
+  it('adds two picker files at their suggested importance using metadata only', async () => {
     vi.useRealTimers();
     const first = new File(['first file contents'], 'first.txt', { type: 'text/plain', lastModified: 1234 });
     const second = new File(['second file contents'], 'second.txt', { type: 'text/plain', lastModified: 5678 });
@@ -229,15 +229,33 @@ describe('Files page Step D behavior', () => {
       fireEvent.change(picker, { target: { files: [first, second] } });
       await waitFor(() => expect(useAppStore.getState().files).toHaveLength(2));
     });
-    expect(useAppStore.getState().files.map((item) => [item.name, item.size, item.lastModified, item.path, item.priority])).toEqual([
-      ['first.txt', first.size, 1234, '/first.txt', 5],
-      ['second.txt', second.size, 5678, '/second.txt', 5],
+    expect(useAppStore.getState().files.map((item) => [item.name, item.size, item.lastModified, item.path])).toEqual([
+      ['first.txt', first.size, 1234, '/first.txt'],
+      ['second.txt', second.size, 5678, '/second.txt'],
     ]);
+    expect(useAppStore.getState().files.map(item => item.priority)).toEqual([6, 6]);
+    expect(useAppStore.getState().files.every(item => item.prioritySource === 'auto')).toBe(true);
     expect(screen.getByText('first.txt')).toBeTruthy();
     expect(screen.getByText('second.txt')).toBeTruthy();
     expect(readers.every((spy) => spy.mock.calls.length === 0)).toBe(true);
     await waitFor(() => expect(runFullKnapsackAsync).toHaveBeenCalledTimes(1));
     await waitFor(() => expect(useAppStore.getState().isPlanStale).toBe(false), { timeout: 3000 });
+  });
+
+  it('resets all edited scores only after confirmation', () => {
+    act(() => useAppStore.getState().setFiles([
+      file({ id: 'edited-a', priority: 1, prioritySource: 'edited' }),
+      file({ id: 'edited-b', name: 'other.pdf', path: '/Downloads/other.pdf', priority: 10, prioritySource: 'edited' }),
+    ]));
+    const confirm = vi.spyOn(window, 'confirm');
+    render(<FilesPage />);
+    confirm.mockReturnValue(false);
+    fireEvent.click(screen.getByRole('button', { name: 'Reset all to suggested' }));
+    expect(useAppStore.getState().files.map(file => file.priority)).toEqual([1, 10]);
+    confirm.mockReturnValue(true);
+    fireEvent.click(screen.getByRole('button', { name: 'Reset all to suggested' }));
+    expect(useAppStore.getState().files.every(file => file.prioritySource === 'auto')).toBe(true);
+    expect(useAppStore.getState().files.map(file => file.priority)).not.toEqual([1, 10]);
   });
 
   it('shows the detail drawer date in dd/mm/yyyy, current constraint and editable suggestion', () => {

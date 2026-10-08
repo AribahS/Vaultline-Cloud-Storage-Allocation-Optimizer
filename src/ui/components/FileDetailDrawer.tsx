@@ -45,7 +45,7 @@ export const FileDetailDrawer: React.FC<FileDetailDrawerProps> = ({ file, onClos
   const resetPrioritySuggestion = useAppStore((state) => state.resetPrioritySuggestion);
   const knapsackResult = useAppStore((state) => state.knapsackResult);
   if (!file) return null;
-  const suggested = suggestFileScore(file, !!file.isDuplicate);
+  const suggested = suggestFileScore(file, !!file.isDuplicate, Date.now());
 
   const detailRows: { label: string; value: React.ReactNode; icon: React.ReactNode }[] = [
     { label: 'Full path', value: file.path, icon: <File size={16} color="var(--color-ink-3)" /> },
@@ -114,7 +114,7 @@ export const FileDetailDrawer: React.FC<FileDetailDrawerProps> = ({ file, onClos
           <div>
             <span style={{ fontWeight: 600, fontSize: '14px', display: 'block' }}>Importance Score</span>
             <span className="text-caption text-ink-3">
-              {file.prioritySource === 'edited' ? '✏️ Custom score edited by you' : '⚡ Auto-calculated by system'}
+              {file.prioritySource === 'edited' ? <span className="score-edited-mark">Edited</span> : <>Suggested {suggested.score}/10</>}
             </span>
           </div>
           <span style={{

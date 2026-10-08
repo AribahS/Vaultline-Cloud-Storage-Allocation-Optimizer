@@ -9,6 +9,7 @@ import { saveAutoSession } from '../engine/storageDb';
 import { ProfileId, ProfileToggles, applyProfileToFiles } from '../engine/profiles';
 import { StoragePlace } from '../engine/multiPlace';
 import { pluralize } from '../lib/format';
+import { resetScoresToSuggested, scoreIncomingFiles } from '../lib/scoring.js';
 
 export type PresetType = 'student' | 'photographer' | 'company';
 
@@ -87,6 +88,8 @@ export interface AppState {
   bulkSetImportance: (ids: string[], priority: number) => void;
   updatePriority: (id: string, priority: number) => void;
   resetPrioritySuggestion: (id: string, priority: number) => void;
+  resetPrioritySuggestions: (ids: string[]) => void;
+  resetAllPrioritySuggestions: () => void;
   loadPreset: (type: PresetType) => void;
   deduplicateKeepOneAction: () => void;
   setFolderMode: (enabled: boolean) => void;
@@ -186,7 +189,7 @@ export const useAppStore = create<AppState>((set, get) => ({
 
   addFiles: (newFiles) => {
     set((state) => {
-      const combined = [...state.files, ...newFiles];
+      const combined = [...state.files, ...scoreIncomingFiles(state.files, newFiles)];
       return { files: markDuplicates(combined) };
     });
     get().markPlanStale();
@@ -288,6 +291,17 @@ export const useAppStore = create<AppState>((set, get) => ({
 
   resetPrioritySuggestion: (id, priority) => {
     set((state) => ({ files: state.files.map((f) => f.id === id ? { ...f, priority, prioritySource: 'auto' } : f) }));
+    get().markPlanStale();
+  },
+
+  resetAllPrioritySuggestions: () => {
+    set((state) => ({ files: markDuplicates(resetScoresToSuggested(state.files)) }));
+    get().markPlanStale();
+  },
+
+  resetPrioritySuggestions: (ids) => {
+    const selected = new Set(ids);
+    set((state) => ({ files: markDuplicates(state.files.map((file) => selected.has(file.id) ? resetScoresToSuggested([file])[0] : file)) }));
     get().markPlanStale();
   },
 
