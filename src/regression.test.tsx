@@ -2,9 +2,6 @@
  * src/regression.test.tsx
  * Regression tests for Vaultline's core working features.
  * These tests prevent regressions on:
- *  - Collapsible sidebar state
- *  - ToolsPage gallery rendering (all 6 tools)
- *  - SplitTool rendering
  *  - pluralize() helper correctness
  *  - Store actions: addFiles, clearFiles, setQuotaBytes, triggerRecompute debounce
  *  - KpiCard renders values without overflow
@@ -84,14 +81,6 @@ describe('useAppStore regression', () => {
   it('setQuotaBytes updates quotaBytes', () => {
     useAppStore.getState().setQuotaBytes(64 * 1024 * 1024 * 1024);
     expect(useAppStore.getState().quotaBytes).toBe(64 * 1024 * 1024 * 1024);
-  });
-
-  it('toggleSidebar changes isSidebarCollapsed', () => {
-    const before = useAppStore.getState().isSidebarCollapsed;
-    useAppStore.getState().toggleSidebar();
-    expect(useAppStore.getState().isSidebarCollapsed).toBe(!before);
-    // restore
-    useAppStore.getState().toggleSidebar();
   });
 
   it('cancelCompute resets isComputing', () => {

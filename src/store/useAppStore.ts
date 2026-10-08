@@ -23,9 +23,7 @@ export interface PlanSnapshot {
 
 export interface AppState {
   // Theme & presentation
-  theme: 'dark' | 'light';
   isPresentMode: boolean;
-  toggleTheme: () => void;
   togglePresentMode: () => void;
 
   // Global complexity toggle: Simple vs Detailed
@@ -33,10 +31,6 @@ export interface AppState {
   setComplexityMode: (mode: 'simple' | 'detailed') => void;
 
   // Sidebar state
-  isSidebarCollapsed: boolean;
-  isMobileDrawerOpen: boolean;
-  toggleSidebar: () => void;
-  setMobileDrawerOpen: (isOpen: boolean) => void;
 
 
   // File metadata & structure
@@ -124,17 +118,7 @@ const initialQuota = 15 * BYTE_UNITS.GB;
 let computeTimer: any = null;
 
 export const useAppStore = create<AppState>((set, get) => ({
-  theme: 'light',
   isPresentMode: false,
-  toggleTheme: () => {
-    set((state) => {
-      const nextTheme = state.theme === 'dark' ? 'light' : 'dark';
-      if (typeof document !== 'undefined') {
-        document.documentElement.setAttribute('data-theme', nextTheme);
-      }
-      return { theme: nextTheme };
-    });
-  },
   togglePresentMode: () => {
     set((state) => ({ isPresentMode: !state.isPresentMode }));
   },
@@ -142,14 +126,6 @@ export const useAppStore = create<AppState>((set, get) => ({
   complexityMode: 'simple',
   setComplexityMode: (complexityMode) => set({ complexityMode }),
 
-  isSidebarCollapsed: localStorage.getItem('vaultline_sidebar_collapsed') === 'true' || (typeof window !== 'undefined' && window.innerWidth < 1100),
-  isMobileDrawerOpen: false,
-  toggleSidebar: () => set((state) => {
-    const next = !state.isSidebarCollapsed;
-    localStorage.setItem('vaultline_sidebar_collapsed', String(next));
-    return { isSidebarCollapsed: next };
-  }),
-  setMobileDrawerOpen: (isOpen) => set({ isMobileDrawerOpen: isOpen }),
 
   files: initialFiles,
   isScanning: false,

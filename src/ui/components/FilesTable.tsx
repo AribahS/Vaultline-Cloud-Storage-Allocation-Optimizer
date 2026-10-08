@@ -202,6 +202,7 @@ export const FilesTable: React.FC<{
 
   return (
     <div 
+      className="table-scroll"
       ref={tableContainerRef}
       style={{ 
         height: '600px', 

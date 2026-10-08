@@ -95,6 +95,7 @@ export const FilesPage: React.FC = () => {
       {/* Header */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '24px', gap: '16px', flexWrap: 'wrap' }}>
         <div>
+          <h1 style={{ fontSize: '28px', margin: 0 }}>Files</h1>
           {files.length > 0 ? (
             <div style={{ display: 'flex', gap: '16px', flexWrap: 'wrap', marginTop: '8px', alignItems: 'center' }}>
               <span style={{ fontSize: '24px', fontWeight: 600, color: 'var(--color-forest)' }}>
@@ -111,7 +112,7 @@ export const FilesPage: React.FC = () => {
           )}
         </div>
         <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
-          <Button variant="secondary" size="sm" icon={<FilePlus size={16} />} onClick={() => fileInputRef.current?.click()}>
+          <Button variant="primary" size="sm" icon={<FilePlus size={16} />} onClick={() => fileInputRef.current?.click()}>
             Add files
           </Button>
           <Button variant="secondary" size="sm" icon={<FolderPlus size={16} />} onClick={handleAddFolder}>

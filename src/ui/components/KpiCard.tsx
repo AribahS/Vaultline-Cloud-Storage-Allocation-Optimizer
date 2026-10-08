@@ -36,12 +36,12 @@ export const KpiCard: React.FC<KpiCardProps> = ({ label, value, subtitle, icon, 
           </div>
           {/* C3: Gold-foil gradient text when accentColor is brass */}
           <div
-            className={isBrass ? 'gold-foil-text' : undefined}
+            className={`kpi-value${isBrass ? ' gold-foil-text' : ''}`}
             style={{
               fontFamily: 'var(--font-heading)',
               fontSize: '32px',
               fontWeight: 600,
-              color: !isBrass ? (accentColor || 'var(--color-forest)') : undefined,
+              color: 'var(--color-ink)',
               lineHeight: 1.1,
               fontVariantNumeric: 'tabular-nums',
               whiteSpace: 'nowrap',

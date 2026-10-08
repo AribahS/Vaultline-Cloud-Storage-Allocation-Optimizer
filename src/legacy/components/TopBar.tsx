@@ -3,7 +3,7 @@
  */
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Sun, Moon, GraduationCap, Volume2, VolumeX } from 'lucide-react';
+import { GraduationCap, Volume2, VolumeX } from 'lucide-react';
 import { useFlowStore, type SceneId } from '../store/useFlowStore';
 import { springs } from '../motion';
 import { isSoundEnabled, toggleSound, playSound } from '../utils/sound';
@@ -29,7 +29,7 @@ function BoxyLogo() {
 }
 
 export const TopBar: React.FC = () => {
-  const { currentScene, setScene, canNavigate, theme, toggleTheme, teacherMode, toggleTeacherMode } =
+  const { currentScene, setScene, canNavigate, teacherMode, toggleTeacherMode } =
     useFlowStore();
   const [soundState, setSoundState] = useState(isSoundEnabled());
 
@@ -113,15 +113,6 @@ export const TopBar: React.FC = () => {
           {soundState ? <Volume2 size={16} /> : <VolumeX size={16} />}
         </button>
 
-        {/* Theme toggle */}
-        <button
-          className="sticker-chip"
-          onClick={toggleTheme}
-          aria-label={`Switch to ${theme === 'light' ? 'dark' : 'light'} theme`}
-          title={`Switch to ${theme === 'light' ? 'dark' : 'light'} theme`}
-        >
-          {theme === 'light' ? <Moon size={16} /> : <Sun size={16} />}
-        </button>
       </div>
     </header>
   );

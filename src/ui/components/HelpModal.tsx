@@ -52,7 +52,7 @@ export const HelpModal: React.FC<HelpModalProps> = ({ onClose }) => {
         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "24px" }}>
           <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
             <div style={{ width: 40, height: 40, borderRadius: "10px", background: "var(--color-forest)", display: "flex", alignItems: "center", justifyContent: "center" }}>
-              <Box size={20} color="#fff" />
+              <Box size={20} color="var(--card)" />
             </div>
             <div>
               <h2 style={{ margin: 0, fontSize: "20px", fontFamily: "var(--font-heading)", fontWeight: 600, color: "var(--color-ink)" }}>Vaultline Help</h2>
@@ -121,7 +121,6 @@ export const HelpModal: React.FC<HelpModalProps> = ({ onClose }) => {
         <Section title="Keyboard shortcuts">
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "8px" }}>
             {[
-              ["Ctrl + B", "Toggle sidebar"],
               ["Esc", "Close drawers / modals"],
             ].map(([key, action]) => (
               <div key={key} style={{
@@ -141,7 +140,7 @@ export const HelpModal: React.FC<HelpModalProps> = ({ onClose }) => {
             onClick={onClose}
             style={{
               padding: "9px 24px", borderRadius: "8px", border: "none",
-              background: "var(--color-forest)", color: "#fff",
+              background: "var(--color-forest)", color: "var(--card)",
               cursor: "pointer", fontSize: "14px", fontWeight: 600,
             }}
           >

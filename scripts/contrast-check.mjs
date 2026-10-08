@@ -1,52 +1,43 @@
 import { readFileSync } from 'node:fs';
 
 const css = readFileSync(new URL('../src/index.css', import.meta.url), 'utf8');
-const token = (name) => {
+const token = name => {
   const match = css.match(new RegExp(`--${name}:\\s*(#[0-9a-f]{6})\\s*;`, 'i'));
   if (!match) throw new Error(`Missing CSS color token --${name}`);
   return match[1].toUpperCase();
 };
-
-const colors = {
-  ink: '#54494B', deep: '#3B3335', paper: '#F1F7ED', card: '#FFFFFF',
-  border: '#D3DDD0', kept: '#91C7B1', keptStroke: '#4F8B74',
-  moved: '#B33951', gold: '#E3D081',
-};
-const tokenNames = {
-  ink: 'ink', deep: 'ink-deep', paper: 'paper', card: 'card',
-  border: 'card-border', kept: 'kept', keptStroke: 'kept-stroke', moved: 'moved', gold: 'gold',
-};
-
-for (const [key, name] of Object.entries(tokenNames)) {
-  const actual = token(name);
-  if (actual !== colors[key]) throw new Error(`--${name} is ${actual}, expected ${colors[key]}`);
-}
-
-function luminance(hex) {
-  const [r, g, b] = hex.match(/[0-9a-f]{2}/gi).map((value) => parseInt(value, 16) / 255)
-    .map((value) => value <= 0.04045 ? value / 12.92 : ((value + 0.055) / 1.055) ** 2.4);
+const luminance = hex => {
+  const [r, g, b] = hex.match(/[0-9a-f]{2}/gi).map(value => parseInt(value, 16) / 255)
+    .map(value => value <= 0.04045 ? value / 12.92 : ((value + 0.055) / 1.055) ** 2.4);
   return 0.2126 * r + 0.7152 * g + 0.0722 * b;
-}
-function ratio(a, b) {
-  const [light, dark] = [luminance(a), luminance(b)].sort((x, y) => y - x);
+};
+const ratio = (foreground, background) => {
+  const [light, dark] = [luminance(foreground), luminance(background)].sort((a, b) => b - a);
   return (light + 0.05) / (dark + 0.05);
-}
+};
 
+const ink = token('ink'); const paper = token('paper'); const card = token('card');
+const cream = token('vault-text'); const vault = token('vault-bg'); const gold = token('gold'); const rust = token('moved');
+const dangerSurface = token('color-danger-surface');
+for (const [name, actual, expected] of [
+  ['ink', ink, '#14231B'], ['paper', paper, '#FBFAF6'], ['card', card, '#FFFFFF'],
+  ['card-border', token('card-border'), '#E6E1D3'], ['vault-bg', vault, '#0F2A1E'],
+  ['vault-text', cream, '#F4EBD3'], ['gold', gold, '#E3D081'],
+]) if (actual !== expected) throw new Error(`--${name} is ${actual}; expected ${expected}`);
+const fileTokenNames = ['docs','photos','videos','audio','archives','code','system','other'];
+const fileTokens = fileTokenNames.map(name => token(`color-file-${name}`));
+const fileText = ['#FFFFFF', ink, ink, '#FFFFFF', ink, '#FFFFFF', '#FFFFFF', '#FFFFFF'];
 const textPairs = [
-  ['ink on paper', colors.ink, colors.paper], ['deep on paper', colors.deep, colors.paper],
-  ['ink on card', colors.ink, colors.card], ['deep on card', colors.deep, colors.card],
-  ['primary button label', colors.paper, colors.ink], ['stage label', colors.paper, colors.deep],
-  ['kept block label', colors.deep, colors.kept], ['gold fill label', colors.deep, colors.gold],
-  ['moved block label', colors.paper, colors.moved], ['gold text on dark stage', colors.gold, colors.deep],
+  ['body ink on paper', ink, paper, 4.5], ['body ink on white cards', ink, card, 4.5],
+  ['cream stage text on vault green', cream, vault, 4.5], ['primary button label on forest', cream, vault, 4.5],
+  ['kept block label on deep green', cream, token('kept'), 4.5], ['moved block label on rust', cream, rust, 4.5],
+  ['gold highlight text on vault', gold, vault, 4.5],
+  ['danger text on paper', rust, paper, 4.5], ['danger text on alert surface', rust, dangerSurface, 4.5],
+  ...fileTokens.map((background, index) => [`${fileTokenNames[index]} label on category colour`, fileText[index], background, 4.5]),
 ];
-for (const [label, foreground, background] of textPairs) {
-  const actual = ratio(foreground, background);
-  if (actual < 4.5) throw new Error(`${label}: ${actual.toFixed(2)}:1 is below 4.5:1`);
+for (const [label, foreground, background, minimum] of textPairs) {
+  const value = ratio(foreground, background);
+  console.log(`${label}: ${value.toFixed(2)}:1 (minimum ${minimum}:1)`);
+  if (value < minimum) throw new Error(`${label} fails contrast: ${value.toFixed(2)}:1 < ${minimum}:1`);
 }
-
-for (const background of [colors.paper, colors.card]) {
-  const actual = ratio(colors.keptStroke, background);
-  if (actual < 3) throw new Error(`kept stroke on ${background}: ${actual.toFixed(2)}:1 is below 3:1`);
-}
-
-console.log('Contrast check passed: 10 text pairs at 4.5:1 and kept stroke on paper/card at 3:1.');
+console.log(`Contrast check passed: ${textPairs.length} text/background token pairs.`);

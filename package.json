@@ -7,7 +7,7 @@
     "dev": "vite",
     "build": "node scripts/contrast-check.mjs && npm test && tsc -b && vite build",
     "lint": "oxlint",
-    "test": "vitest run",
+    "test": "vitest run --config vitest.config.mjs",
     "test:e2e": "playwright test",
     "preview": "vite preview"
   },

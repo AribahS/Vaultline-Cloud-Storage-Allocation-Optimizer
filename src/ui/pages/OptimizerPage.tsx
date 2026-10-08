@@ -8,7 +8,6 @@ import { OptimizationVisualizer } from '../components/OptimizationVisualizer';
 import { SegmentedControl } from '../components/SegmentedControl';
 import { useAppStore } from '../../store/useAppStore';
 import { BYTE_UNITS } from '../../engine/normalizer';
-import { formatBytes } from '../../utils/formatBytes';
 import { formatSize, pluralize } from '../../lib/format';
 import {
   Play, CheckCircle, ArrowRightLeft,
@@ -90,7 +89,8 @@ export const OptimizerPage: React.FC = () => {
 
   return (
     <div className="page-container animate-page-enter">
-      {/* A2: No page-header "Run optimizer" button — only the sidebar card button */}
+      <h1 className="page-title">Optimizer</h1>
+      {/* The main action stays with the plan controls below. */}
       {files.length > 2000 && (
         <Card style={{ marginBottom: '16px', backgroundColor: 'var(--color-surface-sunken)', border: '1px solid var(--color-border-hairline)' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: 'var(--color-ink-2)', fontSize: '13px' }}>
@@ -101,7 +101,7 @@ export const OptimizerPage: React.FC = () => {
       )}
 
       {isPlanStale && files.length > 0 && !isComputing && (
-        <Card style={{ marginBottom: '24px', backgroundColor: '#fef8ec', border: '1px solid var(--color-brass)', boxShadow: 'var(--shadow-level-1)' }}>
+        <Card style={{ marginBottom: '24px', backgroundColor: 'var(--paper)', border: '1px solid var(--color-brass)', boxShadow: 'var(--shadow-level-1)' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '16px', flexWrap: 'wrap' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
               <AlertTriangle size={20} color="var(--color-brass)" />
@@ -110,7 +110,7 @@ export const OptimizerPage: React.FC = () => {
                 <span className="text-caption text-ink-2">Files or capacity changed since the last calculation.</span>
               </div>
             </div>
-            <Button variant="primary" size="sm" icon={<Play size={14} />} onClick={() => triggerRecompute()}>
+            <Button variant="secondary" size="sm" icon={<Play size={14} />} onClick={() => triggerRecompute()}>
               Find the best plan
             </Button>
           </div>
@@ -140,7 +140,7 @@ export const OptimizerPage: React.FC = () => {
         </Card>
       )}
 
-      <div style={{ display: 'grid', gridTemplateColumns: 'minmax(240px, 300px) minmax(0, 1fr)', gap: '20px', alignItems: 'start' }}>
+      <div className="optimizer-layout" style={{ display: 'grid', gridTemplateColumns: 'minmax(240px, 300px) minmax(0, 1fr)', gap: '20px', alignItems: 'start' }}>
         {/* Left: Configuration pane */}
         <div style={{ position: 'sticky', top: '24px', display: 'flex', flexDirection: 'column', gap: '16px' }}>
           {/* Destination */}
@@ -164,7 +164,7 @@ export const OptimizerPage: React.FC = () => {
                         borderRadius: '20px',
                         border: `1px solid ${isActive ? 'var(--color-forest-500)' : 'var(--color-border-strong)'}`,
                         backgroundColor: isActive ? 'var(--color-forest-500)' : 'var(--color-surface-raised)',
-                        color: isActive ? '#fff' : 'var(--color-ink-2)',
+                        color: isActive ? 'var(--card)' : 'var(--color-ink-2)',
                         fontSize: '12px', fontWeight: 500, cursor: 'pointer',
                         transition: 'all 120ms ease',
                       }}
@@ -276,7 +276,7 @@ export const OptimizerPage: React.FC = () => {
           </Button>
 
           {lastComputeError && (
-            <Card style={{ backgroundColor: '#fdf2f1', border: '1px solid #e8c6c1' }}>
+            <Card style={{ backgroundColor: 'var(--color-danger-surface)', border: '1px solid var(--color-danger-border)' }}>
               <div style={{ display: 'flex', gap: '8px', alignItems: 'flex-start' }}>
                 <AlertTriangle size={16} color="var(--color-semantic-danger)" style={{ flexShrink: 0, marginTop: '2px' }} />
                 <div className="text-body-small" style={{ color: 'var(--color-semantic-danger)' }}>
@@ -307,8 +307,8 @@ export const OptimizerPage: React.FC = () => {
               {/* Summary KPIs */}
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))', gap: '12px', marginBottom: '16px' }}>
                 <KpiCard label="Importance kept" value={`${importanceRetained}%`} accentColor="var(--color-brass)" />
-                <KpiCard label="Kept" value={knapsackResult.keptItems.length.toLocaleString()} subtitle={formatBytes(knapsackResult.totalSizeKept)} />
-                <KpiCard label="Move" value={knapsackResult.droppedItems.length.toLocaleString()} subtitle={formatBytes(knapsackResult.totalSizeDropped)} accentColor="var(--color-semantic-move)" />
+                <KpiCard label="Kept" value={pluralize(knapsackResult.keptItems.length, 'file')} subtitle={formatSize(knapsackResult.totalSizeKept)} />
+                <KpiCard label="Files to move" value={pluralize(knapsackResult.droppedItems.length, 'file')} subtitle={formatSize(knapsackResult.totalSizeDropped)} accentColor="var(--color-semantic-move)" />
                 <KpiCard label="Runtime" value={`${knapsackResult.executionTimeMs < 1 ? '<1' : Math.round(knapsackResult.executionTimeMs)}ms`} subtitle={`${knapsackResult.cellsComputed.toLocaleString()} cells`} />
               </div>
 
@@ -338,14 +338,14 @@ export const OptimizerPage: React.FC = () => {
                         <tr>
                           <th style={{ padding: '10px 14px', textAlign: 'left', borderBottom: '1px solid var(--color-border-hairline)' }}>Name</th>
                           <th style={{ padding: '10px 14px', textAlign: 'right', borderBottom: '1px solid var(--color-border-hairline)', width: '110px', whiteSpace: 'nowrap' }}>Size</th>
-                          <th style={{ padding: '10px 14px', textAlign: 'right', borderBottom: '1px solid var(--color-border-hairline)', width: '110px', whiteSpace: 'nowrap' }}>How much you need it</th>
+                          <th style={{ padding: '10px 14px', textAlign: 'right', borderBottom: '1px solid var(--color-border-hairline)', width: '110px', whiteSpace: 'nowrap' }}>Importance</th>
                         </tr>
                       </thead>
                       <tbody>
                         {knapsackResult.keptItems.map(item => (
                           <tr key={item.id} style={{ borderBottom: '1px solid var(--color-border-hairline)' }}>
                             <td style={{ padding: '10px 14px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{item.name}</td>
-                            <td style={{ padding: '10px 14px', textAlign: 'right', fontVariantNumeric: 'tabular-nums', whiteSpace: 'nowrap' }}>{formatBytes(item.originalSize)}</td>
+                            <td style={{ padding: '10px 14px', textAlign: 'right', fontVariantNumeric: 'tabular-nums', whiteSpace: 'nowrap' }}>{formatSize(item.originalSize)}</td>
                             <td style={{ padding: '10px 14px', textAlign: 'right', fontVariantNumeric: 'tabular-nums', whiteSpace: 'nowrap' }}>{item.value}/10</td>
                           </tr>
                         ))}
@@ -363,14 +363,14 @@ export const OptimizerPage: React.FC = () => {
                         <tr>
                           <th style={{ padding: '10px 14px', textAlign: 'left', borderBottom: '1px solid var(--color-border-hairline)' }}>Name</th>
                           <th style={{ padding: '10px 14px', textAlign: 'right', borderBottom: '1px solid var(--color-border-hairline)', width: '110px', whiteSpace: 'nowrap' }}>Size</th>
-                          <th style={{ padding: '10px 14px', textAlign: 'right', borderBottom: '1px solid var(--color-border-hairline)', width: '110px', whiteSpace: 'nowrap' }}>How much you need it</th>
+                          <th style={{ padding: '10px 14px', textAlign: 'right', borderBottom: '1px solid var(--color-border-hairline)', width: '110px', whiteSpace: 'nowrap' }}>Importance</th>
                         </tr>
                       </thead>
                       <tbody>
                         {knapsackResult.droppedItems.map(item => (
                           <tr key={item.id} style={{ borderBottom: '1px solid var(--color-border-hairline)' }}>
                             <td style={{ padding: '10px 14px', color: 'var(--color-semantic-move)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{item.name}</td>
-                            <td style={{ padding: '10px 14px', textAlign: 'right', fontVariantNumeric: 'tabular-nums', whiteSpace: 'nowrap' }}>{formatBytes(item.originalSize)}</td>
+                            <td style={{ padding: '10px 14px', textAlign: 'right', fontVariantNumeric: 'tabular-nums', whiteSpace: 'nowrap' }}>{formatSize(item.originalSize)}</td>
                             <td style={{ padding: '10px 14px', textAlign: 'right', fontVariantNumeric: 'tabular-nums', whiteSpace: 'nowrap' }}>{item.value}/10</td>
                           </tr>
                         ))}

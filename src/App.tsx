@@ -8,7 +8,6 @@ import { FilesPage } from './ui/pages/FilesPage';
 import { OptimizerPage } from './ui/pages/OptimizerPage';
 import ReportsPage from './ui/pages/ReportsPage';
 const AlgorithmPage = () => <div className="page-container"><h1>Algorithm Analysis</h1></div>;
-const ToolsPage = () => <div className="page-container"><h1>Extra Tools</h1></div>;
 
 export const App: React.FC = () => {
   return (
@@ -18,7 +17,7 @@ export const App: React.FC = () => {
         <Route path="/files" element={<FilesPage />} />
         <Route path="/optimizer" element={<OptimizerPage />} />
         <Route path="/algorithm" element={<AlgorithmPage />} />
-        <Route path="/tools" element={<ToolsPage />} />
+        <Route path="/tools" element={<Navigate to="/" replace />} />
         <Route path="/reports" element={<ReportsPage />} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>

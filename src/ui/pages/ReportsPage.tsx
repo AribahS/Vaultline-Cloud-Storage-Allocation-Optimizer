@@ -78,20 +78,20 @@ export const ReportsPage: React.FC = () => {
         .print-only { display: none !important; }
         @media print {
           header, nav, .no-print, .vaultline-sidebar, .vaultline-topbar { display: none !important; }
-          body, html, #root { background: #fff !important; color: #000 !important; margin: 0 !important; padding: 0 !important; }
+          body, html, #root { background: var(--card) !important; color: var(--color-ink) !important; margin: 0 !important; padding: 0 !important; }
           .page-container { padding: 0 !important; margin: 0 !important; max-width: 100% !important; }
           .print-only { display: block !important; padding: 24px !important; }
-          .print-header { display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 2px solid #b8860b; padding-bottom: 16px; margin-bottom: 24px; }
-          .print-title { font-size: 24pt; font-weight: 700; color: #1e3a29; margin: 0; }
+          .print-header { display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 2px solid var(--color-ink); padding-bottom: 16px; margin-bottom: 24px; }
+          .print-title { font-size: 24pt; font-weight: 700; color: var(--vault-bg); margin: 0; }
           .print-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 12px; margin-bottom: 24px; }
-          .print-card { border: 1px solid #cbd5e1; border-radius: 6px; padding: 12px; background: #f8fafc; text-align: center; }
-          .print-card-label { font-size: 8pt; color: #64748b; text-transform: uppercase; font-weight: 600; }
-          .print-card-val { font-size: 16pt; font-weight: 700; color: #1e3a29; margin-top: 4px; }
-          .print-section-title { font-size: 14pt; font-weight: 700; color: #1e3a29; border-bottom: 1px solid #cbd5e1; padding-bottom: 6px; margin: 20px 0 12px; }
+          .print-card { border: 1px solid var(--card-border); border-radius: 6px; padding: 12px; background: var(--paper); text-align: center; }
+          .print-card-label { font-size: 8pt; color: var(--color-ink-3); text-transform: uppercase; font-weight: 600; }
+          .print-card-val { font-size: 16pt; font-weight: 700; color: var(--vault-bg); margin-top: 4px; }
+          .print-section-title { font-size: 14pt; font-weight: 700; color: var(--vault-bg); border-bottom: 1px solid var(--card-border); padding-bottom: 6px; margin: 20px 0 12px; }
           table.print-table { width: 100%; border-collapse: collapse; font-size: 9.5pt; margin-bottom: 20px; }
-          table.print-table th { background-color: #1e3a29; color: #fff; padding: 8px 10px; text-align: left; }
-          table.print-table td { padding: 8px 10px; border-bottom: 1px solid #e2e8f0; }
-          .print-footer { margin-top: 36px; border-top: 1px solid #cbd5e1; padding-top: 12px; font-size: 8.5pt; color: #64748b; display: flex; justify-content: space-between; }
+          table.print-table th { background-color: var(--vault-bg); color: var(--card); padding: 8px 10px; text-align: left; }
+          table.print-table td { padding: 8px 10px; border-bottom: 1px solid var(--card-border); }
+          .print-footer { margin-top: 36px; border-top: 1px solid var(--card-border); padding-top: 12px; font-size: 8.5pt; color: var(--color-ink-3); display: flex; justify-content: space-between; }
         }
       `}</style>
 
@@ -101,16 +101,16 @@ export const ReportsPage: React.FC = () => {
           <div className="print-header">
             <div>
               <h1 className="print-title">Vaultline Storage Report</h1>
-              <div style={{ fontSize: '10pt', color: '#64748b', marginTop: '4px' }}>
+              <div style={{ fontSize: '10pt', color: 'var(--color-ink-3)', marginTop: '4px' }}>
                 Generated: {new Date().toLocaleDateString()} · Target Device Allocation Plan
               </div>
             </div>
           </div>
           <div className="print-grid">
             <div className="print-card"><div className="print-card-label">Target</div><div className="print-card-val">{formatSize(optimizationResult.quotaBytes)}</div></div>
-            <div className="print-card"><div className="print-card-label">Kept</div><div className="print-card-val" style={{ color: '#166534' }}>{formatSize(optimizationResult.totalSizeKept)}</div></div>
-            <div className="print-card"><div className="print-card-label">Offloaded</div><div className="print-card-val" style={{ color: '#991b1b' }}>{formatSize(optimizationResult.totalSizeDropped)}</div></div>
-            <div className="print-card"><div className="print-card-label">Importance</div><div className="print-card-val" style={{ color: '#b8860b' }}>{importanceRetainedPct}%</div></div>
+            <div className="print-card"><div className="print-card-label">Kept</div><div className="print-card-val" style={{ color: 'var(--color-forest)' }}>{formatSize(optimizationResult.totalSizeKept)}</div></div>
+            <div className="print-card"><div className="print-card-label">Offloaded</div><div className="print-card-val" style={{ color: 'var(--color-semantic-danger)' }}>{formatSize(optimizationResult.totalSizeDropped)}</div></div>
+            <div className="print-card"><div className="print-card-label">Importance</div><div className="print-card-val" style={{ color: 'var(--color-ink)' }}>{importanceRetainedPct}%</div></div>
           </div>
           <h2 className="print-section-title">Kept {pluralize(optimizationResult.keptItems.length, 'file')}</h2>
           <table className="print-table">
@@ -168,7 +168,7 @@ export const ReportsPage: React.FC = () => {
           </div>
         </Card>
       ) : (
-        <div className="no-print" style={{ display: 'grid', gridTemplateColumns: 'minmax(280px, 360px) minmax(0, 1fr)', gap: '24px' }}>
+        <div className="no-print report-layout">
           {/* Left: Overview + Format Picker */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
             <Card>
@@ -177,7 +177,7 @@ export const ReportsPage: React.FC = () => {
                 {[
                   { label: 'Target capacity', value: formatSize(optimizationResult.quotaBytes), color: undefined },
                   { label: 'Kept payload', value: `${formatSize(optimizationResult.totalSizeKept)} (${Math.round((optimizationResult.totalSizeKept / Math.max(1, optimizationResult.quotaBytes)) * 100)}%)`, color: 'var(--color-semantic-keep)' },
-                  { label: 'Importance retained', value: `${optimizationResult.totalValue} / ${optimizationResult.maxPossibleValue} (${importanceRetainedPct}%)`, color: 'var(--color-brass)' },
+                  { label: 'Importance retained', value: `${optimizationResult.totalValue} / ${optimizationResult.maxPossibleValue} (${importanceRetainedPct}%)`, color: 'var(--color-ink)' },
                   { label: 'Move', value: `${formatSize(optimizationResult.totalSizeDropped)} (${pluralize(optimizationResult.droppedItems.length, 'file')})`, color: 'var(--color-semantic-move)' },
                 ].map(row => (
                   <div key={row.label} style={{ padding: '10px 12px', background: 'var(--color-surface-sunken)', borderRadius: '8px' }}>

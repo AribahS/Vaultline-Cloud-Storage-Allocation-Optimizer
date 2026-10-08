@@ -1,6 +1,7 @@
 import React, { useState, useMemo, useRef, useCallback } from 'react';
 import { ZoomIn, ZoomOut, RotateCcw, Maximize2, Move } from 'lucide-react';
 import { formatBytes } from '../../utils/formatBytes';
+import { groupSmallTreemapFiles, truncateTreemapLabel } from '../../lib/treemapLabels';
 
 export interface TreemapFile {
   id: string;
@@ -20,19 +21,6 @@ interface TreemapTile {
 }
 
 // C2: Ingot tile — category colors using CSS tokens for theme awareness
-const FILE_CATEGORY_COLORS: Record<string, string> = {
-  document:   'var(--color-file-docs)',
-  photo:      'var(--color-file-photos)',
-  video:      'var(--color-file-videos)',
-  audio:      'var(--color-file-audio)',
-  archive:    'var(--color-file-archives)',
-  code:       'var(--color-file-code)',
-  system:     'var(--color-file-system)',
-  log_temp:   'var(--color-file-other)',
-  database:   'var(--color-file-code)',
-  other:      'var(--color-file-other)',
-};
-
 function squarify(
   items: (TreemapFile & { kept: boolean })[],
   x: number, y: number, w: number, h: number
@@ -142,11 +130,12 @@ export const Treemap: React.FC<TreemapProps> = ({
     if (focusedCategory) {
       filtered = filtered.filter(f => f.category === focusedCategory);
     }
-    return filtered
+    const visible = filtered
       .sort((a, b) => b.size - a.size)
       .slice(0, maxDisplayFiles)
       .map(f => ({ ...f, kept: keptIds.has(f.id) }));
-  }, [files, keptIds, maxDisplayFiles, focusedCategory]);
+    return groupSmallTreemapFiles(visible, width * height, 1800);
+  }, [files, keptIds, maxDisplayFiles, focusedCategory, width, height]);
 
   const tiles = useMemo(() => {
     return squarify(displayFiles, 0, 0, width, height);
@@ -321,13 +310,12 @@ export const Treemap: React.FC<TreemapProps> = ({
         >
           <g transform={`translate(${pan.x}, ${pan.y}) scale(${zoomLevel})`}>
             {tiles.map((tile) => {
-              const color = FILE_CATEGORY_COLORS[tile.file.category] || FILE_CATEGORY_COLORS.other;
               const isKept = tile.kept;
               // Scaled width and height for label visibility
               const scaledW = tile.w * zoomLevel;
               const scaledH = tile.h * zoomLevel;
-              const showLabel = scaledW > 32 && scaledH > 16;
-              const showSizeLabel = scaledW > 70 && scaledH > 32;
+              const showLabel = scaledW >= 58 && scaledH >= 26;
+              const showSizeLabel = scaledW > 90 && scaledH > 38;
               const patternId = `hatch-${tile.file.id}`;
 
               return (
@@ -347,7 +335,8 @@ export const Treemap: React.FC<TreemapProps> = ({
                   {!isKept && (
                     <defs>
                       <pattern id={patternId} width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
-                        <line x1="0" y1="0" x2="0" y2="6" stroke="#F1F7ED" strokeWidth="1" strokeOpacity="0.75" />
+                        <rect width="6" height="6" fill="var(--moved)" />
+                        <line x1="0" y1="0" x2="0" y2="6" stroke="var(--moved-stripe)" strokeWidth="2" />
                       </pattern>
                     </defs>
                   )}
@@ -357,28 +346,36 @@ export const Treemap: React.FC<TreemapProps> = ({
                     width={Math.max(0, tile.w - 1)}
                     height={Math.max(0, tile.h - 1)}
                     rx={Math.min(4, tile.w / 4)}
-                    fill={isKept ? '#91C7B1' : '#B33951'}
-                    opacity={isKept ? 0.88 : 0.45}
-                    stroke={isKept ? '#4F8B74' : '#F1F7ED'}
+                    fill={isKept ? 'var(--vault-bg)' : `url(#${patternId})`}
+                    opacity={1}
+                    stroke={isKept ? 'var(--vault-text)' : 'var(--moved-stripe)'}
                     strokeWidth={isKept ? 1.5 / zoomLevel : 2 / zoomLevel}
                     strokeOpacity={1}
                   />
                   {showLabel && (
+                    <>
+                    <rect
+                      x={tile.x + (tile.w - Math.min(tile.w - 4, truncateTreemapLabel(tile.file.name, Math.floor((tile.w - 12) / 7)).length * 7 + 8)) / 2}
+                      y={tile.y + tile.h / 2 - (showSizeLabel ? 6 : 0) - 9}
+                      width={Math.min(tile.w - 4, truncateTreemapLabel(tile.file.name, Math.floor((tile.w - 12) / 7)).length * 7 + 8)}
+                      height={18}
+                      rx={4}
+                      fill="var(--vault-bg)"
+                    />
                     <text
                       x={tile.x + tile.w / 2}
                       y={tile.y + tile.h / 2 - (showSizeLabel ? 6 : 0)}
                       textAnchor="middle"
                       dominantBaseline="central"
-                      fill={isKept ? '#3B3335' : '#F1F7ED'}
+                      fill="var(--vault-text)"
                       fontSize={Math.max(8, Math.min(12 / zoomLevel, tile.w / 6))}
                       fontFamily="var(--font-interface)"
                       fontWeight={600}
                       style={{ pointerEvents: 'none' }}
                     >
-                      {tile.file.name.length > tile.w / 6
-                        ? tile.file.name.slice(0, Math.max(3, Math.floor(tile.w / 6))) + '..'
-                        : tile.file.name}
+                      {truncateTreemapLabel(tile.file.name, Math.floor((tile.w - 12) / 7))}
                     </text>
+                    </>
                   )}
                   {showSizeLabel && (
                     <text
@@ -386,7 +383,7 @@ export const Treemap: React.FC<TreemapProps> = ({
                       y={tile.y + tile.h / 2 + 8}
                       textAnchor="middle"
                       dominantBaseline="central"
-                      fill={isKept ? '#3B3335' : '#F1F7ED'}
+                      fill="var(--vault-text)"
                       fontSize={Math.max(7, Math.min(10 / zoomLevel, tile.w / 8))}
                       fontFamily="var(--font-mono)"
                       style={{ pointerEvents: 'none' }}
@@ -408,12 +405,12 @@ export const Treemap: React.FC<TreemapProps> = ({
               left: `${hoveredTile.mouseX}px`,
               top: `${hoveredTile.mouseY - 8}px`,
               transform: 'translate(-50%, -100%)',
-              backgroundColor: 'var(--color-surface-raised, #FFFFFF)',
-              color: 'var(--color-ink, #54494B)',
+              backgroundColor: 'var(--color-surface-raised, var(--card))',
+              color: 'var(--color-ink, var(--ink))',
               padding: '8px 12px',
               borderRadius: '6px',
               boxShadow: '0 4px 14px rgba(0,0,0,0.18)',
-              border: '1px solid var(--color-border-strong, #4F8B74)',
+              border: '1px solid var(--color-border-strong, var(--color-semantic-keep-stroke))',
               fontSize: '12px',
               pointerEvents: 'none',
               zIndex: 1000,
@@ -434,7 +431,7 @@ export const Treemap: React.FC<TreemapProps> = ({
             {hoveredTile.tile.file.priority !== undefined && (
               <div style={{ display: 'flex', justifyContent: 'space-between', gap: '8px', color: 'var(--color-ink-2)' }}>
                 <span>Importance:</span>
-                <strong style={{ color: 'var(--color-brass)' }}>{hoveredTile.tile.file.priority}/10</strong>
+                <strong style={{ color: 'var(--color-ink)' }}>{hoveredTile.tile.file.priority}/10</strong>
               </div>
             )}
             <div style={{ marginTop: '6px', paddingTop: '4px', borderTop: '1px solid var(--color-border-hairline)' }}>
@@ -445,7 +442,7 @@ export const Treemap: React.FC<TreemapProps> = ({
                   borderRadius: '4px',
                   fontSize: '11px',
                   fontWeight: 600,
-                  backgroundColor: hoveredTile.tile.kept ? 'var(--color-forest-50)' : '#F1F7ED',
+                  backgroundColor: hoveredTile.tile.kept ? 'var(--color-forest-50)' : 'var(--paper)',
                   color: hoveredTile.tile.kept ? 'var(--color-semantic-keep)' : 'var(--color-semantic-move)'
                 }}
               >

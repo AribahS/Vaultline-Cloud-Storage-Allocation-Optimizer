@@ -64,15 +64,15 @@ const HeroSVG: React.FC = () => (
   >
     {/* Background glow */}
     <radialGradient id="glow" cx="50%" cy="50%" r="50%">
-      <stop offset="0%" stopColor="#B8893C" stopOpacity="0.18" />
-      <stop offset="100%" stopColor="#14382B" stopOpacity="0" />
+      <stop offset="0%" stopColor="var(--gold)" stopOpacity="0.18" />
+      <stop offset="100%" stopColor="var(--vault-bg)" stopOpacity="0" />
     </radialGradient>
     <ellipse cx="240" cy="180" rx="220" ry="160" fill="url(#glow)" />
 
     {/* Vault/folder outline */}
     <motion.rect
       x="80" y="80" width="320" height="220" rx="16"
-      fill="#1F4D3A" stroke="#B8893C" strokeWidth="1.5"
+      fill="var(--color-forest-700)" stroke="var(--gold)" strokeWidth="1.5"
       initial={{ opacity: 0, scale: 0.9 }}
       animate={{ opacity: 1, scale: 1 }}
       transition={{ duration: 0.6, ease: 'easeOut' as any }}
@@ -81,7 +81,7 @@ const HeroSVG: React.FC = () => (
     {/* Folder tab */}
     <motion.path
       d="M80 96 C80 87 87 80 96 80 H180 L196 64 H360 C369 64 376 71 376 80 V80 H80 Z"
-      fill="#2F6B4F" stroke="#B8893C" strokeWidth="1"
+      fill="var(--color-forest-500)" stroke="var(--gold)" strokeWidth="1"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.5, delay: 0.15 }}
@@ -90,14 +90,14 @@ const HeroSVG: React.FC = () => (
     {/* Vault door circle */}
     <motion.circle
       cx="240" cy="195" r="68"
-      fill="#14382B" stroke="#B8893C" strokeWidth="2"
+      fill="var(--vault-bg)" stroke="var(--gold)" strokeWidth="2"
       initial={{ scale: 0, opacity: 0 }}
       animate={{ scale: 1, opacity: 1 }}
       transition={{ duration: 0.7, delay: 0.4, ease: 'easeOut' as any }}
     />
     <motion.circle
       cx="240" cy="195" r="50"
-      fill="#0E2A20" stroke="#B8893C" strokeWidth="1.5" strokeDasharray="6 4"
+      fill="var(--vault-bg)" stroke="var(--gold)" strokeWidth="1.5" strokeDasharray="6 4"
       initial={{ rotate: -180, opacity: 0 }}
       animate={{ rotate: 0, opacity: 1 }}
       transition={{ duration: 1.2, delay: 0.6 }}
@@ -106,12 +106,12 @@ const HeroSVG: React.FC = () => (
     {/* Lock / sparkle icon */}
     <motion.path
       d="M230 185 L240 175 L250 185 L250 200 L230 200 Z"
-      fill="#B8893C"
+      fill="var(--gold)"
       initial={{ opacity: 0, y: 8 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5, delay: 0.9 }}
     />
-    <motion.circle cx="240" cy="190" r="5" fill="#F6F1E4"
+    <motion.circle cx="240" cy="190" r="5" fill="var(--vault-text)"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.4, delay: 1.1 }}
@@ -119,14 +119,14 @@ const HeroSVG: React.FC = () => (
 
     {/* Connector lines to "Keep" and "Move" file chips */}
     <motion.path
-      d="M180 195 L120 155" stroke="#2F6B4F" strokeWidth="1.5"
+      d="M180 195 L120 155" stroke="var(--color-forest-500)" strokeWidth="1.5"
       variants={heroLine}
       initial="hidden"
       animate="show"
       style={{ pathLength: 0 }}
     />
     <motion.path
-      d="M300 195 L360 155" stroke="#9C4A3A" strokeWidth="1.5"
+      d="M300 195 L360 155" stroke="var(--moved)" strokeWidth="1.5"
       variants={heroLine}
       initial="hidden"
       animate="show"
@@ -136,13 +136,13 @@ const HeroSVG: React.FC = () => (
     {/* Keep chip */}
     <motion.rect
       x="60" y="135" width="72" height="40" rx="8"
-      fill="#2F6B4F"
+      fill="var(--color-forest-500)"
       initial={{ x: -20, opacity: 0 }}
       animate={{ x: 0, opacity: 1 }}
       transition={{ duration: 0.5, delay: 1.2 }}
     />
     <motion.text
-      x="96" y="160" textAnchor="middle" fill="#F6F1E4"
+      x="96" y="160" textAnchor="middle" fill="var(--vault-text)"
       fontSize="11" fontWeight="600"
       fontFamily="Inter, sans-serif"
       initial={{ opacity: 0 }}
@@ -155,13 +155,13 @@ const HeroSVG: React.FC = () => (
     {/* Move chip */}
     <motion.rect
       x="348" y="135" width="72" height="40" rx="8"
-      fill="#9C4A3A"
+      fill="var(--moved)"
       initial={{ x: 20, opacity: 0 }}
       animate={{ x: 0, opacity: 1 }}
       transition={{ duration: 0.5, delay: 1.2 }}
     />
     <motion.text
-      x="384" y="160" textAnchor="middle" fill="#F6F1E4"
+      x="384" y="160" textAnchor="middle" fill="var(--vault-text)"
       fontSize="11" fontWeight="600"
       fontFamily="Inter, sans-serif"
       initial={{ opacity: 0 }}
@@ -173,10 +173,10 @@ const HeroSVG: React.FC = () => (
 
     {/* Floating file dots */}
     {[
-      { cx: 140, cy: 240, r: 5, fill: '#2D5A7B', delay: 0.8 },
-      { cx: 165, cy: 255, r: 4, fill: '#B5654A', delay: 0.9 },
-      { cx: 310, cy: 248, r: 5, fill: '#7A5C8C', delay: 1.0 },
-      { cx: 338, cy: 237, r: 4, fill: '#4E8A6B', delay: 1.1 },
+      { cx: 140, cy: 240, r: 5, fill: 'var(--decorative-blue)', delay: 0.8 },
+      { cx: 165, cy: 255, r: 4, fill: 'var(--moved)', delay: 0.9 },
+      { cx: 310, cy: 248, r: 5, fill: 'var(--decorative-violet)', delay: 1.0 },
+      { cx: 338, cy: 237, r: 4, fill: 'var(--color-file-docs)', delay: 1.1 },
     ].map((d) => (
       <motion.circle
         key={`${d.cx}-${d.cy}`}
@@ -211,8 +211,8 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onEnter }) => {
     <div
       style={{
         minHeight: '100vh',
-        backgroundColor: '#0E2A20',
-        color: '#F6F1E4',
+        backgroundColor: 'var(--vault-bg)',
+        color: 'var(--vault-text)',
         display: 'flex',
         flexDirection: 'column',
         fontFamily: 'Inter, sans-serif',
@@ -233,8 +233,8 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onEnter }) => {
           zIndex: 9999,
           padding: '6px 14px',
           borderRadius: 6,
-          backgroundColor: '#B8893C',
-          color: '#0E2A20',
+          backgroundColor: 'var(--gold)',
+          color: 'var(--vault-bg)',
           fontWeight: 600,
           fontSize: 13,
           textDecoration: 'none',
@@ -262,8 +262,8 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onEnter }) => {
         }}
       >
         <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-          <Box size={22} color="#B8893C" />
-          <span style={{ fontFamily: 'Fraunces, serif', fontSize: 20, fontWeight: 600, color: '#F6F1E4' }}>
+          <Box size={22} color="var(--gold)" />
+          <span style={{ fontFamily: 'Fraunces, serif', fontSize: 20, fontWeight: 600, color: 'var(--vault-text)' }}>
             Vaultline
           </span>
         </div>
@@ -275,14 +275,14 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onEnter }) => {
             borderRadius: 8,
             border: '1px solid rgba(184,137,60,0.5)',
             backgroundColor: 'transparent',
-            color: '#B8893C',
+            color: 'var(--gold)',
             fontSize: 14, fontWeight: 600,
             cursor: 'pointer',
             transition: 'all 150ms',
           }}
           onMouseEnter={(e) => {
             e.currentTarget.style.backgroundColor = 'rgba(184,137,60,0.12)';
-            e.currentTarget.style.borderColor = '#B8893C';
+            e.currentTarget.style.borderColor = 'var(--gold)';
           }}
           onMouseLeave={(e) => {
             e.currentTarget.style.backgroundColor = 'transparent';
@@ -324,11 +324,11 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onEnter }) => {
                   borderRadius: 20,
                   border: '1px solid rgba(184,137,60,0.4)',
                   backgroundColor: 'rgba(184,137,60,0.08)',
-                  color: '#B8893C',
+                  color: 'var(--gold)',
                   fontSize: 12, fontWeight: 600, letterSpacing: '0.06em',
                   textTransform: 'uppercase',
                 }}>
-                  <span style={{ width: 6, height: 6, borderRadius: '50%', backgroundColor: '#B8893C' }} />
+                  <span style={{ width: 6, height: 6, borderRadius: '50%', backgroundColor: 'var(--gold)' }} />
                   Provably optimal file planning
                 </span>
               </motion.div>
@@ -340,13 +340,13 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onEnter }) => {
                   fontSize: 'clamp(36px, 5vw, 56px)',
                   fontWeight: 600,
                   lineHeight: 1.15,
-                  color: '#F6F1E4',
+                  color: 'var(--vault-text)',
                   margin: '0 0 20px 0',
                 }}
               >
                 Decide what<br />
                 <span style={{
-                  background: 'linear-gradient(135deg, #B8893C 0%, #E8B96E 60%, #B8893C 100%)',
+                  background: 'linear-gradient(135deg, var(--gold) 0%, var(--gold) 60%, var(--gold) 100%)',
                   WebkitBackgroundClip: 'text',
                   WebkitTextFillColor: 'transparent',
                   backgroundClip: 'text',
@@ -368,7 +368,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onEnter }) => {
                 Vaultline reads your file names, sizes and dates,
                 then uses dynamic programming to find the best
                 mix to fit any target device.{' '}
-                <strong style={{ color: '#F6F1E4' }}>Nothing leaves your device.</strong>
+                <strong style={{ color: 'var(--vault-text)' }}>Nothing leaves your device.</strong>
               </motion.p>
 
               <motion.div variants={fadeUp} style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
@@ -380,8 +380,8 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onEnter }) => {
                     padding: '14px 28px',
                     borderRadius: 10,
                     border: 'none',
-                    background: 'linear-gradient(135deg, #B8893C, #C99A4E)',
-                    color: '#0E2A20',
+                    background: 'linear-gradient(135deg, var(--gold), var(--gold))',
+                    color: 'var(--vault-bg)',
                     fontSize: 15, fontWeight: 700,
                     cursor: 'pointer',
                     boxShadow: '0 4px 20px rgba(184,137,60,0.35)',
@@ -444,7 +444,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onEnter }) => {
                   { num: 'Provably', label: 'optimal' },
                 ].map((stat) => (
                   <div key={stat.label} style={{ display: 'flex', alignItems: 'baseline', gap: 6 }}>
-                    <span style={{ fontSize: 18, fontWeight: 700, color: '#B8893C' }}>{stat.num}</span>
+                    <span style={{ fontSize: 18, fontWeight: 700, color: 'var(--gold)' }}>{stat.num}</span>
                     <span>{stat.label}</span>
                   </div>
                 ))}
@@ -490,7 +490,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onEnter }) => {
                 fontFamily: 'Fraunces, serif',
                 fontSize: 'clamp(24px, 3vw, 36px)',
                 fontWeight: 600,
-                color: '#F6F1E4',
+                color: 'var(--vault-text)',
                 textAlign: 'center',
                 marginBottom: 12,
               }}
@@ -545,14 +545,14 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onEnter }) => {
                       marginBottom: 16,
                     }}
                   >
-                    <feat.icon size={20} color="#B8893C" />
+                    <feat.icon size={20} color="var(--gold)" />
                   </div>
                   <h3
                     style={{
                       fontFamily: 'Fraunces, serif',
                       fontSize: 18,
                       fontWeight: 600,
-                      color: '#F6F1E4',
+                      color: 'var(--vault-text)',
                       margin: '0 0 8px 0',
                     }}
                   >
@@ -592,7 +592,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onEnter }) => {
               fontFamily: 'Fraunces, serif',
               fontSize: 'clamp(24px, 3vw, 36px)',
               fontWeight: 600,
-              color: '#F6F1E4',
+              color: 'var(--vault-text)',
               marginBottom: 16,
             }}
           >
@@ -608,8 +608,8 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onEnter }) => {
               padding: '14px 36px',
               borderRadius: 10,
               border: 'none',
-              background: 'linear-gradient(135deg, #B8893C, #C99A4E)',
-              color: '#0E2A20',
+              background: 'linear-gradient(135deg, var(--gold), var(--gold))',
+              color: 'var(--vault-bg)',
               fontSize: 16, fontWeight: 700,
               cursor: 'pointer',
               boxShadow: '0 4px 20px rgba(184,137,60,0.4)',

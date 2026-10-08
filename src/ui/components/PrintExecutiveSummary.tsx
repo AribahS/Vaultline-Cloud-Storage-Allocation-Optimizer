@@ -48,8 +48,8 @@ export const PrintExecutiveSummary: React.FC = () => {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
             font-size: 10pt;
             line-height: 1.5;
-            color: #54494B;
-            background: #ffffff;
+            color: var(--ink);
+            background: var(--card);
           }
 
           @page {
@@ -61,26 +61,26 @@ export const PrintExecutiveSummary: React.FC = () => {
             display: flex;
             justify-content: space-between;
             align-items: flex-start;
-            border-bottom: 2px solid #E3D081;
+            border-bottom: 2px solid var(--gold);
             padding-bottom: 12px;
             margin-bottom: 20px;
           }
           .print-logo-title {
             font-size: 22pt;
             font-weight: 700;
-            color: #3B3335;
+            color: var(--ink-deep);
             margin: 0;
             line-height: 1.2;
           }
           .print-subtitle {
             font-size: 9.5pt;
-            color: #3B3335;
+            color: var(--ink-deep);
             margin-top: 4px;
           }
           .print-badge-box {
             text-align: right;
             font-size: 9pt;
-            color: #3B3335;
+            color: var(--ink-deep);
           }
           .print-kpi-grid {
             display: grid;
@@ -89,15 +89,15 @@ export const PrintExecutiveSummary: React.FC = () => {
             margin-bottom: 24px;
           }
           .print-kpi-card {
-            border: 1px solid #D3DDD0;
+            border: 1px solid var(--card-border);
             border-radius: 6px;
             padding: 10px 12px;
-            background-color: #F1F7ED;
+            background-color: var(--paper);
             text-align: center;
           }
           .print-kpi-label {
             font-size: 7.5pt;
-            color: #3B3335;
+            color: var(--ink-deep);
             text-transform: uppercase;
             font-weight: 700;
             letter-spacing: 0.5px;
@@ -105,14 +105,14 @@ export const PrintExecutiveSummary: React.FC = () => {
           .print-kpi-val {
             font-size: 15pt;
             font-weight: 700;
-            color: #3B3335;
+            color: var(--ink-deep);
             margin-top: 2px;
           }
           .print-section-header {
             font-size: 12pt;
             font-weight: 700;
-            color: #3B3335;
-            border-bottom: 1px solid #D3DDD0;
+            color: var(--ink-deep);
+            border-bottom: 1px solid var(--card-border);
             padding-bottom: 4px;
             margin: 20px 0 10px 0;
             page-break-after: avoid;
@@ -125,28 +125,28 @@ export const PrintExecutiveSummary: React.FC = () => {
             margin-bottom: 16px;
           }
           table.print-report-table th {
-            background-color: #3B3335;
-            color: #ffffff;
+            background-color: var(--ink-deep);
+            color: var(--card);
             padding: 6px 10px;
             text-align: left;
             font-weight: 600;
           }
           table.print-report-table td {
             padding: 6px 10px;
-            border-bottom: 1px solid #F1F7ED;
+            border-bottom: 1px solid var(--paper);
           }
           table.print-report-table tr {
             page-break-inside: avoid;
             break-inside: avoid;
           }
-          .status-kept { color: #54494B; font-weight: 600; }
-          .status-moved { color: #B33951; font-weight: 600; }
+          .status-kept { color: var(--ink); font-weight: 600; }
+          .status-moved { color: var(--moved); font-weight: 600; }
           .print-doc-footer {
             margin-top: 30px;
             padding-top: 10px;
-            border-top: 1px solid #D3DDD0;
+            border-top: 1px solid var(--card-border);
             font-size: 8pt;
-            color: #3B3335;
+            color: var(--ink-deep);
             display: flex;
             justify-content: space-between;
             page-break-inside: avoid;
@@ -170,7 +170,7 @@ export const PrintExecutiveSummary: React.FC = () => {
       </div>
 
       {!optimizationResult || files.length === 0 ? (
-        <p style={{ fontStyle: 'italic', color: '#3B3335' }}>
+        <p style={{ fontStyle: 'italic', color: 'var(--ink-deep)' }}>
           No optimization data available. Please add files and run the optimizer before printing.
         </p>
       ) : (
@@ -182,15 +182,15 @@ export const PrintExecutiveSummary: React.FC = () => {
             </div>
             <div className="print-kpi-card">
               <div className="print-kpi-label">Kept Storage Payload</div>
-              <div className="print-kpi-val" style={{ color: '#54494B' }}>{formatBytes(optimizationResult.totalSizeKept)}</div>
+              <div className="print-kpi-val" style={{ color: 'var(--ink)' }}>{formatBytes(optimizationResult.totalSizeKept)}</div>
             </div>
             <div className="print-kpi-card">
               <div className="print-kpi-label">Offloaded Space</div>
-              <div className="print-kpi-val" style={{ color: '#B33951' }}>{formatBytes(optimizationResult.totalSizeDropped)}</div>
+              <div className="print-kpi-val" style={{ color: 'var(--moved)' }}>{formatBytes(optimizationResult.totalSizeDropped)}</div>
             </div>
             <div className="print-kpi-card">
               <div className="print-kpi-label">Importance Retained</div>
-              <div className="print-kpi-val" style={{ color: '#E3D081' }}>{importanceRetainedPct}%</div>
+              <div className="print-kpi-val" style={{ color: 'var(--gold)' }}>{importanceRetainedPct}%</div>
             </div>
           </div>
 

@@ -42,9 +42,10 @@ export const DashboardPage: React.FC = () => {
   if (files.length === 0) {
     return (
       <div className="page-container animate-page-enter" style={{ padding: '40px 24px', display: 'flex', flexDirection: 'column', gap: '24px', alignItems: 'flex-start' }}>
+        <h1 className="page-title">Dashboard</h1>
         <p style={{ fontSize: '16px', color: 'var(--color-ink-2)', margin: 0 }}>Decide what to keep.</p>
         <div style={{ display: 'flex', gap: '12px' }}>
-          <Button variant="secondary" onClick={() => setFiles(STUDENT_LAPTOP_DATASET)}>Try sample data</Button>
+          <Button variant="primary" onClick={() => setFiles(STUDENT_LAPTOP_DATASET)}>Try sample data</Button>
           <Button variant="secondary" onClick={() => navigate('/files')}>Add files</Button>
         </div>
       </div>
@@ -54,8 +55,9 @@ export const DashboardPage: React.FC = () => {
   // --- ACTIVE STATE ---
   return (
     <div className="page-container animate-page-enter">
+      <h1 className="page-title">Dashboard</h1>
       {/* KPI Row */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '16px', marginBottom: '24px' }}>
+      <div className="dashboard-kpis" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '16px', marginBottom: '24px' }}>
         <KpiCard
           label="Total files"
           value={pluralize(files.length, 'file')}
@@ -84,7 +86,7 @@ export const DashboardPage: React.FC = () => {
         />
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 2fr) minmax(240px, 1fr)', gap: '16px', marginBottom: '24px' }}>
+      <div className="dashboard-grid" style={{ marginBottom: '24px' }}>
         {/* Optimised plan card */}
         <Card>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
@@ -113,7 +115,7 @@ export const DashboardPage: React.FC = () => {
         </Card>
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '16px' }}>
+      <div className="dashboard-insights">
         {/* Insights */}
         <Card>
           <h3 style={{ margin: '0 0 16px 0' }}>Insights</h3>

@@ -168,7 +168,7 @@ export const OptimizationVisualizer: React.FC = () => {
                   position: 'relative'
                 }}
               >
-                <span style={{ position: 'absolute', top: '10px', right: '12px', fontSize: '12px', fontWeight: 700, fontFamily: 'var(--font-mono)', color: 'var(--color-brass)' }}>
+                <span style={{ position: 'absolute', top: '10px', right: '12px', fontSize: '12px', fontWeight: 700, fontFamily: 'var(--font-mono)', color: 'var(--color-ink)' }}>
                   #{idx + 1} Rank
                 </span>
                 <div style={{ fontWeight: 600, fontSize: '14px', marginBottom: '4px' }}>{item.name}</div>
@@ -222,7 +222,7 @@ export const OptimizationVisualizer: React.FC = () => {
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
-                    color: '#fff',
+                    color: 'var(--card)',
                     fontSize: '10px',
                     fontWeight: 700,
                     overflow: 'hidden',
@@ -244,7 +244,7 @@ export const OptimizationVisualizer: React.FC = () => {
               </div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
                 {keptItems.map(item => (
-                  <div key={item.id} style={{ display: 'flex', justifyContent: 'space-between', padding: '6px 10px', backgroundColor: '#fff', borderRadius: '6px', fontSize: '13px' }}>
+                  <div key={item.id} style={{ display: 'flex', justifyContent: 'space-between', padding: '6px 10px', backgroundColor: 'var(--card)', borderRadius: '6px', fontSize: '13px' }}>
                     <span>{item.name}</span>
                     <span style={{ fontFamily: 'var(--font-mono)', fontWeight: 600 }}>Value {item.value} | {item.normalizedSize}u</span>
                   </div>
@@ -252,13 +252,13 @@ export const OptimizationVisualizer: React.FC = () => {
               </div>
             </div>
 
-            <div style={{ border: '1px solid #D3DDD0', borderRadius: '8px', padding: '14px', backgroundColor: '#F1F7ED' }}>
+            <div style={{ border: '1px solid var(--card-border)', borderRadius: '8px', padding: '14px', backgroundColor: 'var(--paper)' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontWeight: 700, color: 'var(--color-semantic-move)', marginBottom: '10px' }}>
                 <XCircle size={16} /> Moved to External Storage ({droppedItems.length} files)
               </div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
                 {droppedItems.map(item => (
-                  <div key={item.id} style={{ display: 'flex', justifyContent: 'space-between', padding: '6px 10px', backgroundColor: '#fff', borderRadius: '6px', fontSize: '13px' }}>
+                  <div key={item.id} style={{ display: 'flex', justifyContent: 'space-between', padding: '6px 10px', backgroundColor: 'var(--card)', borderRadius: '6px', fontSize: '13px' }}>
                     <span style={{ color: 'var(--color-semantic-move)' }}>{item.name}</span>
                     <span style={{ fontFamily: 'var(--font-mono)', fontWeight: 600 }}>Value {item.value} | {item.normalizedSize}u</span>
                   </div>
@@ -317,7 +317,7 @@ export const OptimizationVisualizer: React.FC = () => {
                     style={{
                       padding: '2px 6px', borderRadius: '4px', border: '1px solid var(--color-border-strong)',
                       backgroundColor: speed === sp ? 'var(--color-forest-500)' : 'transparent',
-                      color: speed === sp ? '#fff' : 'var(--color-ink-2)',
+                      color: speed === sp ? 'var(--card)' : 'var(--color-ink-2)',
                       fontSize: '11px', cursor: 'pointer'
                     }}
                   >
@@ -365,7 +365,7 @@ export const OptimizationVisualizer: React.FC = () => {
                             fontFamily: 'var(--font-mono)',
                             fontWeight: isCurrentCell ? 700 : 500,
                             backgroundColor: isCurrentCell ? 'var(--color-brass)' : 'transparent',
-                            color: isCurrentCell ? '#ffffff' : 'var(--color-ink)',
+                            color: isCurrentCell ? 'var(--card)' : 'var(--color-ink)',
                             transition: 'background-color 0.2s ease'
                           }}
                         >

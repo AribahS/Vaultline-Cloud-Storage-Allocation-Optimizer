@@ -20,10 +20,6 @@ export interface FlowState {
   // Can navigate to a scene
   canNavigate: (scene: SceneId) => boolean;
 
-  // Theme
-  theme: 'light' | 'dark';
-  toggleTheme: () => void;
-
   // Teacher mode
   teacherMode: boolean;
   toggleTeacherMode: () => void;
@@ -74,15 +70,6 @@ export const useFlowStore = create<FlowState>((set, get) => ({
     if (idx === 3) return state.filesDropped && state.roomPicked && state.swipeDone;
     if (idx === 4) return state.filesDropped && state.roomPicked && state.swipeDone && state.packAnimationDone;
     return false;
-  },
-
-  theme: 'light',
-  toggleTheme: () => {
-    set((state) => {
-      const next = state.theme === 'light' ? 'dark' : 'light';
-      document.documentElement.setAttribute('data-theme', next);
-      return { theme: next };
-    });
   },
 
   teacherMode: false,

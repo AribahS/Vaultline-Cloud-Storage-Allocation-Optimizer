@@ -218,9 +218,9 @@ export const FileDetailDrawer: React.FC<FileDetailDrawerProps> = ({ file, onClos
           <span style={{
             display: 'inline-flex', alignItems: 'center', gap: '4px',
             padding: '4px 10px', fontSize: '12px', fontWeight: 600,
-            backgroundColor: '#F1F7ED',
+            backgroundColor: 'var(--paper)',
             color: 'var(--color-semantic-move)',
-            borderRadius: '6px', border: '1px solid #D3DDD0'
+            borderRadius: '6px', border: '1px solid var(--card-border)'
           }}>
             <EyeOff size={12} /> Excluded
           </span>

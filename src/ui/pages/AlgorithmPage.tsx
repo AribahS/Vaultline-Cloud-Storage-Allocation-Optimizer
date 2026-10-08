@@ -112,7 +112,7 @@ export const AlgorithmPage: React.FC = () => {
   };
 
   const cellColors: Record<string, { bg: string; text: string; border?: string }> = {
-    'current': { bg: 'var(--color-forest)', text: '#fff' },
+    'current': { bg: 'var(--color-forest)', text: 'var(--card)' },
     'dep-skip': { bg: 'transparent', text: 'var(--color-ink)', border: 'var(--color-brass)' },
     'dep-take': { bg: 'transparent', text: 'var(--color-ink)', border: 'var(--color-brass)' },
     'computed': { bg: 'var(--color-surface-sunken)', text: 'var(--color-ink)' },
@@ -481,8 +481,8 @@ const CorrectnessTab: React.FC = () => {
           </div>
           <div style={{
             padding: '16px', borderRadius: '8px', flex: 1, textAlign: 'center',
-            backgroundColor: failCount > 0 ? '#fdf2f1' : 'var(--color-surface-sunken)',
-            border: failCount > 0 ? '1px solid #e8c6c1' : '1px solid var(--color-border-hairline)'
+            backgroundColor: failCount > 0 ? 'var(--color-danger-surface)' : 'var(--color-surface-sunken)',
+            border: failCount > 0 ? '1px solid var(--color-danger-border)' : '1px solid var(--color-border-hairline)'
           }}>
             <div style={{ fontFamily: 'var(--font-mono)', fontSize: '28px', fontWeight: 600, color: failCount > 0 ? 'var(--color-semantic-danger)' : 'var(--color-ink-3)' }}>{failCount}</div>
             <div className="text-caption text-ink-2">Failed</div>
@@ -490,7 +490,7 @@ const CorrectnessTab: React.FC = () => {
         </div>
       )}
       {failCase && (
-        <div style={{ marginTop: '12px', padding: '12px', backgroundColor: '#fdf2f1', borderRadius: '8px', fontSize: '13px', fontFamily: 'var(--font-mono)' }}>
+        <div style={{ marginTop: '12px', padding: '12px', backgroundColor: 'var(--color-danger-surface)', borderRadius: '8px', fontSize: '13px', fontFamily: 'var(--font-mono)' }}>
           {failCase}
         </div>
       )}
