@@ -36,11 +36,11 @@ interface TargetOption {
 }
 
 const PRESET_TARGETS: TargetOption[] = [
-  { id: 'phone', name: 'Phone', sizeBytes: 32 * BYTE_UNITS.GB, icon: Smartphone, color: 'var(--grape)' },
-  { id: 'pendrive', name: 'Pen drive', sizeBytes: 16 * BYTE_UNITS.GB, icon: HardDrive, color: 'var(--mint)' },
-  { id: 'google', name: 'Google account', sizeBytes: 15 * BYTE_UNITS.GB, icon: Cloud, color: 'var(--sky)' },
-  { id: 'email', name: 'Email', sizeBytes: 25 * BYTE_UNITS.MB, icon: Mail, color: 'var(--tangerine)' },
-  { id: 'custom', name: 'Custom', sizeBytes: 10 * BYTE_UNITS.GB, icon: Sliders, color: 'var(--lemon)' },
+  { id: 'phone', name: 'Phone', sizeBytes: 32 * BYTE_UNITS.GB, icon: Smartphone, color: 'var(--ink)' },
+  { id: 'pendrive', name: 'Pen drive', sizeBytes: 16 * BYTE_UNITS.GB, icon: HardDrive, color: 'var(--kept)' },
+  { id: 'google', name: 'Google account', sizeBytes: 15 * BYTE_UNITS.GB, icon: Cloud, color: 'var(--paper)' },
+  { id: 'email', name: 'Email', sizeBytes: 25 * BYTE_UNITS.MB, icon: Mail, color: 'var(--highlight)' },
+  { id: 'custom', name: 'Custom', sizeBytes: 10 * BYTE_UNITS.GB, icon: Sliders, color: 'var(--highlight)' },
 ];
 
 export const RoomScene: React.FC = () => {
@@ -139,7 +139,7 @@ export const RoomScene: React.FC = () => {
       id: `place-${Date.now()}`,
       name: 'Backup Drive',
       quotaBytes: 20 * BYTE_UNITS.GB,
-      color: '#2FD3A0',
+      color: 'var(--kept)',
     });
   };
 
@@ -174,7 +174,7 @@ export const RoomScene: React.FC = () => {
         >
           Where do these need to fit?
         </h2>
-        <p style={{ fontSize: 'var(--text-body)', color: 'var(--ink-muted)' }}>
+        <p style={{ fontSize: 'var(--text-body)', color: 'var(--color-ink-2)' }}>
           Pick a destination or enter a custom size.
         </p>
       </div>
@@ -206,8 +206,8 @@ export const RoomScene: React.FC = () => {
                 textAlign: 'center',
                 gap: 'var(--space-sm)',
                 cursor: 'pointer',
-                background: isSelected ? 'var(--surface)' : 'var(--canvas)',
-                borderColor: isSelected ? 'var(--ink)' : 'var(--outline-color)',
+                background: isSelected ? 'var(--card)' : 'var(--paper)',
+                borderColor: isSelected ? 'var(--ink)' : 'var(--card-border)',
                 boxShadow: isSelected ? '5px 5px 0 var(--ink)' : '2px 2px 0 var(--ink)',
                 borderWidth: isSelected ? '3px' : '2.5px',
                 padding: 'var(--space-lg) var(--space-md)',
@@ -225,7 +225,7 @@ export const RoomScene: React.FC = () => {
                   justifyContent: 'center',
                 }}
               >
-                <div style={{ color: '#1B1533' }}>
+                <div style={{ color: 'var(--ink)' }}>
                   <Icon size={24} />
                 </div>
               </div>
@@ -236,7 +236,7 @@ export const RoomScene: React.FC = () => {
                 className="mono"
                 style={{
                   fontSize: 'var(--text-xs)',
-                  color: isSelected ? 'var(--grape)' : 'var(--ink-muted)',
+                  color: isSelected ? 'var(--ink)' : 'var(--color-ink-2)',
                   fontWeight: 700,
                 }}
               >
@@ -258,7 +258,7 @@ export const RoomScene: React.FC = () => {
             style={{
               maxWidth: 540,
               margin: '0 auto var(--space-xl) auto',
-              background: 'var(--surface)',
+              background: 'var(--card)',
               display: 'flex',
               flexDirection: 'column',
               gap: 'var(--space-md)',
@@ -280,7 +280,7 @@ export const RoomScene: React.FC = () => {
                   border: '2.5px solid var(--ink)',
                   boxShadow: '3px 3px 0 var(--ink)',
                   width: 140,
-                  background: 'var(--canvas)',
+                  background: 'var(--paper)',
                   color: 'var(--ink)',
                 }}
               />
@@ -294,7 +294,7 @@ export const RoomScene: React.FC = () => {
                     onClick={() => handleCustomUnitChange(unit)}
                     style={{
                       fontWeight: 800,
-                      background: customUnit === unit ? 'var(--lemon)' : 'var(--canvas)',
+                      background: customUnit === unit ? 'var(--highlight)' : 'var(--paper)',
                     }}
                   >
                     {unit}
@@ -311,7 +311,7 @@ export const RoomScene: React.FC = () => {
               value={customValue}
               onChange={(e) => handleCustomValueChange(parseInt(e.target.value))}
               style={{
-                accentColor: 'var(--grape)',
+                accentColor: 'var(--ink)',
                 cursor: 'pointer',
                 height: 8,
               }}
@@ -339,7 +339,7 @@ export const RoomScene: React.FC = () => {
             className="sticker-card"
             style={{
               height: 180,
-              background: 'var(--surface)',
+              background: 'var(--card)',
               borderRadius: 22,
               border: '3px solid var(--ink)',
               boxShadow: '6px 6px 0 var(--ink)',
@@ -356,7 +356,7 @@ export const RoomScene: React.FC = () => {
               <span style={{ fontWeight: 800, fontSize: 'var(--text-lg)' }}>
                 {PRESET_TARGETS.find((t) => t.id === activeTargetId)?.name || 'Box'}
               </span>
-              <span className="mono" style={{ fontWeight: 800, color: 'var(--grape)' }}>
+              <span className="mono" style={{ fontWeight: 800, color: 'var(--ink)' }}>
                 {formatBytes(quotaBytes)}
               </span>
             </div>
@@ -367,7 +367,7 @@ export const RoomScene: React.FC = () => {
                 style={{
                   height: 28,
                   width: '100%',
-                  background: 'var(--canvas)',
+                  background: 'var(--paper)',
                   borderRadius: 10,
                   border: '2px solid var(--ink)',
                   overflow: 'hidden',
@@ -378,7 +378,7 @@ export const RoomScene: React.FC = () => {
                   initial={false}
                   animate={{
                     width: `${Math.min(100, (totalSizeBytes / Math.max(1, quotaBytes)) * 100)}%`,
-                    backgroundColor: isOverQuota ? 'var(--bubblegum)' : 'var(--mint)',
+                    backgroundColor: isOverQuota ? 'var(--moved)' : 'var(--kept)',
                   }}
                   transition={springs.snappy}
                   style={{
@@ -393,7 +393,7 @@ export const RoomScene: React.FC = () => {
                   marginTop: 6,
                   fontSize: 'var(--text-xs)',
                   fontWeight: 700,
-                  color: 'var(--ink-muted)',
+                  color: 'var(--color-ink-2)',
                 }}
               >
                 <span>Files: {formatBytes(totalSizeBytes)}</span>
@@ -413,10 +413,10 @@ export const RoomScene: React.FC = () => {
               style={{
                 width: 220,
                 height: 180,
-                background: 'var(--surface)',
+                background: 'var(--card)',
                 borderRadius: 22,
                 border: '3px solid var(--ink)',
-                boxShadow: '6px 6px 0 var(--mint)',
+                boxShadow: '6px 6px 0 var(--kept)',
                 display: 'flex',
                 flexDirection: 'column',
                 justifyContent: 'space-between',
@@ -428,15 +428,15 @@ export const RoomScene: React.FC = () => {
                 <button
                   onClick={() => removePlace(place.id)}
                   aria-label="Remove storage place"
-                  style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--bubblegum)' }}
+                  style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--moved)' }}
                 >
                   <Trash2 size={16} />
                 </button>
               </div>
-              <span className="mono" style={{ fontWeight: 800, fontSize: 18, color: 'var(--mint)' }}>
+              <span className="mono" style={{ fontWeight: 800, fontSize: 18, color: 'var(--kept)' }}>
                 {formatBytes(place.quotaBytes)}
               </span>
-              <span style={{ fontSize: 'var(--text-xs)', color: 'var(--ink-muted)' }}>
+              <span style={{ fontSize: 'var(--text-xs)', color: 'var(--color-ink-2)' }}>
                 Extra destination
               </span>
             </motion.div>
@@ -451,7 +451,7 @@ export const RoomScene: React.FC = () => {
           style={{
             fontSize: 'var(--text-lg)',
             fontWeight: 800,
-            color: isOverQuota ? 'var(--bubblegum)' : 'var(--ink)',
+            color: isOverQuota ? 'var(--moved)' : 'var(--ink)',
             textAlign: 'center',
             maxWidth: 600,
           }}

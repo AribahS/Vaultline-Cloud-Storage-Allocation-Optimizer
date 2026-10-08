@@ -64,7 +64,7 @@ export class ErrorBoundary extends Component<Props, State> {
             <h2 style={{ fontSize: 'var(--text-lg)', fontFamily: "'Bricolage Grotesque', sans-serif", fontWeight: 800 }}>
               Oops, something broke
             </h2>
-            <p style={{ color: 'var(--ink-muted)', fontSize: 'var(--text-sm)' }}>
+            <p style={{ color: 'var(--color-ink-2)', fontSize: 'var(--text-sm)' }}>
               {this.state.error?.message || 'An unexpected error occurred.'}
             </p>
             <div style={{ display: 'flex', gap: 'var(--space-md)', justifyContent: 'center', flexWrap: 'wrap' }}>

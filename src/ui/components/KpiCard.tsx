@@ -12,7 +12,7 @@ export interface KpiCardProps {
 
 export const KpiCard: React.FC<KpiCardProps> = ({ label, value, subtitle, icon, accentColor, onClick }) => {
   // C3: Apply gold-foil gradient text for brass/gold accent KPIs
-  const isBrass = accentColor === 'var(--color-brass)';
+  const isBrass = accentColor === 'var(--highlight)';
 
   return (
     <Card
@@ -62,7 +62,7 @@ export const KpiCard: React.FC<KpiCardProps> = ({ label, value, subtitle, icon, 
             width: '40px',
             height: '40px',
             borderRadius: '10px',
-            backgroundColor: 'var(--color-forest-50)',
+            backgroundColor: 'var(--paper)',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',

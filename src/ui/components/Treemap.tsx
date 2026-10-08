@@ -252,9 +252,9 @@ export const Treemap: React.FC<TreemapProps> = ({
             style={{
               padding: '3px 8px',
               borderRadius: '12px',
-              border: focusedCategory === null ? '1px solid var(--color-forest)' : '1px solid var(--color-border-hairline)',
-              backgroundColor: focusedCategory === null ? 'var(--color-forest-50)' : 'transparent',
-              color: focusedCategory === null ? 'var(--color-forest)' : 'var(--color-ink-2)',
+              border: focusedCategory === null ? '1px solid var(--ink)' : '1px solid var(--color-border-hairline)',
+              backgroundColor: focusedCategory === null ? 'var(--paper)' : 'transparent',
+              color: focusedCategory === null ? 'var(--ink)' : 'var(--color-ink-2)',
               cursor: 'pointer',
               fontSize: '11px',
               fontWeight: 500
@@ -269,9 +269,9 @@ export const Treemap: React.FC<TreemapProps> = ({
               style={{
                 padding: '3px 8px',
                 borderRadius: '12px',
-                border: focusedCategory === cat ? '1px solid var(--color-forest)' : '1px solid var(--color-border-hairline)',
-                backgroundColor: focusedCategory === cat ? 'var(--color-forest-50)' : 'transparent',
-                color: focusedCategory === cat ? 'var(--color-forest)' : 'var(--color-ink-2)',
+                border: focusedCategory === cat ? '1px solid var(--ink)' : '1px solid var(--color-border-hairline)',
+                backgroundColor: focusedCategory === cat ? 'var(--paper)' : 'transparent',
+                color: focusedCategory === cat ? 'var(--ink)' : 'var(--color-ink-2)',
                 cursor: 'pointer',
                 fontSize: '11px',
                 fontWeight: 500
@@ -346,9 +346,9 @@ export const Treemap: React.FC<TreemapProps> = ({
                     width={Math.max(0, tile.w - 1)}
                     height={Math.max(0, tile.h - 1)}
                     rx={Math.min(4, tile.w / 4)}
-                    fill={isKept ? 'var(--vault-bg)' : `url(#${patternId})`}
+                    fill={isKept ? 'var(--kept)' : `url(#${patternId})`}
                     opacity={1}
-                    stroke={isKept ? 'var(--vault-text)' : 'var(--moved-stripe)'}
+                    stroke={isKept ? 'var(--ink)' : 'var(--moved-stripe)'}
                     strokeWidth={isKept ? 1.5 / zoomLevel : 2 / zoomLevel}
                     strokeOpacity={1}
                   />
@@ -360,14 +360,14 @@ export const Treemap: React.FC<TreemapProps> = ({
                       width={Math.min(tile.w - 4, truncateTreemapLabel(tile.file.name, Math.floor((tile.w - 12) / 7)).length * 7 + 8)}
                       height={18}
                       rx={4}
-                      fill="var(--vault-bg)"
+                      fill="var(--ink)"
                     />
                     <text
                       x={tile.x + tile.w / 2}
                       y={tile.y + tile.h / 2 - (showSizeLabel ? 6 : 0)}
                       textAnchor="middle"
                       dominantBaseline="central"
-                      fill="var(--vault-text)"
+                      fill="var(--paper)"
                       fontSize={Math.max(8, Math.min(12 / zoomLevel, tile.w / 6))}
                       fontFamily="var(--font-interface)"
                       fontWeight={600}
@@ -383,7 +383,7 @@ export const Treemap: React.FC<TreemapProps> = ({
                       y={tile.y + tile.h / 2 + 8}
                       textAnchor="middle"
                       dominantBaseline="central"
-                      fill="var(--vault-text)"
+                      fill="var(--paper)"
                       fontSize={Math.max(7, Math.min(10 / zoomLevel, tile.w / 8))}
                       fontFamily="var(--font-mono)"
                       style={{ pointerEvents: 'none' }}
@@ -409,7 +409,7 @@ export const Treemap: React.FC<TreemapProps> = ({
               color: 'var(--color-ink, var(--ink))',
               padding: '8px 12px',
               borderRadius: '6px',
-              boxShadow: '0 4px 14px rgba(0,0,0,0.18)',
+              boxShadow: '0 4px 14px color-mix(in srgb,var(--ink) 18%,transparent)',
               border: '1px solid var(--color-border-strong, var(--color-semantic-keep-stroke))',
               fontSize: '12px',
               pointerEvents: 'none',
@@ -442,7 +442,7 @@ export const Treemap: React.FC<TreemapProps> = ({
                   borderRadius: '4px',
                   fontSize: '11px',
                   fontWeight: 600,
-                  backgroundColor: hoveredTile.tile.kept ? 'var(--color-forest-50)' : 'var(--paper)',
+                  backgroundColor: hoveredTile.tile.kept ? 'var(--paper)' : 'var(--paper)',
                   color: hoveredTile.tile.kept ? 'var(--color-semantic-keep)' : 'var(--color-semantic-move)'
                 }}
               >

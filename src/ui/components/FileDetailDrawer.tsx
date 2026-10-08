@@ -121,7 +121,7 @@ export const FileDetailDrawer: React.FC<FileDetailDrawerProps> = ({ file, onClos
             fontFamily: 'var(--font-mono)',
             fontSize: '22px',
             fontWeight: 700,
-            color: 'var(--color-forest-500)'
+            color: 'var(--ink)'
           }}>{file.priority}/10</span>
         </div>
 
@@ -135,7 +135,7 @@ export const FileDetailDrawer: React.FC<FileDetailDrawerProps> = ({ file, onClos
           onChange={(e) => updatePriority(file.id, parseInt(e.target.value, 10))}
           style={{
             width: '100%',
-            accentColor: 'var(--color-forest-500)',
+            accentColor: 'var(--ink)',
             cursor: 'pointer',
             marginTop: '8px',
             marginBottom: '12px'
@@ -158,9 +158,9 @@ export const FileDetailDrawer: React.FC<FileDetailDrawerProps> = ({ file, onClos
                 borderRadius: '6px',
                 fontSize: '12px',
                 fontWeight: 500,
-                border: file.priority === p.val ? '1px solid var(--color-forest-500)' : '1px solid var(--color-border-strong)',
-                backgroundColor: file.priority === p.val ? 'var(--color-forest-50)' : 'var(--color-surface-raised)',
-                color: file.priority === p.val ? 'var(--color-forest-500)' : 'var(--color-ink)',
+                border: file.priority === p.val ? '1px solid var(--ink)' : '1px solid var(--color-border-strong)',
+                backgroundColor: file.priority === p.val ? 'var(--paper)' : 'var(--color-surface-raised)',
+                color: file.priority === p.val ? 'var(--ink)' : 'var(--color-ink)',
                 cursor: 'pointer'
               }}
             >
@@ -190,7 +190,7 @@ export const FileDetailDrawer: React.FC<FileDetailDrawerProps> = ({ file, onClos
             return (
               <span style={{
                 display: 'inline-flex', padding: '4px 10px', borderRadius: '6px', fontSize: '13px', fontWeight: 600,
-                backgroundColor: isKept ? 'rgba(145,199,177,0.2)' : 'rgba(179,57,81,0.1)',
+                backgroundColor: isKept ? 'color-mix(in srgb,var(--kept) 20%,transparent)' : 'color-mix(in srgb,var(--moved) 10%,transparent)',
                 color: isKept ? 'var(--color-semantic-keep-stroke)' : 'var(--color-semantic-move)',
                 border: `1px solid ${isKept ? 'var(--color-semantic-keep-stroke)' : 'var(--color-semantic-move)'}`
               }}>
@@ -207,9 +207,9 @@ export const FileDetailDrawer: React.FC<FileDetailDrawerProps> = ({ file, onClos
           <span style={{
             display: 'inline-flex', alignItems: 'center', gap: '4px',
             padding: '4px 10px', fontSize: '12px', fontWeight: 600,
-            backgroundColor: 'var(--color-forest-50)',
+            backgroundColor: 'var(--paper)',
             color: 'var(--color-semantic-keep)',
-            borderRadius: '6px', border: '1px solid var(--color-forest-100)'
+            borderRadius: '6px', border: '1px solid var(--heat-1)'
           }}>
             <Pin size={12} /> Always keep
           </span>
@@ -229,7 +229,7 @@ export const FileDetailDrawer: React.FC<FileDetailDrawerProps> = ({ file, onClos
           <span style={{
             display: 'inline-flex', alignItems: 'center', gap: '4px',
             padding: '4px 10px', fontSize: '12px', fontWeight: 600,
-            backgroundColor: 'var(--color-brass-soft)',
+            backgroundColor: 'var(--paper)',
             color: 'var(--color-semantic-warning)',
             borderRadius: '6px', border: '1px solid var(--color-border-strong)'
           }}>

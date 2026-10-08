@@ -19,11 +19,11 @@ const scenes: { id: SceneId; label: string }[] = [
 function BoxyLogo() {
   return (
     <svg width="24" height="24" viewBox="0 0 72 72" fill="none">
-      <rect x="4" y="8" width="64" height="56" rx="14" fill="var(--primary)" stroke="var(--outline-color)" strokeWidth="2.5" />
-      <line x1="4" y1="28" x2="68" y2="28" stroke="var(--outline-color)" strokeWidth="2" />
-      <circle cx="26" cy="19" r="3" fill="var(--surface)" />
-      <circle cx="46" cy="19" r="3" fill="var(--surface)" />
-      <path d="M30 43 Q36 49 42 43" stroke="var(--surface)" strokeWidth="2.5" strokeLinecap="round" fill="none" />
+      <rect x="4" y="8" width="64" height="56" rx="14" fill="var(--primary)" stroke="var(--card-border)" strokeWidth="2.5" />
+      <line x1="4" y1="28" x2="68" y2="28" stroke="var(--card-border)" strokeWidth="2" />
+      <circle cx="26" cy="19" r="3" fill="var(--card)" />
+      <circle cx="46" cy="19" r="3" fill="var(--card)" />
+      <path d="M30 43 Q36 49 42 43" stroke="var(--card)" strokeWidth="2.5" strokeLinecap="round" fill="none" />
     </svg>
   );
 }

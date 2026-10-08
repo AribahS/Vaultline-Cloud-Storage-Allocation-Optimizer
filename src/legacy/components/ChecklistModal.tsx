@@ -104,7 +104,7 @@ export const ChecklistModal: React.FC<{ isOpen: boolean; onClose: () => void }> 
       style={{
         position: 'fixed',
         inset: 0,
-        backgroundColor: 'rgba(27, 21, 51, 0.75)',
+        backgroundColor: 'color-mix(in srgb,var(--ink) 75%,transparent)',
         zIndex: 1000,
         display: 'flex',
         alignItems: 'center',
@@ -124,7 +124,7 @@ export const ChecklistModal: React.FC<{ isOpen: boolean; onClose: () => void }> 
         style={{
           width: '100%',
           maxWidth: 680,
-          background: 'var(--surface)',
+          background: 'var(--card)',
           padding: 'var(--space-xl)',
           maxHeight: '90vh',
           display: 'flex',
@@ -136,7 +136,7 @@ export const ChecklistModal: React.FC<{ isOpen: boolean; onClose: () => void }> 
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <div>
             <h3 style={{ fontSize: 'var(--text-lg)', fontWeight: 800 }}>Packing checklist</h3>
-            <p style={{ fontSize: 'var(--text-sm)', color: 'var(--ink-muted)' }}>
+            <p style={{ fontSize: 'var(--text-sm)', color: 'var(--color-ink-2)' }}>
               Print or export your tailored Keep & Move lists.
             </p>
           </div>
@@ -148,7 +148,7 @@ export const ChecklistModal: React.FC<{ isOpen: boolean; onClose: () => void }> 
         {/* Action bar for exports */}
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
           <button className="sticker-chip" onClick={handleCopy} style={{ gap: 6 }}>
-            {copied ? <Check size={14} color="var(--mint)" /> : <Copy size={14} />}
+            {copied ? <Check size={14} color="var(--kept)" /> : <Copy size={14} />}
             <span>{copied ? 'Copied!' : 'Copy text'}</span>
           </button>
           <button className="sticker-chip" onClick={handleDownloadCSV} style={{ gap: 6 }}>
@@ -168,17 +168,17 @@ export const ChecklistModal: React.FC<{ isOpen: boolean; onClose: () => void }> 
         {/* Warning note for script */}
         <div
           style={{
-            background: 'var(--canvas)',
+            background: 'var(--paper)',
             borderRadius: 12,
             padding: '8px 12px',
             display: 'flex',
             alignItems: 'center',
             gap: 8,
             fontSize: 'var(--text-xs)',
-            color: 'var(--ink-muted)',
+            color: 'var(--color-ink-2)',
           }}
         >
-          <AlertTriangle size={14} color="var(--tangerine)" />
+          <AlertTriangle size={14} color="var(--highlight)" />
           <span>Always review shell scripts before executing them on your system.</span>
         </div>
 
@@ -195,7 +195,7 @@ export const ChecklistModal: React.FC<{ isOpen: boolean; onClose: () => void }> 
         >
           {/* Keep List */}
           <div>
-            <h4 style={{ fontSize: 'var(--text-sm)', fontWeight: 800, color: 'var(--mint)', marginBottom: 8 }}>
+            <h4 style={{ fontSize: 'var(--text-sm)', fontWeight: 800, color: 'var(--kept)', marginBottom: 8 }}>
               ✓ KEEP IN BOX ({keptItems.length})
             </h4>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
@@ -209,7 +209,7 @@ export const ChecklistModal: React.FC<{ isOpen: boolean; onClose: () => void }> 
                       display: 'flex',
                       alignItems: 'center',
                       justifyContent: 'space-between',
-                      background: 'var(--canvas)',
+                      background: 'var(--paper)',
                       padding: '8px 12px',
                       borderRadius: 10,
                       cursor: 'pointer',
@@ -221,7 +221,7 @@ export const ChecklistModal: React.FC<{ isOpen: boolean; onClose: () => void }> 
                         type="checkbox"
                         checked={isChecked}
                         onChange={() => {}}
-                        style={{ accentColor: 'var(--grape)' }}
+                        style={{ accentColor: 'var(--ink)' }}
                       />
                       <span
                         style={{
@@ -236,7 +236,7 @@ export const ChecklistModal: React.FC<{ isOpen: boolean; onClose: () => void }> 
                         {f.name}
                       </span>
                     </div>
-                    <span className="mono" style={{ fontSize: 12, color: 'var(--ink-muted)' }}>
+                    <span className="mono" style={{ fontSize: 12, color: 'var(--color-ink-2)' }}>
                       {formatBytes(getFSize(f))}
                     </span>
                   </label>
@@ -247,7 +247,7 @@ export const ChecklistModal: React.FC<{ isOpen: boolean; onClose: () => void }> 
 
           {/* Move List */}
           <div>
-            <h4 style={{ fontSize: 'var(--text-sm)', fontWeight: 800, color: 'var(--bubblegum)', marginBottom: 8 }}>
+            <h4 style={{ fontSize: 'var(--text-sm)', fontWeight: 800, color: 'var(--moved)', marginBottom: 8 }}>
               → MOVE ELSEWHERE ({movedItems.length})
             </h4>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
@@ -261,7 +261,7 @@ export const ChecklistModal: React.FC<{ isOpen: boolean; onClose: () => void }> 
                       display: 'flex',
                       alignItems: 'center',
                       justifyContent: 'space-between',
-                      background: 'var(--canvas)',
+                      background: 'var(--paper)',
                       padding: '8px 12px',
                       borderRadius: 10,
                       cursor: 'pointer',
@@ -273,7 +273,7 @@ export const ChecklistModal: React.FC<{ isOpen: boolean; onClose: () => void }> 
                         type="checkbox"
                         checked={isChecked}
                         onChange={() => {}}
-                        style={{ accentColor: 'var(--grape)' }}
+                        style={{ accentColor: 'var(--ink)' }}
                       />
                       <span
                         style={{
@@ -288,7 +288,7 @@ export const ChecklistModal: React.FC<{ isOpen: boolean; onClose: () => void }> 
                         {f.name}
                       </span>
                     </div>
-                    <span className="mono" style={{ fontSize: 12, color: 'var(--ink-muted)' }}>
+                    <span className="mono" style={{ fontSize: 12, color: 'var(--color-ink-2)' }}>
                       {formatBytes(getFSize(f))}
                     </span>
                   </label>

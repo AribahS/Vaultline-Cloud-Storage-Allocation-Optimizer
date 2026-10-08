@@ -46,7 +46,7 @@ export const LabFractional: React.FC = () => {
             max="16"
             value={quotaGb}
             onChange={(e) => setQuotaGb(parseInt(e.target.value))}
-            style={{ width: '100%', accentColor: 'var(--color-success)' }}
+            style={{ width: '100%', accentColor: 'var(--kept)' }}
           />
         </div>
 
@@ -65,7 +65,7 @@ export const LabFractional: React.FC = () => {
           </div>
           <div>
             <div style={{ fontSize: 'var(--text-xs)', color: 'var(--color-dim)' }}>Integrality Gap</div>
-            <div className="font-mono" style={{ fontSize: 'var(--text-lg)', fontWeight: 700, color: 'var(--color-warning)' }}>
+            <div className="font-mono" style={{ fontSize: 'var(--text-lg)', fontWeight: 700, color: 'var(--ink)' }}>
               +{result.gapPriority} pts
             </div>
           </div>
@@ -105,7 +105,7 @@ export const LabFractional: React.FC = () => {
                     style={{
                       height: '100%',
                       width: `${pct}%`,
-                      backgroundColor: chunk.isPartial ? 'var(--color-warning)' : 'var(--color-success)',
+                      backgroundColor: chunk.isPartial ? 'var(--highlight)' : 'var(--kept)',
                       transition: 'width var(--transition-normal)',
                     }}
                   />

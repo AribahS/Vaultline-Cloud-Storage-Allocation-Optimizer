@@ -74,7 +74,7 @@ export const ComplexityCard: React.FC<ComplexityCardProps> = ({
         {n <= 20 && (
           <div style={{ padding: '12px', backgroundColor: 'var(--color-surface-sunken)', borderRadius: 'var(--radius-md)' }}>
             <div style={{ fontSize: '10px', color: 'var(--color-dim)', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Brute Force 2ⁿ</div>
-            <div className="font-mono" style={{ fontSize: 'var(--text-base)', fontWeight: 700, color: 'var(--color-warning)', marginTop: '2px' }}>
+            <div className="font-mono" style={{ fontSize: 'var(--text-base)', fontWeight: 700, color: 'var(--ink)', marginTop: '2px' }}>
               {subsetsTotal.toLocaleString()}
             </div>
             <div style={{ fontSize: 'var(--text-xs)', color: 'var(--color-dim)', marginTop: '2px' }}>

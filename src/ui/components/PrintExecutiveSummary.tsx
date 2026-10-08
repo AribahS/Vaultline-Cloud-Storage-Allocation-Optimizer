@@ -61,26 +61,26 @@ export const PrintExecutiveSummary: React.FC = () => {
             display: flex;
             justify-content: space-between;
             align-items: flex-start;
-            border-bottom: 2px solid var(--gold);
+            border-bottom: 2px solid var(--highlight);
             padding-bottom: 12px;
             margin-bottom: 20px;
           }
           .print-logo-title {
             font-size: 22pt;
             font-weight: 700;
-            color: var(--ink-deep);
+            color: var(--ink);
             margin: 0;
             line-height: 1.2;
           }
           .print-subtitle {
             font-size: 9.5pt;
-            color: var(--ink-deep);
+            color: var(--ink);
             margin-top: 4px;
           }
           .print-badge-box {
             text-align: right;
             font-size: 9pt;
-            color: var(--ink-deep);
+            color: var(--ink);
           }
           .print-kpi-grid {
             display: grid;
@@ -97,7 +97,7 @@ export const PrintExecutiveSummary: React.FC = () => {
           }
           .print-kpi-label {
             font-size: 7.5pt;
-            color: var(--ink-deep);
+            color: var(--ink);
             text-transform: uppercase;
             font-weight: 700;
             letter-spacing: 0.5px;
@@ -105,13 +105,13 @@ export const PrintExecutiveSummary: React.FC = () => {
           .print-kpi-val {
             font-size: 15pt;
             font-weight: 700;
-            color: var(--ink-deep);
+            color: var(--ink);
             margin-top: 2px;
           }
           .print-section-header {
             font-size: 12pt;
             font-weight: 700;
-            color: var(--ink-deep);
+            color: var(--ink);
             border-bottom: 1px solid var(--card-border);
             padding-bottom: 4px;
             margin: 20px 0 10px 0;
@@ -125,7 +125,7 @@ export const PrintExecutiveSummary: React.FC = () => {
             margin-bottom: 16px;
           }
           table.print-report-table th {
-            background-color: var(--ink-deep);
+            background-color: var(--ink);
             color: var(--card);
             padding: 6px 10px;
             text-align: left;
@@ -146,7 +146,7 @@ export const PrintExecutiveSummary: React.FC = () => {
             padding-top: 10px;
             border-top: 1px solid var(--card-border);
             font-size: 8pt;
-            color: var(--ink-deep);
+            color: var(--ink);
             display: flex;
             justify-content: space-between;
             page-break-inside: avoid;
@@ -170,7 +170,7 @@ export const PrintExecutiveSummary: React.FC = () => {
       </div>
 
       {!optimizationResult || files.length === 0 ? (
-        <p style={{ fontStyle: 'italic', color: 'var(--ink-deep)' }}>
+        <p style={{ fontStyle: 'italic', color: 'var(--ink)' }}>
           No optimization data available. Please add files and run the optimizer before printing.
         </p>
       ) : (
@@ -190,7 +190,7 @@ export const PrintExecutiveSummary: React.FC = () => {
             </div>
             <div className="print-kpi-card">
               <div className="print-kpi-label">Importance Retained</div>
-              <div className="print-kpi-val" style={{ color: 'var(--gold)' }}>{importanceRetainedPct}%</div>
+              <div className="print-kpi-val" style={{ color: 'var(--ink)' }}>{importanceRetainedPct}%</div>
             </div>
           </div>
 

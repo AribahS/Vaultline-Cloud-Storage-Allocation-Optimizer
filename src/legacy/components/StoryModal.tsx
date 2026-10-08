@@ -50,7 +50,7 @@ export const StoryModal: React.FC<{ isOpen: boolean; onClose: () => void }> = ({
       style={{
         position: 'fixed',
         inset: 0,
-        backgroundColor: 'rgba(27, 21, 51, 0.75)',
+        backgroundColor: 'color-mix(in srgb,var(--ink) 75%,transparent)',
         zIndex: 1000,
         display: 'flex',
         alignItems: 'center',
@@ -70,7 +70,7 @@ export const StoryModal: React.FC<{ isOpen: boolean; onClose: () => void }> = ({
         style={{
           width: '100%',
           maxWidth: 720,
-          background: 'var(--surface)',
+          background: 'var(--card)',
           padding: 'var(--space-xl)',
           position: 'relative',
           display: 'flex',
@@ -86,7 +86,7 @@ export const StoryModal: React.FC<{ isOpen: boolean; onClose: () => void }> = ({
             justifyContent: 'space-between',
             alignItems: 'center',
             marginBottom: 'var(--space-lg)',
-            borderBottom: '2px solid var(--canvas)',
+            borderBottom: '2px solid var(--paper)',
             paddingBottom: 'var(--space-sm)',
           }}
         >
@@ -104,7 +104,7 @@ export const StoryModal: React.FC<{ isOpen: boolean; onClose: () => void }> = ({
                     width: 10,
                     height: 10,
                     borderRadius: 999,
-                    background: idx === slide ? 'var(--grape)' : 'var(--canvas-dot)',
+                    background: idx === slide ? 'var(--ink)' : 'var(--card-border)',
                     border: '1.5px solid var(--ink)',
                     transition: 'all 0.2s ease',
                   }}
@@ -158,7 +158,7 @@ export const StoryModal: React.FC<{ isOpen: boolean; onClose: () => void }> = ({
             justifyContent: 'space-between',
             alignItems: 'center',
             marginTop: 'var(--space-lg)',
-            borderTop: '2px solid var(--canvas)',
+            borderTop: '2px solid var(--paper)',
             paddingTop: 'var(--space-md)',
           }}
         >
@@ -179,7 +179,7 @@ export const StoryModal: React.FC<{ isOpen: boolean; onClose: () => void }> = ({
             <span>Previous</span>
           </motion.button>
 
-          <span style={{ fontSize: 'var(--text-xs)', color: 'var(--ink-muted)', fontWeight: 700 }}>
+          <span style={{ fontSize: 'var(--text-xs)', color: 'var(--color-ink-2)', fontWeight: 700 }}>
             Slide {slide + 1} of {totalSlides}
           </span>
 
@@ -208,9 +208,9 @@ const Slide1: React.FC<{
   setSelection: React.Dispatch<React.SetStateAction<('A' | 'B' | 'C')[]>>;
 }> = ({ selection, setSelection }) => {
   const blocks = {
-    A: { name: 'Block A', size: 6, score: 30, color: 'var(--bubblegum)' },
-    B: { name: 'Block B', size: 5, score: 24, color: 'var(--mint)' },
-    C: { name: 'Block C', size: 5, score: 24, color: 'var(--sky)' },
+    A: { name: 'Block A', size: 6, score: 30, color: 'var(--moved)' },
+    B: { name: 'Block B', size: 5, score: 24, color: 'var(--kept)' },
+    C: { name: 'Block C', size: 5, score: 24, color: 'var(--paper)' },
   };
 
   const totalUsed = selection.reduce((sum, key) => sum + blocks[key].size, 0);
@@ -229,7 +229,7 @@ const Slide1: React.FC<{
       <h3 style={{ fontSize: 'var(--text-scene-title)', marginBottom: 8 }}>
         A tricky puzzle
       </h3>
-      <p style={{ fontSize: 'var(--text-sm)', color: 'var(--ink-muted)', marginBottom: 20 }}>
+      <p style={{ fontSize: 'var(--text-sm)', color: 'var(--color-ink-2)', marginBottom: 20 }}>
         You have a 10-unit box. The quick way grabs the biggest single item first. But does that get you the best total?
       </p>
 
@@ -239,12 +239,12 @@ const Slide1: React.FC<{
           width: 340,
           height: 54,
           margin: '0 auto 16px auto',
-          background: 'var(--canvas)',
+          background: 'var(--paper)',
           border: '2.5px solid var(--ink)',
           borderRadius: 14,
           display: 'flex',
           overflow: 'hidden',
-          boxShadow: isOver ? '3px 3px 0 var(--bubblegum)' : '3px 3px 0 var(--ink)',
+          boxShadow: isOver ? '3px 3px 0 var(--moved)' : '3px 3px 0 var(--ink)',
         }}
       >
         {selection.map((key) => {
@@ -274,7 +274,7 @@ const Slide1: React.FC<{
 
       <div style={{ marginBottom: 16, fontSize: 'var(--text-sm)', fontWeight: 800 }}>
         Space: <span className="mono">{totalUsed} / 10</span> · Score: <span className="mono">{totalScore}</span>
-        {isOver && <span style={{ color: 'var(--bubblegum)', marginLeft: 8 }}>Over capacity!</span>}
+        {isOver && <span style={{ color: 'var(--moved)', marginLeft: 8 }}>Over capacity!</span>}
       </div>
 
       {/* 3 Blocks to click */}
@@ -288,7 +288,7 @@ const Slide1: React.FC<{
               onClick={() => toggle(k)}
               className="sticker-chip"
               style={{
-                background: isSelected ? b.color : 'var(--canvas)',
+                background: isSelected ? b.color : 'var(--paper)',
                 fontWeight: 800,
                 fontSize: 13,
                 padding: '6px 14px',
@@ -318,7 +318,7 @@ const Slide1: React.FC<{
             playSound('cheer');
             setSelection(['B', 'C']);
           }}
-          style={{ fontSize: 12, background: 'var(--mint)' }}
+          style={{ fontSize: 12, background: 'var(--kept)' }}
         >
           Try the better way (B & C: score 48)
         </button>
@@ -334,7 +334,7 @@ const Slide2: React.FC = () => {
       <h3 style={{ fontSize: 'var(--text-scene-title)', marginBottom: 8 }}>
         Too many options
       </h3>
-      <p style={{ fontSize: 'var(--text-sm)', color: 'var(--ink-muted)', marginBottom: 24 }}>
+      <p style={{ fontSize: 'var(--text-sm)', color: 'var(--color-ink-2)', marginBottom: 24 }}>
         With 3 items, there are 8 possible combinations. Some fit, some don’t.
       </p>
 
@@ -367,7 +367,7 @@ const Slide2: React.FC = () => {
               padding: '10px 6px',
               borderRadius: 12,
               border: '2px solid var(--ink)',
-              background: comb.best ? 'var(--mint)' : comb.fit ? 'var(--canvas)' : 'var(--surface)',
+              background: comb.best ? 'var(--kept)' : comb.fit ? 'var(--paper)' : 'var(--card)',
               opacity: comb.fit ? 1 : 0.45,
               textDecoration: comb.fit ? 'none' : 'line-through',
               fontSize: 12,
@@ -384,7 +384,7 @@ const Slide2: React.FC = () => {
         style={{
           maxWidth: 460,
           margin: '0 auto',
-          background: 'var(--lemon)',
+          background: 'var(--highlight)',
           padding: '12px 18px',
         }}
       >
@@ -415,7 +415,7 @@ const Slide3: React.FC<{
       <h3 style={{ fontSize: 'var(--text-scene-title)', marginBottom: 8 }}>
         The smart shortcut
       </h3>
-      <p style={{ fontSize: 'var(--text-sm)', color: 'var(--ink-muted)', marginBottom: 16 }}>
+      <p style={{ fontSize: 'var(--text-sm)', color: 'var(--color-ink-2)', marginBottom: 16 }}>
         Instead of guessing billions of times, Vaultline solves it step-by-step.
       </p>
 
@@ -435,7 +435,7 @@ const Slide3: React.FC<{
             <motion.div
               key={idx}
               animate={{
-                background: isHighlighted ? 'var(--mint)' : 'var(--canvas)',
+                background: isHighlighted ? 'var(--kept)' : 'var(--paper)',
                 scale: isHighlighted ? [1, 1.1, 1] : 1,
               }}
               style={{
@@ -462,7 +462,7 @@ const Slide3: React.FC<{
           minHeight: 48,
           maxWidth: 480,
           margin: '0 auto 16px auto',
-          color: 'var(--grape)',
+          color: 'var(--ink)',
         }}
       >
         {steps[step]}
@@ -486,7 +486,7 @@ const Slide3: React.FC<{
             playSound('pop');
             setStep((s) => (s < steps.length - 1 ? s + 1 : 0));
           }}
-          style={{ fontSize: 12, background: 'var(--lemon)' }}
+          style={{ fontSize: 12, background: 'var(--highlight)' }}
         >
           Next step
         </button>
@@ -502,7 +502,7 @@ const Slide4: React.FC<{ onOpenTeacher: () => void }> = ({ onOpenTeacher }) => {
       <h3 style={{ fontSize: 'var(--text-scene-title)', marginBottom: 8 }}>
         Quick vs careful
       </h3>
-      <p style={{ fontSize: 'var(--text-sm)', color: 'var(--ink-muted)', marginBottom: 20 }}>
+      <p style={{ fontSize: 'var(--text-sm)', color: 'var(--color-ink-2)', marginBottom: 20 }}>
         Two methods side-by-side:
       </p>
 
@@ -520,15 +520,15 @@ const Slide4: React.FC<{ onOpenTeacher: () => void }> = ({ onOpenTeacher }) => {
           className="sticker-card"
           style={{
             padding: 16,
-            background: 'var(--canvas)',
+            background: 'var(--paper)',
             textAlign: 'left',
           }}
         >
           <span style={{ fontWeight: 800, fontSize: 14 }}>Quick method</span>
-          <p style={{ fontSize: 12, color: 'var(--ink-muted)', marginTop: 4 }}>
+          <p style={{ fontSize: 12, color: 'var(--color-ink-2)', marginTop: 4 }}>
             Grabs the highest value per size until full.
           </p>
-          <div style={{ marginTop: 12, fontSize: 13, fontWeight: 800, color: 'var(--tangerine)' }}>
+          <div style={{ marginTop: 12, fontSize: 13, fontWeight: 800, color: 'var(--ink)' }}>
             Can get stuck leaving awkward gaps.
           </div>
         </div>
@@ -538,18 +538,18 @@ const Slide4: React.FC<{ onOpenTeacher: () => void }> = ({ onOpenTeacher }) => {
           className="sticker-card"
           style={{
             padding: 16,
-            background: 'var(--surface)',
-            border: '2.5px solid var(--grape)',
+            background: 'var(--card)',
+            border: '2.5px solid var(--ink)',
             textAlign: 'left',
           }}
         >
-          <span style={{ fontWeight: 800, fontSize: 14, color: 'var(--grape)' }}>
+          <span style={{ fontWeight: 800, fontSize: 14, color: 'var(--ink)' }}>
             Vaultline
           </span>
-          <p style={{ fontSize: 12, color: 'var(--ink-muted)', marginTop: 4 }}>
+          <p style={{ fontSize: 12, color: 'var(--color-ink-2)', marginTop: 4 }}>
             Mathematically proves the exact best combination.
           </p>
-          <div style={{ marginTop: 12, fontSize: 13, fontWeight: 800, color: 'var(--mint)' }}>
+          <div style={{ marginTop: 12, fontSize: 13, fontWeight: 800, color: 'var(--kept)' }}>
             100% optimal every single time.
           </div>
         </div>
@@ -560,7 +560,7 @@ const Slide4: React.FC<{ onOpenTeacher: () => void }> = ({ onOpenTeacher }) => {
         style={{
           background: 'none',
           border: 'none',
-          color: 'var(--grape)',
+          color: 'var(--ink)',
           fontWeight: 800,
           fontSize: 'var(--text-sm)',
           cursor: 'pointer',

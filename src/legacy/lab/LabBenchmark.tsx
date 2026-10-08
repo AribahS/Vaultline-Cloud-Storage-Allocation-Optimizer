@@ -82,7 +82,7 @@ export const LabBenchmark: React.FC = () => {
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '14px', flexWrap: 'wrap', gap: '8px' }}>
           <span style={{ fontSize: 'var(--text-sm)', fontWeight: 600, color: 'var(--color-ink)' }}>Measured DP Runtime Scaling</span>
           <div style={{ display: 'flex', gap: '16px', fontSize: 'var(--text-xs)' }}>
-            <span style={{ color: 'var(--color-success)', fontWeight: 500 }}>● Measured DP (ms)</span>
+            <span style={{ color: 'var(--kept)', fontWeight: 500 }}>● Measured DP (ms)</span>
             <span style={{ color: 'var(--color-primary)', fontWeight: 500 }}>— Fitted O(nW) line</span>
             <span style={{ color: 'var(--color-danger)', fontWeight: 500 }}>- - Estimated combinations (capped at 2⁶⁰)</span>
           </div>
@@ -118,7 +118,7 @@ export const LabBenchmark: React.FC = () => {
           />
 
           {/* Measured DP Line */}
-          <path d={dpPath} fill="none" stroke="var(--color-success)" strokeWidth="2.5" />
+          <path d={dpPath} fill="none" stroke="var(--kept)" strokeWidth="2.5" />
 
           {/* Points */}
           {benchmarkPoints.map((p, idx) => {
@@ -130,8 +130,8 @@ export const LabBenchmark: React.FC = () => {
                 cx={x}
                 cy={y}
                 r="3.5"
-                fill="var(--color-success)"
-                stroke="#fff"
+                fill="var(--kept)"
+                stroke="var(--paper)"
                 strokeWidth="1"
               />
             );

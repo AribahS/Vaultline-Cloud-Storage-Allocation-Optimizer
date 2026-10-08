@@ -30,7 +30,7 @@ export const Drawer: React.FC<DrawerProps> = ({ isOpen, onClose, title, children
         style={{
           position: 'fixed',
           top: 0, left: 0, right: 0, bottom: 0,
-          backgroundColor: 'rgba(20, 56, 43, 0.4)',
+          backgroundColor: 'color-mix(in srgb,var(--ink) 40%,transparent)',
           backdropFilter: 'blur(2px)',
           zIndex: 1000,
           opacity: isOpen ? 1 : 0,

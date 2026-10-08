@@ -103,9 +103,9 @@ export const OptimizationVisualizer: React.FC = () => {
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px', flexWrap: 'wrap', gap: '12px' }}>
         <div>
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <Cpu size={20} color="var(--color-brass)" />
+            <Cpu size={20} color="var(--highlight)" />
             <h3 style={{ margin: 0 }}>Optimization Visualizer</h3>
-            <span style={{ fontSize: '11px', padding: '2px 8px', borderRadius: '10px', backgroundColor: 'var(--color-forest-50)', color: 'var(--color-forest-500)', fontWeight: 600 }}>
+            <span style={{ fontSize: '11px', padding: '2px 8px', borderRadius: '10px', backgroundColor: 'var(--paper)', color: 'var(--ink)', fontWeight: 600 }}>
               Transparent Engine Rationale
             </span>
           </div>
@@ -133,7 +133,7 @@ export const OptimizationVisualizer: React.FC = () => {
                 padding: '6px 12px', borderRadius: '6px', border: 'none',
                 fontSize: '12px', fontWeight: 600, cursor: 'pointer',
                 backgroundColor: stage === st.id ? 'var(--color-surface-raised)' : 'transparent',
-                color: stage === st.id ? 'var(--color-forest-500)' : 'var(--color-ink-2)',
+                color: stage === st.id ? 'var(--ink)' : 'var(--color-ink-2)',
                 boxShadow: stage === st.id ? 'var(--shadow-soft-sm)' : 'none'
               }}
             >
@@ -146,7 +146,7 @@ export const OptimizationVisualizer: React.FC = () => {
       {/* Stage 1: Efficiency & Density Ranking */}
       {stage === 'density' && (
         <div>
-          <div style={{ padding: '12px 16px', backgroundColor: 'var(--color-forest-50)', borderRadius: '8px', marginBottom: '16px', fontSize: '13px', color: 'var(--color-forest-700)', display: 'flex', gap: '10px', alignItems: 'flex-start' }}>
+          <div style={{ padding: '12px 16px', backgroundColor: 'var(--paper)', borderRadius: '8px', marginBottom: '16px', fontSize: '13px', color: 'var(--ink)', display: 'flex', gap: '10px', alignItems: 'flex-start' }}>
             <Lightbulb size={18} style={{ flexShrink: 0, marginTop: '2px' }} />
             <div>
               <strong>Step 1: Value Density Calculation</strong>
@@ -178,7 +178,7 @@ export const OptimizationVisualizer: React.FC = () => {
                 </div>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingTop: '8px', borderTop: '1px solid var(--color-border-hairline)', fontSize: '12px' }}>
                   <span className="text-ink-3">Efficiency Density:</span>
-                  <span style={{ fontFamily: 'var(--font-mono)', fontWeight: 700, color: 'var(--color-forest-500)', fontSize: '14px' }}>
+                  <span style={{ fontFamily: 'var(--font-mono)', fontWeight: 700, color: 'var(--ink)', fontSize: '14px' }}>
                     {item.density} pts/unit
                   </span>
                 </div>
@@ -191,8 +191,8 @@ export const OptimizationVisualizer: React.FC = () => {
       {/* Stage 2: Vault Capacity Packing Simulation */}
       {stage === 'packing' && (
         <div>
-          <div style={{ padding: '12px 16px', backgroundColor: 'var(--color-brass-soft)', borderRadius: '8px', marginBottom: '16px', fontSize: '13px', color: 'var(--color-ink)', display: 'flex', gap: '10px', alignItems: 'flex-start' }}>
-            <Lightbulb size={18} style={{ flexShrink: 0, marginTop: '2px', color: 'var(--color-brass)' }} />
+          <div style={{ padding: '12px 16px', backgroundColor: 'var(--paper)', borderRadius: '8px', marginBottom: '16px', fontSize: '13px', color: 'var(--color-ink)', display: 'flex', gap: '10px', alignItems: 'flex-start' }}>
+            <Lightbulb size={18} style={{ flexShrink: 0, marginTop: '2px', color: 'var(--highlight)' }} />
             <div>
               <strong>Step 2: Capacity Allocation & Constraint Checking</strong>
               <p style={{ margin: '4px 0 0' }}>
@@ -216,7 +216,7 @@ export const OptimizationVisualizer: React.FC = () => {
                   style={{
                     width: `${(item.normalizedSize / visualizerData.capacity) * 100}%`,
                     height: '100%',
-                    backgroundColor: 'var(--color-forest-500)',
+                    backgroundColor: 'var(--ink)',
                     marginRight: '2px',
                     borderRadius: '8px',
                     display: 'flex',
@@ -238,7 +238,7 @@ export const OptimizationVisualizer: React.FC = () => {
 
           {/* Result item comparison cards */}
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
-            <div style={{ border: '1px solid var(--color-forest-100)', borderRadius: '8px', padding: '14px', backgroundColor: 'var(--color-forest-50)' }}>
+            <div style={{ border: '1px solid var(--heat-1)', borderRadius: '8px', padding: '14px', backgroundColor: 'var(--paper)' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontWeight: 700, color: 'var(--color-semantic-keep)', marginBottom: '10px' }}>
                 <CheckCircle2 size={16} /> Kept in Vault ({keptItems.length} files)
               </div>
@@ -316,7 +316,7 @@ export const OptimizationVisualizer: React.FC = () => {
                     onClick={() => setSpeed(sp)}
                     style={{
                       padding: '2px 6px', borderRadius: '4px', border: '1px solid var(--color-border-strong)',
-                      backgroundColor: speed === sp ? 'var(--color-forest-500)' : 'transparent',
+                      backgroundColor: speed === sp ? 'var(--ink)' : 'transparent',
                       color: speed === sp ? 'var(--card)' : 'var(--color-ink-2)',
                       fontSize: '11px', cursor: 'pointer'
                     }}
@@ -330,7 +330,7 @@ export const OptimizationVisualizer: React.FC = () => {
 
           {/* Current Step Explanation Box */}
           {currentStep && (
-            <div style={{ padding: '12px 16px', backgroundColor: 'var(--color-forest-50)', borderLeft: '4px solid var(--color-forest-500)', borderRadius: '4px', marginBottom: '16px', fontSize: '13px', color: 'var(--color-forest-700)' }}>
+            <div style={{ padding: '12px 16px', backgroundColor: 'var(--paper)', borderLeft: '4px solid var(--ink)', borderRadius: '4px', marginBottom: '16px', fontSize: '13px', color: 'var(--ink)' }}>
               <strong>Step Analysis:</strong> {(currentStep as TableStep)?.explanation || (currentStep as any)?.reason}
             </div>
           )}
@@ -364,8 +364,8 @@ export const OptimizationVisualizer: React.FC = () => {
                             padding: '6px',
                             fontFamily: 'var(--font-mono)',
                             fontWeight: isCurrentCell ? 700 : 500,
-                            backgroundColor: isCurrentCell ? 'var(--color-brass)' : 'transparent',
-                            color: isCurrentCell ? 'var(--card)' : 'var(--color-ink)',
+                            backgroundColor: isCurrentCell ? 'var(--highlight)' : 'transparent',
+                            color: 'var(--ink)',
                             transition: 'background-color 0.2s ease'
                           }}
                         >

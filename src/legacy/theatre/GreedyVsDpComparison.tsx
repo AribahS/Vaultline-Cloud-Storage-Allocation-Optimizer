@@ -57,15 +57,15 @@ export const GreedyVsDpComparison: React.FC<GreedyVsDpComparisonProps> = ({
       <div
         style={{
           padding: '12px 16px',
-          backgroundColor: gap > 0 ? 'var(--color-success-surface)' : 'var(--color-surface-sunken)',
-          border: `1px solid ${gap > 0 ? 'rgba(18, 163, 127, 0.3)' : 'var(--color-border)'}`,
+          backgroundColor: gap > 0 ? 'var(--color-file-archives)' : 'var(--color-surface-sunken)',
+          border: `1px solid ${gap > 0 ? 'color-mix(in srgb,var(--kept) 30%,transparent)' : 'var(--color-border)'}`,
           borderRadius: 'var(--radius-md)',
           marginBottom: '18px',
           fontSize: 'var(--text-sm)',
         }}
       >
         {gap > 0 ? (
-          <span style={{ color: 'var(--color-success)', fontWeight: 500 }}>
+          <span style={{ color: 'var(--kept)', fontWeight: 500 }}>
             Dynamic programming achieved <strong>+{gap} more priority points</strong> than greedy! Greedy took a large high-density item, leaving an awkward gap that could not fit complementary items.
           </span>
         ) : (
@@ -87,7 +87,7 @@ export const GreedyVsDpComparison: React.FC<GreedyVsDpComparisonProps> = ({
           }}
         >
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
-            <span style={{ fontWeight: 600, fontSize: 'var(--text-sm)', color: 'var(--color-warning)' }}>
+            <span style={{ fontWeight: 600, fontSize: 'var(--text-sm)', color: 'var(--ink)' }}>
               Greedy by Density (Value / Size)
             </span>
             <span className="font-mono" style={{ fontSize: 'var(--text-xs)', color: 'var(--color-ink)', fontWeight: 600 }}>
@@ -106,8 +106,8 @@ export const GreedyVsDpComparison: React.FC<GreedyVsDpComparisonProps> = ({
                 style={{
                   padding: '8px 12px',
                   borderRadius: 'var(--radius-sm)',
-                  backgroundColor: step.fits ? 'var(--color-warning-surface)' : 'var(--color-surface)',
-                  border: `1px solid ${step.fits ? 'rgba(245, 165, 36, 0.3)' : 'var(--color-border)'}`,
+                  backgroundColor: step.fits ? 'var(--color-file-code)' : 'var(--color-surface)',
+                  border: `1px solid ${step.fits ? 'color-mix(in srgb,var(--highlight) 30%,transparent)' : 'var(--color-border)'}`,
                   fontSize: 'var(--text-xs)',
                   display: 'flex',
                   justifyContent: 'space-between',
@@ -122,7 +122,7 @@ export const GreedyVsDpComparison: React.FC<GreedyVsDpComparisonProps> = ({
                   </div>
                 </div>
                 <div style={{ textAlign: 'right' }}>
-                  <span style={{ fontWeight: 600, color: step.fits ? 'var(--color-warning)' : 'var(--color-dim)' }}>
+                  <span style={{ fontWeight: 600, color: step.fits ? 'var(--ink)' : 'var(--color-dim)' }}>
                     {step.fits ? 'KEPT' : 'SKIPPED'}
                   </span>
                 </div>
@@ -141,7 +141,7 @@ export const GreedyVsDpComparison: React.FC<GreedyVsDpComparisonProps> = ({
           }}
         >
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
-            <span style={{ fontWeight: 600, fontSize: 'var(--text-sm)', color: 'var(--color-success)' }}>
+            <span style={{ fontWeight: 600, fontSize: 'var(--text-sm)', color: 'var(--kept)' }}>
               Dynamic Programming (Provably Optimal)
             </span>
             <span className="font-mono text-success" style={{ fontSize: 'var(--text-xs)', fontWeight: 700 }}>
@@ -160,8 +160,8 @@ export const GreedyVsDpComparison: React.FC<GreedyVsDpComparisonProps> = ({
                 style={{
                   padding: '8px 12px',
                   borderRadius: 'var(--radius-sm)',
-                  backgroundColor: 'var(--color-success-surface)',
-                  border: '1px solid rgba(18, 163, 127, 0.3)',
+                  backgroundColor: 'var(--color-file-archives)',
+                  border: '1px solid color-mix(in srgb,var(--kept) 30%,transparent)',
                   fontSize: 'var(--text-xs)',
                   display: 'flex',
                   justifyContent: 'space-between',

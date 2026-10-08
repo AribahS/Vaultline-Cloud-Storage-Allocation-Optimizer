@@ -76,7 +76,7 @@ export const PackItYourselfModal: React.FC<{ isOpen: boolean; onClose: () => voi
       style={{
         position: 'fixed',
         inset: 0,
-        backgroundColor: 'rgba(27, 21, 51, 0.75)',
+        backgroundColor: 'color-mix(in srgb,var(--ink) 75%,transparent)',
         zIndex: 1000,
         display: 'flex',
         alignItems: 'center',
@@ -96,7 +96,7 @@ export const PackItYourselfModal: React.FC<{ isOpen: boolean; onClose: () => voi
         style={{
           width: '100%',
           maxWidth: 780,
-          background: 'var(--surface)',
+          background: 'var(--card)',
           padding: 'var(--space-xl)',
           maxHeight: '90vh',
           overflowY: 'auto',
@@ -111,7 +111,7 @@ export const PackItYourselfModal: React.FC<{ isOpen: boolean; onClose: () => voi
             <h3 style={{ fontSize: 'var(--text-lg)', fontWeight: 800 }}>
               Pack it yourself challenge
             </h3>
-            <p style={{ fontSize: 'var(--text-sm)', color: 'var(--ink-muted)' }}>
+            <p style={{ fontSize: 'var(--text-sm)', color: 'var(--color-ink-2)' }}>
               Click tiles to pack them into the box without overflowing.
             </p>
           </div>
@@ -128,7 +128,7 @@ export const PackItYourselfModal: React.FC<{ isOpen: boolean; onClose: () => voi
         {/* Live Fill Meter */}
         <div
           style={{
-            background: 'var(--canvas)',
+            background: 'var(--paper)',
             borderRadius: 16,
             padding: 'var(--space-md)',
             border: '2px solid var(--ink)',
@@ -143,7 +143,7 @@ export const PackItYourselfModal: React.FC<{ isOpen: boolean; onClose: () => voi
               style={{
                 fontSize: 'var(--text-sm)',
                 fontWeight: 800,
-                color: isOverLimit ? 'var(--bubblegum)' : 'var(--mint)',
+                color: isOverLimit ? 'var(--moved)' : 'var(--kept)',
               }}
             >
               {isOverLimit ? 'OVER LIMIT!' : `${Math.round(fillPct)}% full`}
@@ -153,7 +153,7 @@ export const PackItYourselfModal: React.FC<{ isOpen: boolean; onClose: () => voi
           <div
             style={{
               height: 20,
-              background: 'var(--surface)',
+              background: 'var(--card)',
               borderRadius: 8,
               border: '1.5px solid var(--ink)',
               overflow: 'hidden',
@@ -163,10 +163,10 @@ export const PackItYourselfModal: React.FC<{ isOpen: boolean; onClose: () => voi
               animate={{
                 width: `${fillPct}%`,
                 backgroundColor: isOverLimit
-                  ? 'var(--bubblegum)'
+                  ? 'var(--moved)'
                   : fillPct > 85
-                  ? 'var(--tangerine)'
-                  : 'var(--mint)',
+                  ? 'var(--highlight)'
+                  : 'var(--kept)',
               }}
               style={{ height: '100%' }}
             />
@@ -180,7 +180,7 @@ export const PackItYourselfModal: React.FC<{ isOpen: boolean; onClose: () => voi
             animate={{ scale: 1, opacity: 1 }}
             className="sticker-card"
             style={{
-              background: isOverLimit ? 'var(--bubblegum)' : 'var(--lemon)',
+              background: isOverLimit ? 'var(--moved)' : 'var(--highlight)',
               padding: '12px 18px',
               display: 'flex',
               alignItems: 'center',
@@ -236,8 +236,8 @@ export const PackItYourselfModal: React.FC<{ isOpen: boolean; onClose: () => voi
                   gap: 6,
                   cursor: 'pointer',
                   textAlign: 'left',
-                  background: isPacked ? 'var(--mint-light)' : 'var(--surface)',
-                  borderColor: revealed && isOptimal ? 'var(--grape)' : 'var(--outline-color)',
+                  background: isPacked ? 'var(--color-file-archives)' : 'var(--card)',
+                  borderColor: revealed && isOptimal ? 'var(--ink)' : 'var(--card-border)',
                   borderWidth: revealed && isOptimal ? 3 : 2,
                 }}
               >
@@ -276,7 +276,7 @@ export const PackItYourselfModal: React.FC<{ isOpen: boolean; onClose: () => voi
                 <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 11 }}>
                   <span>{isPacked ? '✓ In box' : '+ Tap to pack'}</span>
                   {revealed && isOptimal && (
-                    <span style={{ color: 'var(--grape)', fontWeight: 800 }}>★ Best pick</span>
+                    <span style={{ color: 'var(--ink)', fontWeight: 800 }}>★ Best pick</span>
                   )}
                 </div>
               </motion.button>

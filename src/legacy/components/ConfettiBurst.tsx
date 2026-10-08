@@ -17,8 +17,6 @@ interface ConfettiPiece {
   alpha: number;
 }
 
-const CANDY_COLORS = ['#7B5CFF', '#2FD3A0', '#FF9F43', '#FF6FA5', '#4CC9FF', '#FFD84D'];
-
 export const ConfettiBurst: React.FC<{ trigger?: boolean; onComplete?: () => void }> = ({
   trigger = true,
   onComplete,
@@ -35,6 +33,9 @@ export const ConfettiBurst: React.FC<{ trigger?: boolean; onComplete?: () => voi
     if (!canvas) return;
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
+    const palette = getComputedStyle(document.documentElement);
+    const confettiColors = ['--ink', '--kept', '--moved', '--highlight', '--paper']
+      .map(token => palette.getPropertyValue(token).trim());
 
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
@@ -53,7 +54,7 @@ export const ConfettiBurst: React.FC<{ trigger?: boolean; onComplete?: () => voi
         vx: Math.cos(angle) * speed,
         vy: Math.sin(angle) * speed - 3,
         size: 7 + Math.random() * 6,
-        color: CANDY_COLORS[Math.floor(Math.random() * CANDY_COLORS.length)],
+        color: confettiColors[Math.floor(Math.random() * confettiColors.length)],
         rotation: Math.random() * 360,
         vRot: (Math.random() - 0.5) * 12,
         alpha: 1,

@@ -205,16 +205,16 @@ export const AlgorithmDrawer: React.FC<AlgorithmDrawerProps> = ({ open, onClose 
                   </table>
                   <svg className="walk-arrows" width={gridWidth} height={gridHeight} viewBox={`0 0 ${gridWidth} ${gridHeight}`} aria-hidden="true">
                     <defs>
-                      <marker id="walk-arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="var(--color-forest-500)" /></marker>
-                      <marker id="walk-gold-arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="var(--gold)" /></marker>
+                      <marker id="walk-arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="var(--ink)" /></marker>
+                      <marker id="walk-gold-arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="var(--highlight)" /></marker>
                     </defs>
                     {winnerArrows.map(({ source, winner }, index) => {
                       const from = tablePoint(source.row, source.column); const to = tablePoint(currentStep!.row, currentStep!.column);
-                      return <line key={index} x1={from.x} y1={from.y} x2={to.x} y2={to.y} stroke="var(--color-forest-500)" strokeWidth={winner ? 2.5 : 1.25} strokeDasharray={winner ? undefined : '4 3'} markerEnd="url(#walk-arrow)" opacity={winner ? .92 : .5} />;
+                      return <line key={index} x1={from.x} y1={from.y} x2={to.x} y2={to.y} stroke="var(--ink)" strokeWidth={winner ? 2.5 : 1.25} strokeDasharray={winner ? undefined : '4 3'} markerEnd="url(#walk-arrow)" opacity={winner ? .92 : .5} />;
                     })}
                     {tracePath && <>
-                      <polyline points={tracePath} fill="none" stroke="var(--gold)" strokeWidth="4" strokeLinejoin="round" strokeLinecap="round" opacity=".9" />
-                      {tracePoints.map((point, index) => <circle key={index} cx={point.x} cy={point.y} r="6" fill="var(--gold)" stroke="var(--vault-bg)" strokeWidth="2" />)}
+                      <polyline points={tracePath} fill="none" stroke="var(--highlight)" strokeWidth="4" strokeLinejoin="round" strokeLinecap="round" opacity=".9" />
+                      {tracePoints.map((point, index) => <circle key={index} cx={point.x} cy={point.y} r="6" fill="var(--highlight)" stroke="var(--vault)" strokeWidth="2" />)}
                     </>}
                   </svg>
                 </div>

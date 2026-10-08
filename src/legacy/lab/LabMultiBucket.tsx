@@ -4,9 +4,9 @@ import { KnapsackItem } from '../../engine/types';
 
 export const LabMultiBucket: React.FC = () => {
   const [buckets, setBuckets] = useState<StorageBucket[]>([
-    { id: 'b1', name: 'Ultra-Fast NVMe SSD', quotaGb: 8, color: 'var(--color-success)' },
+    { id: 'b1', name: 'Ultra-Fast NVMe SSD', quotaGb: 8, color: 'var(--kept)' },
     { id: 'b2', name: 'Primary Cloud S3', quotaGb: 14, color: 'var(--color-primary)' },
-    { id: 'b3', name: 'Secondary Cold Storage', quotaGb: 20, color: 'var(--color-warning)' },
+    { id: 'b3', name: 'Secondary Cold Storage', quotaGb: 20, color: 'var(--highlight)' },
   ]);
 
   const items: KnapsackItem[] = [

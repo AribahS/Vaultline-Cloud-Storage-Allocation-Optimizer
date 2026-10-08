@@ -62,15 +62,15 @@ const HeroSVG: React.FC = () => (
   >
     {/* Background glow */}
     <radialGradient id="glow" cx="50%" cy="50%" r="50%">
-      <stop offset="0%" stopColor="var(--gold)" stopOpacity="0.18" />
-      <stop offset="100%" stopColor="var(--vault-bg)" stopOpacity="0" />
+      <stop offset="0%" stopColor="var(--highlight)" stopOpacity="0.18" />
+      <stop offset="100%" stopColor="var(--vault)" stopOpacity="0" />
     </radialGradient>
     <ellipse cx="240" cy="180" rx="220" ry="160" fill="url(#glow)" />
 
     {/* Vault/folder outline */}
     <motion.rect
       x="80" y="80" width="320" height="220" rx="16"
-      fill="var(--color-forest-700)" stroke="var(--gold)" strokeWidth="1.5"
+      fill="var(--ink)" stroke="var(--highlight)" strokeWidth="1.5"
       initial={{ opacity: 0, scale: 0.9 }}
       animate={{ opacity: 1, scale: 1 }}
       transition={{ duration: 0.6, ease: 'easeOut' as any }}
@@ -79,7 +79,7 @@ const HeroSVG: React.FC = () => (
     {/* Folder tab */}
     <motion.path
       d="M80 96 C80 87 87 80 96 80 H180 L196 64 H360 C369 64 376 71 376 80 V80 H80 Z"
-      fill="var(--color-forest-500)" stroke="var(--gold)" strokeWidth="1"
+      fill="var(--ink)" stroke="var(--highlight)" strokeWidth="1"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.5, delay: 0.15 }}
@@ -88,14 +88,14 @@ const HeroSVG: React.FC = () => (
     {/* Vault door circle */}
     <motion.circle
       cx="240" cy="195" r="68"
-      fill="var(--vault-bg)" stroke="var(--gold)" strokeWidth="2"
+      fill="var(--vault)" stroke="var(--highlight)" strokeWidth="2"
       initial={{ scale: 0, opacity: 0 }}
       animate={{ scale: 1, opacity: 1 }}
       transition={{ duration: 0.7, delay: 0.4, ease: 'easeOut' as any }}
     />
     <motion.circle
       cx="240" cy="195" r="50"
-      fill="var(--vault-bg)" stroke="var(--gold)" strokeWidth="1.5" strokeDasharray="6 4"
+      fill="var(--vault)" stroke="var(--highlight)" strokeWidth="1.5" strokeDasharray="6 4"
       initial={{ rotate: -180, opacity: 0 }}
       animate={{ rotate: 0, opacity: 1 }}
       transition={{ duration: 1.2, delay: 0.6 }}
@@ -104,12 +104,12 @@ const HeroSVG: React.FC = () => (
     {/* Lock / sparkle icon */}
     <motion.path
       d="M230 185 L240 175 L250 185 L250 200 L230 200 Z"
-      fill="var(--gold)"
+      fill="var(--highlight)"
       initial={{ opacity: 0, y: 8 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5, delay: 0.9 }}
     />
-    <motion.circle cx="240" cy="190" r="5" fill="var(--vault-text)"
+    <motion.circle cx="240" cy="190" r="5" fill="var(--paper)"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.4, delay: 1.1 }}
@@ -117,7 +117,7 @@ const HeroSVG: React.FC = () => (
 
     {/* Connector lines to "Keep" and "Move" file chips */}
     <motion.path
-      d="M180 195 L120 155" stroke="var(--color-forest-500)" strokeWidth="1.5"
+      d="M180 195 L120 155" stroke="var(--ink)" strokeWidth="1.5"
       variants={heroLine}
       initial="hidden"
       animate="show"
@@ -134,13 +134,13 @@ const HeroSVG: React.FC = () => (
     {/* Keep chip */}
     <motion.rect
       x="60" y="135" width="72" height="40" rx="8"
-      fill="var(--color-forest-500)"
+      fill="var(--ink)"
       initial={{ x: -20, opacity: 0 }}
       animate={{ x: 0, opacity: 1 }}
       transition={{ duration: 0.5, delay: 1.2 }}
     />
     <motion.text
-      x="96" y="160" textAnchor="middle" fill="var(--vault-text)"
+      x="96" y="160" textAnchor="middle" fill="var(--paper)"
       fontSize="11" fontWeight="600"
       fontFamily="Inter, sans-serif"
       initial={{ opacity: 0 }}
@@ -159,7 +159,7 @@ const HeroSVG: React.FC = () => (
       transition={{ duration: 0.5, delay: 1.2 }}
     />
     <motion.text
-      x="384" y="160" textAnchor="middle" fill="var(--vault-text)"
+      x="384" y="160" textAnchor="middle" fill="var(--paper)"
       fontSize="11" fontWeight="600"
       fontFamily="Inter, sans-serif"
       initial={{ opacity: 0 }}
@@ -171,9 +171,9 @@ const HeroSVG: React.FC = () => (
 
     {/* Floating file dots */}
     {[
-      { cx: 140, cy: 240, r: 5, fill: 'var(--decorative-blue)', delay: 0.8 },
+      { cx: 140, cy: 240, r: 5, fill: 'var(--highlight)', delay: 0.8 },
       { cx: 165, cy: 255, r: 4, fill: 'var(--moved)', delay: 0.9 },
-      { cx: 310, cy: 248, r: 5, fill: 'var(--decorative-violet)', delay: 1.0 },
+      { cx: 310, cy: 248, r: 5, fill: 'var(--ink)', delay: 1.0 },
       { cx: 338, cy: 237, r: 4, fill: 'var(--color-file-docs)', delay: 1.1 },
     ].map((d) => (
       <motion.circle
@@ -208,8 +208,8 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onEnter }) => {
       className="landing-page"
       style={{
         minHeight: '100vh',
-        backgroundColor: 'var(--vault-bg)',
-        color: 'var(--vault-text)',
+        backgroundColor: 'var(--paper)',
+        color: 'var(--ink)',
         display: 'flex',
         flexDirection: 'column',
         fontFamily: 'Inter, sans-serif',
@@ -227,12 +227,13 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onEnter }) => {
           alignItems: 'center',
           justifyContent: 'space-between',
           padding: '20px 40px',
-          borderBottom: '1px solid rgba(184,137,60,0.15)',
+          backgroundColor: 'var(--paper)',
+          borderBottom: '1px solid var(--card-border)',
         }}
       >
         <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-          <Box size={22} color="var(--gold)" />
-          <span style={{ fontFamily: 'Fraunces, serif', fontSize: 20, fontWeight: 600, color: 'var(--vault-text)' }}>
+          <Box size={22} color="var(--highlight)" />
+          <span style={{ fontFamily: 'Fraunces, serif', fontSize: 20, fontWeight: 600, color: 'var(--paper)' }}>
             Vaultline
           </span>
         </div>
@@ -256,6 +257,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onEnter }) => {
               maxWidth: 1200,
               margin: '0 auto',
               padding: '64px 40px',
+              backgroundColor: 'var(--vault)',
               width: '100%',
             }}
           >
@@ -267,13 +269,13 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onEnter }) => {
                   display: 'inline-flex', alignItems: 'center', gap: 6,
                   padding: '4px 12px',
                   borderRadius: 20,
-                  border: '1px solid rgba(184,137,60,0.4)',
-                  backgroundColor: 'rgba(184,137,60,0.08)',
-                  color: 'var(--gold)',
+                  border: '1px solid color-mix(in srgb,var(--highlight) 40%,transparent)',
+                  backgroundColor: 'color-mix(in srgb,var(--highlight) 8%,transparent)',
+                  color: 'var(--highlight)',
                   fontSize: 12, fontWeight: 600, letterSpacing: '0.06em',
                   textTransform: 'uppercase',
                 }}>
-                  <span style={{ width: 6, height: 6, borderRadius: '50%', backgroundColor: 'var(--gold)' }} />
+                  <span style={{ width: 6, height: 6, borderRadius: '50%', backgroundColor: 'var(--highlight)' }} />
                   Make room for what matters
                 </span>
               </motion.div>
@@ -285,13 +287,13 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onEnter }) => {
                   fontSize: 'clamp(36px, 5vw, 56px)',
                   fontWeight: 600,
                   lineHeight: 1.15,
-                  color: 'var(--vault-text)',
+                  color: 'var(--paper)',
                   margin: '0 0 20px 0',
                 }}
               >
                 Decide what<br />
                 <span style={{
-                  background: 'linear-gradient(135deg, var(--gold) 0%, var(--gold) 60%, var(--gold) 100%)',
+                  background: 'linear-gradient(135deg, var(--highlight) 0%, var(--highlight) 60%, var(--highlight) 100%)',
                   WebkitBackgroundClip: 'text',
                   WebkitTextFillColor: 'transparent',
                   backgroundClip: 'text',
@@ -305,7 +307,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onEnter }) => {
                 style={{
                   fontSize: 17,
                   lineHeight: 1.75,
-                  color: 'rgba(246,241,228,0.72)',
+                  color: 'var(--text-muted-on-dark)',
                   margin: '0 0 40px 0',
                   maxWidth: 440,
                 }}
@@ -323,20 +325,20 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onEnter }) => {
                     padding: '14px 28px',
                     borderRadius: 10,
                     border: 'none',
-                    background: 'linear-gradient(135deg, var(--gold), var(--gold))',
-                    color: 'var(--vault-bg)',
+                    background: 'var(--ink)',
+                    color: 'var(--paper)',
                     fontSize: 15, fontWeight: 700,
                     cursor: 'pointer',
-                    boxShadow: '0 4px 20px rgba(184,137,60,0.35)',
+                    boxShadow: '0 4px 20px color-mix(in srgb,var(--highlight) 35%,transparent)',
                     transition: 'transform 150ms, box-shadow 150ms',
                   }}
                   onMouseEnter={(e) => {
                     e.currentTarget.style.transform = 'translateY(-2px)';
-                    e.currentTarget.style.boxShadow = '0 8px 28px rgba(184,137,60,0.45)';
+                    e.currentTarget.style.boxShadow = '0 8px 28px color-mix(in srgb,var(--highlight) 45%,transparent)';
                   }}
                   onMouseLeave={(e) => {
                     e.currentTarget.style.transform = 'translateY(0)';
-                    e.currentTarget.style.boxShadow = '0 4px 20px rgba(184,137,60,0.35)';
+                    e.currentTarget.style.boxShadow = '0 4px 20px color-mix(in srgb,var(--highlight) 35%,transparent)';
                   }}
                 >
                   Try sample data <ArrowRight size={16} />
@@ -350,20 +352,20 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onEnter }) => {
                     display: 'flex', alignItems: 'center', gap: 8,
                     padding: '14px 24px',
                     borderRadius: 10,
-                    border: '1px solid rgba(246,241,228,0.2)',
-                    backgroundColor: 'rgba(246,241,228,0.06)',
-                    color: 'rgba(246,241,228,0.8)',
+                    border: '1px solid var(--ink)',
+                    backgroundColor: 'var(--paper)',
+                    color: 'var(--ink)',
                     fontSize: 15, fontWeight: 600,
                     cursor: 'pointer',
                     transition: 'border-color 150ms, background-color 150ms',
                   }}
                   onMouseEnter={(e) => {
-                    e.currentTarget.style.backgroundColor = 'rgba(246,241,228,0.1)';
-                    e.currentTarget.style.borderColor = 'rgba(246,241,228,0.35)';
+                    e.currentTarget.style.backgroundColor = 'var(--card)';
+                    e.currentTarget.style.borderColor = 'var(--ink)';
                   }}
                   onMouseLeave={(e) => {
-                    e.currentTarget.style.backgroundColor = 'rgba(246,241,228,0.06)';
-                    e.currentTarget.style.borderColor = 'rgba(246,241,228,0.2)';
+                    e.currentTarget.style.backgroundColor = 'var(--paper)';
+                    e.currentTarget.style.borderColor = 'var(--ink)';
                   }}
                 >
                   Open app
@@ -378,7 +380,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onEnter }) => {
                   display: 'flex',
                   gap: 24,
                   flexWrap: 'wrap',
-                  color: 'rgba(246,241,228,0.45)',
+                  color: 'var(--text-muted-on-dark)',
                   fontSize: 13,
                 }}
               >
@@ -398,7 +400,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onEnter }) => {
               {/* Soft radial bg glow behind SVG */}
               <div style={{
                 position: 'absolute', inset: -40,
-                background: 'radial-gradient(circle at 50% 50%, rgba(47,107,79,0.3) 0%, transparent 70%)',
+                background: 'radial-gradient(circle at 50% 50%, color-mix(in srgb,var(--kept) 30%,transparent) 0%, transparent 70%)',
                 pointerEvents: 'none',
               }} />
               <HeroSVG />
@@ -415,8 +417,8 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onEnter }) => {
           initial="hidden"
           animate="show"
           style={{
-            backgroundColor: 'rgba(14,42,32,0.6)',
-            borderTop: '1px solid rgba(184,137,60,0.1)',
+            backgroundColor: 'var(--paper)',
+            borderTop: '1px solid var(--card-border)',
             padding: '64px 40px',
           }}
         >
@@ -427,7 +429,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onEnter }) => {
                 fontFamily: 'Fraunces, serif',
                 fontSize: 'clamp(24px, 3vw, 36px)',
                 fontWeight: 600,
-                color: 'var(--vault-text)',
+                color: 'var(--paper)',
                 textAlign: 'center',
                 marginBottom: 12,
               }}
@@ -438,7 +440,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onEnter }) => {
               variants={fadeUp}
               style={{
                 textAlign: 'center',
-                color: 'rgba(246,241,228,0.55)',
+                color: 'var(--text-muted)',
                 fontSize: 16,
                 marginBottom: 48,
               }}
@@ -459,37 +461,37 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onEnter }) => {
                   variants={fadeUp}
                   whileHover={{ y: -4, transition: { duration: 0.2 } }}
                   style={{
-                    backgroundColor: 'rgba(31,77,58,0.5)',
-                    border: '1px solid rgba(184,137,60,0.15)',
+                    backgroundColor: 'var(--card)',
+                    border: '1px solid var(--card-border)',
                     borderRadius: 14,
                     padding: '28px 24px',
                     cursor: 'default',
                     transition: 'border-color 200ms',
                   }}
-                  onMouseEnter={(e) => (e.currentTarget.style.borderColor = 'rgba(184,137,60,0.4)')}
-                  onMouseLeave={(e) => (e.currentTarget.style.borderColor = 'rgba(184,137,60,0.15)')}
+                  onMouseEnter={(e) => (e.currentTarget.style.borderColor = 'color-mix(in srgb,var(--highlight) 40%,transparent)')}
+                  onMouseLeave={(e) => (e.currentTarget.style.borderColor = 'color-mix(in srgb,var(--highlight) 15%,transparent)')}
                 >
                   <div
                     style={{
                       width: 44,
                       height: 44,
                       borderRadius: 10,
-                      backgroundColor: 'rgba(184,137,60,0.12)',
-                      border: '1px solid rgba(184,137,60,0.25)',
+                      backgroundColor: 'color-mix(in srgb,var(--highlight) 12%,transparent)',
+                      border: '1px solid color-mix(in srgb,var(--highlight) 25%,transparent)',
                       display: 'flex',
                       alignItems: 'center',
                       justifyContent: 'center',
                       marginBottom: 16,
                     }}
                   >
-                    <feat.icon size={20} color="var(--gold)" />
+                    <feat.icon size={20} color="var(--highlight)" />
                   </div>
                   <h3
                     style={{
                       fontFamily: 'Fraunces, serif',
                       fontSize: 18,
                       fontWeight: 600,
-                      color: 'var(--vault-text)',
+                      color: 'var(--paper)',
                       margin: '0 0 8px 0',
                     }}
                   >
@@ -499,7 +501,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onEnter }) => {
                     style={{
                       fontSize: 14,
                       lineHeight: 1.65,
-                      color: 'rgba(246,241,228,0.6)',
+                    color: 'var(--text-muted)',
                       margin: 0,
                     }}
                   >
@@ -522,7 +524,8 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onEnter }) => {
           style={{
             padding: '48px 40px',
             textAlign: 'center',
-            borderTop: '1px solid rgba(184,137,60,0.1)',
+            backgroundColor: 'var(--paper)',
+            borderTop: '1px solid var(--card-border)',
           }}
         >
           <h2
@@ -530,16 +533,16 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onEnter }) => {
               fontFamily: 'Fraunces, serif',
               fontSize: 'clamp(24px, 3vw, 36px)',
               fontWeight: 600,
-              color: 'var(--vault-text)',
+              color: 'var(--paper)',
               marginBottom: 16,
             }}
           >
             Ready to organise your files?
           </h2>
-          <p style={{ color: 'rgba(246,241,228,0.55)', marginBottom: 32, fontSize: 15 }}>
+          <p style={{ color: 'var(--text-muted)', marginBottom: 32, fontSize: 15 }}>
             Drop files anywhere — it runs entirely in your browser.
           </p>
-          <p style={{ marginTop: 24, fontSize: 12, color: 'rgba(246,241,228,0.3)' }}>
+          <p style={{ marginTop: 24, fontSize: 12, color: 'var(--text-muted)', opacity: .8 }}>
             Your plan is calculated in this browser from file metadata.
           </p>
         </motion.footer>

@@ -114,11 +114,11 @@ export const PlayPage: React.FC = () => {
         <div className="curve-card" aria-label="Importance retained by capacity">
           <span className="curve-title">Importance retained as capacity grows</span>
           <svg viewBox="0 0 700 96" role="img" aria-label={`Capacity curve; current capacity ${formatSize(actualCapacity * unitBytes)}, knee at ${formatSize(knee.capacity * unitBytes)}`}>
-            <path d={chartPath} fill="none" stroke="var(--gold)" strokeWidth="3" />
-            <line x1={kneeX} x2={kneeX} y1="8" y2="88" stroke="var(--vault-text)" strokeDasharray="4 4" />
-            <line x1={currentX} x2={currentX} y1="8" y2="88" stroke="var(--gold)" strokeWidth="2" />
-            <circle cx={currentX} cy={currentY} r="5" fill="var(--gold)" />
-            <text x="4" y="12" fill="var(--vault-text)" fontSize="10">100%</text><text x="4" y="90" fill="var(--vault-text)" fontSize="10">0%</text>
+            <path d={chartPath} fill="none" stroke="var(--highlight)" strokeWidth="3" />
+            <line x1={kneeX} x2={kneeX} y1="8" y2="88" stroke="var(--paper)" strokeDasharray="4 4" />
+            <line x1={currentX} x2={currentX} y1="8" y2="88" stroke="var(--highlight)" strokeWidth="2" />
+            <circle cx={currentX} cy={currentY} r="5" fill="var(--highlight)" />
+            <text x="4" y="12" fill="var(--paper)" fontSize="10">100%</text><text x="4" y="90" fill="var(--paper)" fontSize="10">0%</text>
           </svg>
           <p data-testid="knee-sentence">{kneeSentence(curve, actualCapacity, unitBytes)}</p>
         </div>

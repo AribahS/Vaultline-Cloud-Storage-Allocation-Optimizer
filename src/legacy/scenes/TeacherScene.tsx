@@ -162,8 +162,8 @@ export const TeacherScene: React.FC = () => {
             style={{
               padding: 8,
               borderRadius: 12,
-              background: 'var(--grape)',
-              color: '#FFFFFF',
+              background: 'var(--ink)',
+              color: 'var(--paper)',
               border: '2px solid var(--ink)',
             }}
           >
@@ -171,7 +171,7 @@ export const TeacherScene: React.FC = () => {
           </div>
           <div>
             <h2 style={{ fontSize: 'var(--text-lg)', fontWeight: 800 }}>Teacher Mode</h2>
-            <p style={{ fontSize: 'var(--text-xs)', color: 'var(--ink-muted)' }}>
+            <p style={{ fontSize: 'var(--text-xs)', color: 'var(--color-ink-2)' }}>
               Complete algorithm walkthrough, formal complexity, comparisons, and algorithmic variations.
             </p>
           </div>
@@ -192,7 +192,7 @@ export const TeacherScene: React.FC = () => {
                 fontWeight: 800,
                 padding: '8px 16px',
                 textTransform: 'capitalize',
-                background: activeTab === tab ? 'var(--lemon)' : 'var(--canvas)',
+                background: activeTab === tab ? 'var(--highlight)' : 'var(--paper)',
               }}
             >
               {tab === 'algorithm' ? 'Algorithm' : tab === 'compare' ? 'Compare' : 'Lab'}
@@ -244,7 +244,7 @@ export const TeacherScene: React.FC = () => {
               disabled={isRunningSelfTest}
               style={{ fontSize: 12, padding: '6px 12px', gap: 6 }}
             >
-              <CheckCircle size={14} color="var(--mint)" />
+              <CheckCircle size={14} color="var(--kept)" />
               <span>{isRunningSelfTest ? 'Testing...' : 'Run 200 self-tests'}</span>
             </button>
           </div>
@@ -256,7 +256,7 @@ export const TeacherScene: React.FC = () => {
               animate={{ opacity: 1, y: 0 }}
               className="sticker-card"
               style={{
-                background: selfTestResult.failedCases === 0 ? 'var(--mint-light)' : 'var(--bubblegum)',
+                background: selfTestResult.failedCases === 0 ? 'var(--color-file-archives)' : 'var(--moved)',
                 padding: '10px 16px',
                 display: 'flex',
                 justifyContent: 'space-between',
@@ -290,7 +290,7 @@ export const TeacherScene: React.FC = () => {
               style={{
                 padding: 16,
                 overflowX: 'auto',
-                background: 'var(--surface)',
+                background: 'var(--card)',
               }}
             >
               <span style={{ fontWeight: 800, fontSize: 'var(--text-sm)', marginBottom: 8, display: 'block' }}>
@@ -344,16 +344,16 @@ export const TeacherScene: React.FC = () => {
               className="sticker-card"
               style={{
                 padding: 16,
-                background: 'var(--canvas)',
+                background: 'var(--paper)',
                 display: 'flex',
                 flexDirection: 'column',
                 gap: 8,
               }}
             >
-              <span style={{ fontWeight: 800, fontSize: 13, color: 'var(--grape)' }}>
+              <span style={{ fontWeight: 800, fontSize: 13, color: 'var(--ink)' }}>
                 Pseudo-polynomial Time & NP-completeness
               </span>
-              <p style={{ fontSize: 12, color: 'var(--ink-muted)', lineHeight: 1.5 }}>
+              <p style={{ fontSize: 12, color: 'var(--color-ink-2)', lineHeight: 1.5 }}>
                 0/1 Knapsack is weakly NP-complete. Dynamic programming runs in O(N × W) time, which depends on the numeric value of W rather than the number of bits in the input. When W is scaled to discrete integer chunks (as Vaultline normalizes file sizes), DP computes in mere milliseconds.
               </p>
             </div>
@@ -383,10 +383,10 @@ export const TeacherScene: React.FC = () => {
               <span style={{ fontWeight: 800, fontSize: 'var(--text-lg)' }}>
                 Split across places
               </span>
-              <span style={{ fontSize: 12, color: 'var(--ink-muted)', marginLeft: 8 }} className="mono">
+              <span style={{ fontSize: 12, color: 'var(--color-ink-2)', marginLeft: 8 }} className="mono">
                 (Multi-Knapsack Problem)
               </span>
-              <p style={{ fontSize: 12, color: 'var(--ink-muted)', marginTop: 4 }}>
+              <p style={{ fontSize: 12, color: 'var(--color-ink-2)', marginTop: 4 }}>
                 Sequential DP solves allocation across multiple storage containers.
               </p>
             </div>
@@ -399,10 +399,10 @@ export const TeacherScene: React.FC = () => {
               <span style={{ fontWeight: 800, fontSize: 'var(--text-lg)' }}>
                 Time limit constraint
               </span>
-              <span style={{ fontSize: 12, color: 'var(--ink-muted)', marginLeft: 8 }} className="mono">
+              <span style={{ fontSize: 12, color: 'var(--color-ink-2)', marginLeft: 8 }} className="mono">
                 (Multi-dimensional Knapsack)
               </span>
-              <p style={{ fontSize: 12, color: 'var(--ink-muted)', marginTop: 4 }}>
+              <p style={{ fontSize: 12, color: 'var(--color-ink-2)', marginTop: 4 }}>
                 Constrains both transfer time (network/bus bandwidth) and storage capacity simultaneously.
               </p>
             </div>
@@ -415,10 +415,10 @@ export const TeacherScene: React.FC = () => {
               <span style={{ fontWeight: 800, fontSize: 'var(--text-lg)' }}>
                 Fractional packing
               </span>
-              <span style={{ fontSize: 12, color: 'var(--ink-muted)', marginLeft: 8 }} className="mono">
+              <span style={{ fontSize: 12, color: 'var(--color-ink-2)', marginLeft: 8 }} className="mono">
                 (Continuous Knapsack via Greedy)
               </span>
-              <p style={{ fontSize: 12, color: 'var(--ink-muted)', marginTop: 4 }}>
+              <p style={{ fontSize: 12, color: 'var(--color-ink-2)', marginTop: 4 }}>
                 Where files or items can be split into chunks; greedy sort by value-to-size is mathematically optimal.
               </p>
             </div>
@@ -431,10 +431,10 @@ export const TeacherScene: React.FC = () => {
               <span style={{ fontWeight: 800, fontSize: 'var(--text-lg)' }}>
                 Fast estimate mode
               </span>
-              <span style={{ fontSize: 12, color: 'var(--ink-muted)', marginLeft: 8 }} className="mono">
+              <span style={{ fontSize: 12, color: 'var(--color-ink-2)', marginLeft: 8 }} className="mono">
                 (FPTAS — Fully Polynomial-Time Approximation Scheme)
               </span>
-              <p style={{ fontSize: 12, color: 'var(--ink-muted)', marginTop: 4 }}>
+              <p style={{ fontSize: 12, color: 'var(--color-ink-2)', marginTop: 4 }}>
                 Scales values by (ε × V_max / N) to guarantee a solution within (1 - ε) of the optimum in polynomial time.
               </p>
             </div>
@@ -447,10 +447,10 @@ export const TeacherScene: React.FC = () => {
               <span style={{ fontWeight: 800, fontSize: 'var(--text-lg)' }}>
                 Runtime speed benchmark
               </span>
-              <span style={{ fontSize: 12, color: 'var(--ink-muted)', marginLeft: 8 }} className="mono">
+              <span style={{ fontSize: 12, color: 'var(--color-ink-2)', marginLeft: 8 }} className="mono">
                 (Empirical Complexity Analysis)
               </span>
-              <p style={{ fontSize: 12, color: 'var(--ink-muted)', marginTop: 4 }}>
+              <p style={{ fontSize: 12, color: 'var(--color-ink-2)', marginTop: 4 }}>
                 Measures execution time scaling over item counts with linear regression fitted line.
               </p>
             </div>

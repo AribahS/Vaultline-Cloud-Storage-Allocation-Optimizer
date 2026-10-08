@@ -27,8 +27,8 @@ export const NarrationPanel: React.FC<NarrationPanelProps> = ({
             fontSize: 'var(--text-xs)',
             padding: '3px 10px',
             borderRadius: 'var(--radius-full)',
-            backgroundColor: isTraceback ? 'var(--color-success-surface)' : 'var(--color-primary-surface)',
-            color: isTraceback ? 'var(--color-success)' : 'var(--color-primary)',
+            backgroundColor: isTraceback ? 'var(--color-file-archives)' : 'var(--color-primary-surface)',
+            color: isTraceback ? 'var(--kept)' : 'var(--color-primary)',
             fontWeight: 600,
           }}
         >
@@ -45,7 +45,7 @@ export const NarrationPanel: React.FC<NarrationPanelProps> = ({
             padding: '14px 16px',
             backgroundColor: 'var(--color-surface-sunken)',
             borderRadius: 'var(--radius-md)',
-            border: `1px solid ${isTraceback ? 'rgba(18, 163, 127, 0.3)' : 'var(--color-border)'}`,
+            border: `1px solid ${isTraceback ? 'color-mix(in srgb,var(--kept) 30%,transparent)' : 'var(--color-border)'}`,
             fontSize: 'var(--text-sm)',
             lineHeight: 1.6,
             color: 'var(--color-ink)',
@@ -93,7 +93,7 @@ export const NarrationPanel: React.FC<NarrationPanelProps> = ({
             </div>
             <div style={{ display: 'flex', justifyContent: 'space-between', borderTop: '1px solid var(--color-border)', paddingTop: '6px', marginTop: '4px' }}>
               <span style={{ color: 'var(--color-ink)', fontWeight: 600 }}>Outcome:</span>
-              <span style={{ fontWeight: 700, color: tableStep.decision === 'take' ? 'var(--color-success)' : 'var(--color-muted)' }}>
+              <span style={{ fontWeight: 700, color: tableStep.decision === 'take' ? 'var(--kept)' : 'var(--color-muted)' }}>
                 {tableStep.decision.toUpperCase()} {tableStep.isTie ? '(Tie broken: min files)' : ''}
               </span>
             </div>
@@ -131,8 +131,8 @@ export const NarrationPanel: React.FC<NarrationPanelProps> = ({
                   style={{
                     padding: '6px 10px',
                     borderRadius: 'var(--radius-sm)',
-                    backgroundColor: 'var(--color-success-surface)',
-                    border: '1px solid rgba(18, 163, 127, 0.25)',
+                    backgroundColor: 'var(--color-file-archives)',
+                    border: '1px solid color-mix(in srgb,var(--kept) 25%,transparent)',
                     fontSize: 'var(--text-xs)',
                     display: 'flex',
                     justifyContent: 'space-between',

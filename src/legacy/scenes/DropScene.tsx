@@ -205,7 +205,7 @@ export const DropScene: React.FC = () => {
             <p
               style={{
                 fontSize: 'var(--text-lg)',
-                color: 'var(--ink-muted)',
+                color: 'var(--color-ink-2)',
                 fontWeight: 600,
               }}
             >
@@ -224,7 +224,7 @@ export const DropScene: React.FC = () => {
                 display: 'inline-flex',
                 alignItems: 'center',
                 gap: 'var(--space-md)',
-                background: 'var(--surface)',
+                background: 'var(--card)',
                 border: '2.5px solid var(--ink)',
                 boxShadow: '4px 4px 0 var(--ink)',
                 borderRadius: 'var(--radius-card)',
@@ -237,8 +237,8 @@ export const DropScene: React.FC = () => {
                   width: 14,
                   height: 14,
                   borderRadius: 999,
-                  background: 'var(--mint)',
-                  boxShadow: '0 0 0 3px var(--canvas)',
+                  background: 'var(--kept)',
+                  boxShadow: '0 0 0 3px var(--paper)',
                 }}
               />
               <span style={{ fontSize: 'var(--text-lg)', fontWeight: 800 }} className="mono">
@@ -334,7 +334,7 @@ export const DropScene: React.FC = () => {
               whileHover={{ scale: 1.04 }}
               whileTap={{ scale: 0.96 }}
               style={{
-                background: 'var(--lemon)',
+                background: 'var(--highlight)',
                 display: 'inline-flex',
                 alignItems: 'center',
                 gap: 'var(--space-xs)',
@@ -361,7 +361,7 @@ export const DropScene: React.FC = () => {
                   width: '100%',
                   maxWidth: 440,
                   padding: 'var(--space-md)',
-                  background: 'var(--surface)',
+                  background: 'var(--card)',
                 }}
               >
                 <motion.button
@@ -374,12 +374,12 @@ export const DropScene: React.FC = () => {
                     flexDirection: 'column',
                     height: 'auto',
                     gap: 6,
-                    background: 'var(--canvas)',
+                    background: 'var(--paper)',
                   }}
                 >
-                  <Laptop size={20} color="var(--grape)" />
+                  <Laptop size={20} color="var(--ink)" />
                   <span style={{ fontSize: 'var(--text-xs)', fontWeight: 800 }}>Student laptop</span>
-                  <span style={{ fontSize: 11, color: 'var(--ink-muted)' }}>14 files · 15 GB</span>
+                  <span style={{ fontSize: 11, color: 'var(--color-ink-2)' }}>14 files · 15 GB</span>
                 </motion.button>
 
                 <motion.button
@@ -392,12 +392,12 @@ export const DropScene: React.FC = () => {
                     flexDirection: 'column',
                     height: 'auto',
                     gap: 6,
-                    background: 'var(--canvas)',
+                    background: 'var(--paper)',
                   }}
                 >
-                  <Camera size={20} color="var(--bubblegum)" />
+                  <Camera size={20} color="var(--moved)" />
                   <span style={{ fontSize: 'var(--text-xs)', fontWeight: 800 }}>Photographer</span>
-                  <span style={{ fontSize: 11, color: 'var(--ink-muted)' }}>15 files · 24 GB</span>
+                  <span style={{ fontSize: 11, color: 'var(--color-ink-2)' }}>15 files · 24 GB</span>
                 </motion.button>
 
                 <motion.button
@@ -410,12 +410,12 @@ export const DropScene: React.FC = () => {
                     flexDirection: 'column',
                     height: 'auto',
                     gap: 6,
-                    background: 'var(--canvas)',
+                    background: 'var(--paper)',
                   }}
                 >
-                  <Building2 size={20} color="var(--mint)" />
+                  <Building2 size={20} color="var(--kept)" />
                   <span style={{ fontSize: 'var(--text-xs)', fontWeight: 800 }}>Small office</span>
-                  <span style={{ fontSize: 11, color: 'var(--ink-muted)' }}>13 files · 40 GB</span>
+                  <span style={{ fontSize: 11, color: 'var(--color-ink-2)' }}>13 files · 40 GB</span>
                 </motion.button>
               </motion.div>
             )}
@@ -434,7 +434,7 @@ export const DropScene: React.FC = () => {
                 display: 'flex',
                 alignItems: 'center',
                 gap: 'var(--space-sm)',
-                background: 'var(--surface)',
+                background: 'var(--card)',
               }}
             >
               <div
@@ -442,7 +442,7 @@ export const DropScene: React.FC = () => {
                   width: 14,
                   height: 14,
                   borderRadius: '50%',
-                  border: '2px solid var(--grape)',
+                  border: '2px solid var(--ink)',
                   borderTopColor: 'transparent',
                   animation: 'spin 0.8s linear infinite',
                 }}

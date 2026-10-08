@@ -30,7 +30,7 @@ export const HelpModal: React.FC<HelpModalProps> = ({ onClose }) => {
       {/* Backdrop */}
       <div
         onClick={onClose}
-        style={{ position: "absolute", inset: 0, backgroundColor: "rgba(0,0,0,0.5)", backdropFilter: "blur(4px)" }}
+        style={{ position: "absolute", inset: 0, backgroundColor: "color-mix(in srgb,var(--ink) 50%,transparent)", backdropFilter: "blur(4px)" }}
       />
       {/* Panel */}
       <div
@@ -44,14 +44,14 @@ export const HelpModal: React.FC<HelpModalProps> = ({ onClose }) => {
           backgroundColor: "var(--color-surface)",
           border: "1px solid var(--color-border-hairline)",
           borderRadius: "14px",
-          boxShadow: "0 32px 80px rgba(0,0,0,0.35)",
+          boxShadow: "0 32px 80px color-mix(in srgb,var(--ink) 35%,transparent)",
           padding: "28px",
         }}
       >
         {/* Header */}
         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "24px" }}>
           <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
-            <div style={{ width: 40, height: 40, borderRadius: "10px", background: "var(--color-forest)", display: "flex", alignItems: "center", justifyContent: "center" }}>
+            <div style={{ width: 40, height: 40, borderRadius: "10px", background: "var(--ink)", display: "flex", alignItems: "center", justifyContent: "center" }}>
               <Box size={20} color="var(--card)" />
             </div>
             <div>
@@ -82,10 +82,10 @@ export const HelpModal: React.FC<HelpModalProps> = ({ onClose }) => {
             ].map(({ icon: Icon, label, desc }) => (
               <div key={label} style={{
                 padding: "14px 12px", borderRadius: "10px",
-                background: "rgba(14, 74, 46, 0.08)",
-                border: "1px solid rgba(14, 74, 46, 0.15)",
+                background: "color-mix(in srgb,var(--kept) 8%,transparent)",
+                border: "1px solid color-mix(in srgb,var(--kept) 15%,transparent)",
               }}>
-                <Icon size={18} color="var(--color-forest)" style={{ marginBottom: "8px", display: "block" }} />
+                <Icon size={18} color="var(--ink)" style={{ marginBottom: "8px", display: "block" }} />
                 <div style={{ fontSize: "12px", fontWeight: 600, color: "var(--color-ink)", marginBottom: "4px" }}>{label}</div>
                 <div style={{ fontSize: "11px", color: "var(--color-ink-muted)", lineHeight: 1.5 }}>{desc}</div>
               </div>
@@ -128,7 +128,7 @@ export const HelpModal: React.FC<HelpModalProps> = ({ onClose }) => {
                 padding: "8px 12px", borderRadius: "7px",
                 backgroundColor: "var(--color-canvas)", border: "1px solid var(--color-border-hairline)",
               }}>
-                <code style={{ fontSize: "12px", fontFamily: "var(--font-mono, monospace)", color: "var(--color-forest)", fontWeight: 600 }}>{key}</code>
+                <code style={{ fontSize: "12px", fontFamily: "var(--font-mono, monospace)", color: "var(--ink)", fontWeight: 600 }}>{key}</code>
                 <span style={{ fontSize: "12px", color: "var(--color-ink-muted)" }}>{action}</span>
               </div>
             ))}
@@ -140,7 +140,7 @@ export const HelpModal: React.FC<HelpModalProps> = ({ onClose }) => {
             onClick={onClose}
             style={{
               padding: "9px 24px", borderRadius: "8px", border: "none",
-              background: "var(--color-forest)", color: "var(--card)",
+              background: "var(--ink)", color: "var(--card)",
               cursor: "pointer", fontSize: "14px", fontWeight: 600,
             }}
           >

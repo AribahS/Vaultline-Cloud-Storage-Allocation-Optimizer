@@ -103,11 +103,11 @@ export const DpTable: React.FC<DpTableProps> = ({
           <span style={{ color: 'var(--color-ink)' }}>Computing (Active)</span>
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-          <span style={{ width: '12px', height: '12px', backgroundColor: 'var(--color-warning-surface)', borderRadius: '3px', border: '1.5px dashed var(--color-warning)' }} />
+          <span style={{ width: '12px', height: '12px', backgroundColor: 'var(--color-file-code)', borderRadius: '3px', border: '1.5px dashed var(--highlight)' }} />
           <span style={{ color: 'var(--color-ink)' }}>Dependencies (Skip & Take)</span>
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-          <span style={{ width: '12px', height: '12px', backgroundColor: 'var(--color-success-surface)', borderRadius: '3px', border: '2px solid var(--color-success)' }} />
+          <span style={{ width: '12px', height: '12px', backgroundColor: 'var(--color-file-archives)', borderRadius: '3px', border: '2px solid var(--kept)' }} />
           <span style={{ color: 'var(--color-ink)' }}>Traceback Path</span>
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
@@ -200,11 +200,11 @@ export const DpTable: React.FC<DpTableProps> = ({
                 let border = '1px solid var(--color-border)';
 
                 if (isSkipDep || isTakeDep) {
-                  cellBg = 'var(--color-warning-surface)';
-                  border = '1.5px dashed var(--color-warning)';
+                  cellBg = 'var(--color-file-code)';
+                  border = '1.5px dashed var(--highlight)';
                 } else if (isTb) {
-                  cellBg = 'var(--color-success-surface)';
-                  border = '2px solid var(--color-success)';
+                  cellBg = 'var(--color-file-archives)';
+                  border = '2px solid var(--kept)';
                 }
 
                 return (
@@ -264,27 +264,26 @@ export const DpTable: React.FC<DpTableProps> = ({
                     const isTb = tracebackPathCoords.has(`${r}_${w}`);
 
                     const cellVal = table[r]?.[w] ?? 0;
-                    const heatOpacity = isComputed ? (cellVal / maxTableVal) * 0.25 : 0;
-
-                    let bg = isComputed ? `rgba(91, 63, 217, ${heatOpacity})` : 'var(--color-surface-sunken)';
+                    const heatLevel = isComputed ? Math.min(4, Math.max(0, Math.round((cellVal / maxTableVal) * 4))) : 0;
+                    let bg = isComputed ? `var(--heat-${heatLevel})` : 'var(--color-surface-sunken)';
                     let border = '1px solid var(--color-border)';
-                    let textColor = isComputed ? 'var(--color-ink)' : 'var(--color-dim)';
+                    let textColor = isComputed ? (heatLevel < 3 ? 'var(--ink)' : 'var(--paper)') : 'var(--color-dim)';
                     let fontWeight = 400;
 
                     if (isActive) {
-                      bg = 'var(--color-primary)';
-                      border = '2px solid #fff';
-                      textColor = '#ffffff';
+                      bg = 'var(--ink)';
+                      border = '2px solid var(--highlight)';
+                      textColor = 'var(--paper)';
                       fontWeight = 700;
                     } else if (isSkipDep || isTakeDep) {
-                      bg = 'var(--color-warning-surface)';
-                      border = '1.5px dashed var(--color-warning)';
-                      textColor = 'var(--color-warning)';
+                      bg = 'var(--color-file-code)';
+                      border = '1.5px dashed var(--highlight)';
+                      textColor = 'var(--ink)';
                       fontWeight = 700;
                     } else if (isTb) {
-                      bg = 'var(--color-success-surface)';
-                      border = '2px solid var(--color-success)';
-                      textColor = 'var(--color-success)';
+                      bg = 'var(--highlight)';
+                      border = '2px solid var(--ink)';
+                      textColor = 'var(--ink)';
                       fontWeight = 700;
                     }
 

@@ -36,7 +36,7 @@ export const LabFptas: React.FC = () => {
       <div className="card" style={{ padding: '18px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '16px' }}>
         <div>
           <span style={{ fontSize: 'var(--text-xs)', color: 'var(--color-dim)', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Approximation Tolerance (ε)</span>
-          <div className="font-mono" style={{ fontSize: 'var(--text-2xl)', fontWeight: 700, color: 'var(--color-success)', marginTop: '2px' }}>
+          <div className="font-mono" style={{ fontSize: 'var(--text-2xl)', fontWeight: 700, color: 'var(--kept)', marginTop: '2px' }}>
             ε = {epsilon.toFixed(2)} ({(epsilon * 100).toFixed(0)}%)
           </div>
         </div>
@@ -50,7 +50,7 @@ export const LabFptas: React.FC = () => {
             step="0.01"
             value={epsilon}
             onChange={(e) => setEpsilon(parseFloat(e.target.value))}
-            style={{ width: '100%', accentColor: 'var(--color-success)' }}
+            style={{ width: '100%', accentColor: 'var(--kept)' }}
           />
           <span style={{ fontSize: 'var(--text-xs)', color: 'var(--color-dim)' }}>0.50</span>
         </div>
@@ -58,7 +58,7 @@ export const LabFptas: React.FC = () => {
         <div style={{ display: 'flex', gap: '20px', textAlign: 'right' }}>
           <div>
             <div style={{ fontSize: 'var(--text-xs)', color: 'var(--color-dim)' }}>Guaranteed Bound</div>
-            <div className="font-mono" style={{ fontSize: 'var(--text-lg)', fontWeight: 700, color: 'var(--color-warning)' }}>
+            <div className="font-mono" style={{ fontSize: 'var(--text-lg)', fontWeight: 700, color: 'var(--ink)' }}>
               ≥ {(result.guaranteedRatio * 100).toFixed(0)}%
             </div>
           </div>

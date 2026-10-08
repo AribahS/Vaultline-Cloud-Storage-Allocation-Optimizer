@@ -96,17 +96,17 @@ export const OptimizerPage: React.FC = () => {
       {files.length > 2000 && (
         <Card style={{ marginBottom: '16px', backgroundColor: 'var(--color-surface-sunken)', border: '1px solid var(--color-border-hairline)' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: 'var(--color-ink-2)', fontSize: '13px' }}>
-            <AlertTriangle size={16} color="var(--color-brass)" />
+            <AlertTriangle size={16} color="var(--highlight)" />
                   <span>Auto-recompute is disabled for large datasets ({pluralize(files.length, 'file')} &gt; 2000). Manual recompute required.</span>
           </div>
         </Card>
       )}
 
       {isPlanStale && files.length > 0 && !isComputing && (
-        <Card style={{ marginBottom: '24px', backgroundColor: 'var(--paper)', border: '1px solid var(--color-brass)', boxShadow: 'var(--shadow-level-1)' }}>
+        <Card style={{ marginBottom: '24px', backgroundColor: 'var(--paper)', border: '1px solid var(--highlight)', boxShadow: 'var(--shadow-level-1)' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '16px', flexWrap: 'wrap' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-              <AlertTriangle size={20} color="var(--color-brass)" />
+              <AlertTriangle size={20} color="var(--highlight)" />
               <div>
                 <strong style={{ display: 'block', color: 'var(--color-ink)', fontSize: '14px' }}>Plan is out of date. Recompute required.</strong>
                 <span className="text-caption text-ink-2">Files or capacity changed since the last calculation.</span>
@@ -120,11 +120,11 @@ export const OptimizerPage: React.FC = () => {
       )}
 
       {isComputing && (
-        <Card style={{ marginBottom: '24px', backgroundColor: 'var(--color-surface-raised)', border: '1px solid var(--color-brass)' }}>
+        <Card style={{ marginBottom: '24px', backgroundColor: 'var(--color-surface-raised)', border: '1px solid var(--highlight)' }}>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                <Clock size={18} color="var(--color-brass)" />
+                <Clock size={18} color="var(--highlight)" />
                 <strong style={{ fontSize: '14px', color: 'var(--color-ink)' }}>
                   {computeProgress?.stage || 'Computing…'}
                 </strong>
@@ -132,7 +132,7 @@ export const OptimizerPage: React.FC = () => {
               <Button variant="ghost" size="sm" onClick={() => cancelCompute()}>Cancel</Button>
             </div>
             <div style={{ width: '100%', backgroundColor: 'var(--color-surface-sunken)', height: '8px', borderRadius: '4px', overflow: 'hidden' }}>
-              <div style={{ width: `${computeProgress?.percent || 10}%`, height: '100%', backgroundColor: 'var(--color-brass)', transition: 'width 0.2s ease' }} />
+              <div style={{ width: `${computeProgress?.percent || 10}%`, height: '100%', backgroundColor: 'var(--highlight)', transition: 'width 0.2s ease' }} />
             </div>
             <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '12px', color: 'var(--color-ink-3)' }}>
               <span>Cells computed: {computeProgress?.cellsComputed?.toLocaleString() || 0}</span>
@@ -164,8 +164,8 @@ export const OptimizerPage: React.FC = () => {
                       style={{
                         padding: '4px 10px',
                         borderRadius: '20px',
-                        border: `1px solid ${isActive ? 'var(--color-forest-500)' : 'var(--color-border-strong)'}`,
-                        backgroundColor: isActive ? 'var(--color-forest-500)' : 'var(--color-surface-raised)',
+                        border: `1px solid ${isActive ? 'var(--ink)' : 'var(--color-border-strong)'}`,
+                        backgroundColor: isActive ? 'var(--ink)' : 'var(--color-surface-raised)',
                         color: isActive ? 'var(--card)' : 'var(--color-ink-2)',
                         fontSize: '12px', fontWeight: 500, cursor: 'pointer',
                         transition: 'all 120ms ease',
@@ -300,8 +300,8 @@ export const OptimizerPage: React.FC = () => {
               {/* C7: Empty state SVG */}
               <svg width="56" height="56" viewBox="0 0 64 64" fill="none" aria-hidden="true" style={{ margin: '0 auto 16px', display: 'block' }}>
                 <rect x="8" y="20" width="48" height="36" rx="6" fill="var(--color-surface-sunken)" stroke="var(--color-border-strong)" strokeWidth="1.5" />
-                <circle cx="32" cy="38" r="8" fill="var(--color-forest-50)" stroke="var(--color-brass)" strokeWidth="1.5" />
-                <path d="M29 38L31 40L35 36" stroke="var(--color-brass)" strokeWidth="1.5" strokeLinecap="round" />
+                <circle cx="32" cy="38" r="8" fill="var(--paper)" stroke="var(--highlight)" strokeWidth="1.5" />
+                <path d="M29 38L31 40L35 36" stroke="var(--highlight)" strokeWidth="1.5" strokeLinecap="round" />
               </svg>
               <h3>No results yet</h3>
               <p className="text-body-small text-ink-3" style={{ marginTop: '8px' }}>
@@ -312,7 +312,7 @@ export const OptimizerPage: React.FC = () => {
             <>
               {/* Summary KPIs */}
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))', gap: '12px', marginBottom: '16px' }}>
-                <KpiCard label="Importance kept" value={`${importanceRetained}%`} accentColor="var(--color-brass)" />
+                <KpiCard label="Importance kept" value={`${importanceRetained}%`} accentColor="var(--highlight)" />
                 <KpiCard label="Kept" value={pluralize(knapsackResult.keptItems.length, 'file')} subtitle={formatSize(knapsackResult.totalSizeKept)} />
                 <KpiCard label="Files to move" value={pluralize(knapsackResult.droppedItems.length, 'file')} subtitle={formatSize(knapsackResult.totalSizeDropped)} accentColor="var(--color-semantic-move)" />
                 <KpiCard label="Runtime" value={`${knapsackResult.executionTimeMs < 1 ? '<1' : Math.round(knapsackResult.executionTimeMs)}ms`} subtitle={`${knapsackResult.cellsComputed.toLocaleString()} cells`} />

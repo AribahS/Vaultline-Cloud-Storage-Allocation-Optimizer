@@ -174,7 +174,7 @@ export const SwipeScene: React.FC = () => {
         >
           Quick: what matters?
         </h2>
-        <p style={{ fontSize: 'var(--text-body)', color: 'var(--ink-muted)' }}>
+        <p style={{ fontSize: 'var(--text-body)', color: 'var(--color-ink-2)' }}>
           Swipe your biggest files. We will guess the rest.
         </p>
       </div>
@@ -196,7 +196,7 @@ export const SwipeScene: React.FC = () => {
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
             style={{
-              background: 'var(--tangerine)',
+              background: 'var(--highlight)',
               color: 'var(--ink)',
               fontSize: 'var(--text-xs)',
               fontWeight: 800,
@@ -215,7 +215,7 @@ export const SwipeScene: React.FC = () => {
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
             style={{
-              background: 'var(--sky)',
+              background: 'var(--paper)',
               color: 'var(--ink)',
               fontSize: 'var(--text-xs)',
               fontWeight: 800,
@@ -246,12 +246,12 @@ export const SwipeScene: React.FC = () => {
             alignItems: 'center',
             gap: 8,
             borderRadius: 'var(--radius-chip)',
-            background: 'var(--surface)',
+            background: 'var(--card)',
           }}
         >
-          <Star size={16} color="var(--grape)" />
+          <Star size={16} color="var(--ink)" />
           <span style={{ fontSize: 'var(--text-xs)', fontWeight: 800 }}>Must keep:</span>
-          <span className="mono" style={{ fontWeight: 800, color: 'var(--grape)' }}>
+          <span className="mono" style={{ fontWeight: 800, color: 'var(--ink)' }}>
             {swipedCounts.must_keep}
           </span>
         </div>
@@ -265,12 +265,12 @@ export const SwipeScene: React.FC = () => {
             alignItems: 'center',
             gap: 8,
             borderRadius: 'var(--radius-chip)',
-            background: 'var(--surface)',
+            background: 'var(--card)',
           }}
         >
-          <Flame size={16} color="var(--mint)" />
+          <Flame size={16} color="var(--kept)" />
           <span style={{ fontSize: 'var(--text-xs)', fontWeight: 800 }}>Important:</span>
-          <span className="mono" style={{ fontWeight: 800, color: 'var(--mint)' }}>
+          <span className="mono" style={{ fontWeight: 800, color: 'var(--kept)' }}>
             {swipedCounts.important}
           </span>
         </div>
@@ -284,12 +284,12 @@ export const SwipeScene: React.FC = () => {
             alignItems: 'center',
             gap: 8,
             borderRadius: 'var(--radius-chip)',
-            background: 'var(--surface)',
+            background: 'var(--card)',
           }}
         >
-          <ArrowLeft size={16} color="var(--bubblegum)" />
+          <ArrowLeft size={16} color="var(--moved)" />
           <span style={{ fontSize: 'var(--text-xs)', fontWeight: 800 }}>Can go:</span>
-          <span className="mono" style={{ fontWeight: 800, color: 'var(--bubblegum)' }}>
+          <span className="mono" style={{ fontWeight: 800, color: 'var(--moved)' }}>
             {swipedCounts.can_go}
           </span>
         </div>
@@ -325,14 +325,14 @@ export const SwipeScene: React.FC = () => {
                 textAlign: 'center',
                 padding: 'var(--space-xl)',
                 maxWidth: 400,
-                background: 'var(--surface)',
+                background: 'var(--card)',
               }}
             >
-              <CheckCircle size={48} color="var(--mint)" style={{ margin: '0 auto 12px auto' }} />
+              <CheckCircle size={48} color="var(--kept)" style={{ margin: '0 auto 12px auto' }} />
               <h3 style={{ fontSize: 'var(--text-lg)', marginBottom: 8 }}>
                 All done swiping!
               </h3>
-              <p style={{ fontSize: 'var(--text-sm)', color: 'var(--ink-muted)', marginBottom: 16 }}>
+              <p style={{ fontSize: 'var(--text-sm)', color: 'var(--color-ink-2)', marginBottom: 16 }}>
                 Vaultline will use smart defaults for all your remaining files.
               </p>
               <motion.button
@@ -367,7 +367,7 @@ export const SwipeScene: React.FC = () => {
             whileHover={{ scale: 1.06 }}
             whileTap={{ scale: 0.94 }}
             style={{
-              background: 'var(--bubblegum)',
+              background: 'var(--moved)',
               color: 'var(--ink)',
               padding: '12px 20px',
               display: 'flex',
@@ -405,8 +405,8 @@ export const SwipeScene: React.FC = () => {
             whileHover={{ scale: 1.06 }}
             whileTap={{ scale: 0.94 }}
             style={{
-              background: 'var(--grape)',
-              color: '#FFFFFF',
+              background: 'var(--ink)',
+              color: 'var(--paper)',
               padding: '12px 20px',
               display: 'flex',
               alignItems: 'center',
@@ -425,7 +425,7 @@ export const SwipeScene: React.FC = () => {
             whileHover={{ scale: 1.06 }}
             whileTap={{ scale: 0.94 }}
             style={{
-              background: 'var(--mint)',
+              background: 'var(--kept)',
               color: 'var(--ink)',
               padding: '12px 20px',
               display: 'flex',
@@ -448,7 +448,7 @@ export const SwipeScene: React.FC = () => {
             style={{
               background: 'none',
               border: 'none',
-              color: 'var(--ink-muted)',
+              color: 'var(--color-ink-2)',
               fontSize: 'var(--text-sm)',
               fontWeight: 700,
               textDecoration: 'underline',
@@ -569,7 +569,7 @@ const SwipeCard: React.FC<SwipeCardProps> = ({
             style={{
               fontSize: 'var(--text-xs)',
               fontWeight: 800,
-              color: 'var(--ink-muted)',
+              color: 'var(--color-ink-2)',
             }}
           >
             {formatAge(file.lastModified)}
@@ -600,14 +600,14 @@ const SwipeCard: React.FC<SwipeCardProps> = ({
             display: 'flex',
             justifyContent: 'space-between',
             alignItems: 'center',
-            borderTop: '2px solid var(--canvas)',
+            borderTop: '2px solid var(--paper)',
             paddingTop: 'var(--space-sm)',
           }}
         >
-          <span className="mono" style={{ fontSize: 18, fontWeight: 800, color: 'var(--grape)' }}>
+          <span className="mono" style={{ fontSize: 18, fontWeight: 800, color: 'var(--ink)' }}>
             {formatBytes(file.size)}
           </span>
-          <span style={{ fontSize: 12, color: 'var(--ink-muted)' }}>
+          <span style={{ fontSize: 12, color: 'var(--color-ink-2)' }}>
             Swipe or use arrows
           </span>
         </div>

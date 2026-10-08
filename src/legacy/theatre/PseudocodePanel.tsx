@@ -83,11 +83,11 @@ export const PseudocodePanel: React.FC<PseudocodePanelProps> = ({
                 borderRadius: '4px',
                 backgroundColor: isActive
                   ? isTraceback
-                    ? 'var(--color-success-surface)'
+                    ? 'var(--color-file-archives)'
                     : 'var(--color-primary-surface)'
                   : 'transparent',
                 borderLeft: isActive
-                  ? `3px solid ${isTraceback ? 'var(--color-success)' : 'var(--color-primary)'}`
+                  ? `3px solid ${isTraceback ? 'var(--kept)' : 'var(--color-primary)'}`
                   : '3px solid transparent',
                 color: isActive
                   ? 'var(--color-ink)'

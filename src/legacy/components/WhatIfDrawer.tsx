@@ -66,7 +66,7 @@ export const WhatIfDrawer: React.FC<{ isOpen: boolean; onClose: () => void }> = 
       style={{
         position: 'fixed',
         inset: 0,
-        backgroundColor: 'rgba(27, 21, 51, 0.65)',
+        backgroundColor: 'color-mix(in srgb,var(--ink) 65%,transparent)',
         zIndex: 1000,
         display: 'flex',
         alignItems: 'center',
@@ -86,7 +86,7 @@ export const WhatIfDrawer: React.FC<{ isOpen: boolean; onClose: () => void }> = 
         style={{
           width: '100%',
           maxWidth: 600,
-          background: 'var(--surface)',
+          background: 'var(--card)',
           padding: 'var(--space-xl)',
           display: 'flex',
           flexDirection: 'column',
@@ -98,7 +98,7 @@ export const WhatIfDrawer: React.FC<{ isOpen: boolean; onClose: () => void }> = 
             <h3 style={{ fontSize: 'var(--text-lg)', fontWeight: 800 }}>
               What if I had more room?
             </h3>
-            <p style={{ fontSize: 'var(--text-sm)', color: 'var(--ink-muted)' }}>
+            <p style={{ fontSize: 'var(--text-sm)', color: 'var(--color-ink-2)' }}>
               See what files you would unlock with a bigger box.
             </p>
           </div>
@@ -115,17 +115,17 @@ export const WhatIfDrawer: React.FC<{ isOpen: boolean; onClose: () => void }> = 
         {/* Big Extra Room Display */}
         <div
           style={{
-            background: 'var(--canvas)',
+            background: 'var(--paper)',
             borderRadius: 16,
             padding: 'var(--space-lg)',
             textAlign: 'center',
             border: '2px solid var(--ink)',
           }}
         >
-          <span style={{ fontSize: 'var(--text-sm)', fontWeight: 700, color: 'var(--ink-muted)' }}>
+          <span style={{ fontSize: 'var(--text-sm)', fontWeight: 700, color: 'var(--color-ink-2)' }}>
             Extra space added:
           </span>
-          <div className="mono" style={{ fontSize: 36, fontWeight: 800, color: 'var(--grape)' }}>
+          <div className="mono" style={{ fontSize: 36, fontWeight: 800, color: 'var(--ink)' }}>
             +{formatBytes(extraBytes)}
           </div>
           <p
@@ -133,7 +133,7 @@ export const WhatIfDrawer: React.FC<{ isOpen: boolean; onClose: () => void }> = 
               fontSize: 'var(--text-body)',
               fontWeight: 800,
               marginTop: 10,
-              color: nextKeptItem ? 'var(--mint)' : 'var(--ink-muted)',
+              color: nextKeptItem ? 'var(--kept)' : 'var(--color-ink-2)',
             }}
           >
             {nextKeptItem
@@ -153,7 +153,7 @@ export const WhatIfDrawer: React.FC<{ isOpen: boolean; onClose: () => void }> = 
             onChange={(e) => handleSliderChange(parseFloat(e.target.value))}
             style={{
               width: '100%',
-              accentColor: 'var(--grape)',
+              accentColor: 'var(--ink)',
               cursor: 'pointer',
               height: 8,
             }}
@@ -167,12 +167,12 @@ export const WhatIfDrawer: React.FC<{ isOpen: boolean; onClose: () => void }> = 
               marginTop: 8,
               fontSize: 'var(--text-xs)',
               fontWeight: 700,
-              color: 'var(--ink-muted)',
+              color: 'var(--color-ink-2)',
             }}
           >
             <span>+0.5 GB</span>
             {changePoints.map((cp: any, idx: number) => (
-              <span key={idx} style={{ color: 'var(--grape)' }} title={cp.name}>
+              <span key={idx} style={{ color: 'var(--ink)' }} title={cp.name}>
                 ● +{formatBytes(cp.size)}
               </span>
             ))}

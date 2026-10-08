@@ -28,19 +28,19 @@ export const ReportsPage: React.FC = () => {
       @page { size: A4; margin: 16mm; }
       .plan-print { display: none; }
       @media print {
-        html, body, #root { background: #fff !important; color: #14231B !important; margin: 0 !important; }
+        html, body, #root { background: var(--paper) !important; color: var(--ink) !important; margin: 0 !important; }
         .vaultline-topbar, .no-print, .algorithm-drawer, .algorithm-drawer-backdrop { display: none !important; }
         .plan-page { width: 100% !important; max-width: none !important; padding: 0 !important; margin: 0 !important; }
         .plan-print { display: block !important; }
-        .plan-print-header { border-bottom: 2px solid #14231B; margin-bottom: 8mm; padding-bottom: 4mm; }
+        .plan-print-header { border-bottom: 2px solid var(--ink); margin-bottom: 8mm; padding-bottom: 4mm; }
         .plan-print-kpis { display: grid; grid-template-columns: repeat(3,1fr); gap: 4mm; margin: 5mm 0 8mm; }
-        .plan-print-card { border: 1px solid #E6E1D3; border-radius: 4px; padding: 4mm; }
-        .plan-print-card strong { display: block; font-size: 18pt; color: #14231B; }
+        .plan-print-card { border: 1px solid var(--card-border); border-radius: 4px; padding: 4mm; }
+        .plan-print-card strong { display: block; font-size: 18pt; color: var(--ink); }
         .plan-print-section { break-before: page; }
         .plan-print-table { width: 100%; border-collapse: collapse; font-size: 9pt; }
-        .plan-print-table th, .plan-print-table td { border-bottom: 1px solid #E6E1D3; padding: 2mm; text-align: left; overflow-wrap: anywhere; }
-        .plan-print-table th { background: #0F2A1E !important; color: #F4EBD3 !important; print-color-adjust: exact; }
-        .plan-print-table tr.move-row td { background: repeating-linear-gradient(135deg,#fff 0,#fff 5px,#E9D9CE 5px,#E9D9CE 7px) !important; print-color-adjust: exact; }
+        .plan-print-table th, .plan-print-table td { border-bottom: 1px solid var(--card-border); padding: 2mm; text-align: left; overflow-wrap: anywhere; }
+        .plan-print-table th { background: var(--vault) !important; color: var(--paper) !important; print-color-adjust: exact; }
+        .plan-print-table tr.move-row td { background: repeating-linear-gradient(135deg,var(--paper) 0,var(--paper) 5px,var(--moved-stripe) 5px,var(--moved-stripe) 7px) !important; border-left: 2px solid var(--moved); print-color-adjust: exact; }
       }
     `}</style>
 

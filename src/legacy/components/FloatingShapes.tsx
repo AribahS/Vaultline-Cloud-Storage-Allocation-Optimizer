@@ -5,13 +5,13 @@
 import React from 'react';
 
 const shapes = [
-  { type: 'circle', color: 'var(--grape)', size: 80, top: '10%', left: '5%', delay: '0s', duration: '18s' },
-  { type: 'square', color: 'var(--mint)', size: 60, top: '70%', left: '85%', delay: '2s', duration: '22s' },
-  { type: 'triangle', color: 'var(--tangerine)', size: 50, top: '30%', left: '90%', delay: '4s', duration: '20s' },
-  { type: 'circle', color: 'var(--bubblegum)', size: 45, top: '80%', left: '15%', delay: '6s', duration: '25s' },
-  { type: 'square', color: 'var(--sky)', size: 70, top: '15%', left: '75%', delay: '1s', duration: '19s' },
-  { type: 'triangle', color: 'var(--lemon)', size: 55, top: '55%', left: '40%', delay: '3s', duration: '23s' },
-  { type: 'circle', color: 'var(--grape-light)', size: 35, top: '45%', left: '60%', delay: '5s', duration: '21s' },
+  { type: 'circle', color: 'var(--ink)', size: 80, top: '10%', left: '5%', delay: '0s', duration: '18s' },
+  { type: 'square', color: 'var(--kept)', size: 60, top: '70%', left: '85%', delay: '2s', duration: '22s' },
+  { type: 'triangle', color: 'var(--highlight)', size: 50, top: '30%', left: '90%', delay: '4s', duration: '20s' },
+  { type: 'circle', color: 'var(--moved)', size: 45, top: '80%', left: '15%', delay: '6s', duration: '25s' },
+  { type: 'square', color: 'var(--paper)', size: 70, top: '15%', left: '75%', delay: '1s', duration: '19s' },
+  { type: 'triangle', color: 'var(--highlight)', size: 55, top: '55%', left: '40%', delay: '3s', duration: '23s' },
+  { type: 'circle', color: 'var(--color-file-other)', size: 35, top: '45%', left: '60%', delay: '5s', duration: '21s' },
 ];
 
 function ShapeEl({ type, color, size }: { type: string; color: string; size: number }) {

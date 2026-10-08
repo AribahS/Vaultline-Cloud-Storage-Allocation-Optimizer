@@ -62,13 +62,13 @@ export const DashboardPage: React.FC = () => {
           label="Total files"
           value={pluralize(files.length, 'file')}
           subtitle={formatSize(totalSize)}
-          icon={<Files size={20} color="var(--color-forest-500)" />}
+          icon={<Files size={20} color="var(--ink)" />}
         />
         <KpiCard
           label="Selected space"
           value={formatSize(quotaBytes)}
           subtitle="Target capacity"
-          icon={<HardDrive size={20} color="var(--color-forest-500)" />}
+          icon={<HardDrive size={20} color="var(--ink)" />}
         />
         <KpiCard
           label="Kept by plan"
@@ -81,8 +81,8 @@ export const DashboardPage: React.FC = () => {
           label="Importance retained"
           value={knapsackResult ? `${importanceRetained}%` : (isComputing ? '...' : '--')}
           subtitle={knapsackResult ? `${knapsackResult.totalValue} of ${knapsackResult.maxPossibleValue}` : (isComputing ? 'Computing...' : '--')}
-          icon={<TrendingUp size={20} color="var(--color-brass)" />}
-          accentColor="var(--color-brass)"
+          icon={<TrendingUp size={20} color="var(--highlight)" />}
+          accentColor="var(--highlight)"
         />
       </div>
 

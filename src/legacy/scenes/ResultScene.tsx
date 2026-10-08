@@ -157,17 +157,17 @@ export const ResultScene: React.FC = () => {
               display: 'flex',
               flexDirection: 'column',
               gap: 4,
-              background: 'var(--surface)',
+              background: 'var(--card)',
             }}
           >
-            <span style={{ fontSize: 'var(--text-xs)', color: 'var(--ink-muted)', fontWeight: 800 }}>
+            <span style={{ fontSize: 'var(--text-xs)', color: 'var(--color-ink-2)', fontWeight: 800 }}>
               FILES KEPT
             </span>
             <div className="mono" style={{ fontSize: 32, fontWeight: 800, color: 'var(--ink)' }}>
               {keptItems.length}
-              <span style={{ fontSize: 16, color: 'var(--ink-muted)' }}> / {totalFiles}</span>
+              <span style={{ fontSize: 16, color: 'var(--color-ink-2)' }}> / {totalFiles}</span>
             </div>
-            <span style={{ fontSize: 11, color: 'var(--ink-muted)' }}>
+            <span style={{ fontSize: 11, color: 'var(--color-ink-2)' }}>
               {movedItems.length} stored elsewhere
             </span>
           </div>
@@ -180,13 +180,13 @@ export const ResultScene: React.FC = () => {
               display: 'flex',
               flexDirection: 'column',
               gap: 6,
-              background: 'var(--surface)',
+              background: 'var(--card)',
             }}
           >
-            <span style={{ fontSize: 'var(--text-xs)', color: 'var(--ink-muted)', fontWeight: 800 }}>
+            <span style={{ fontSize: 'var(--text-xs)', color: 'var(--color-ink-2)', fontWeight: 800 }}>
               SPACE USED
             </span>
-            <div className="mono" style={{ fontSize: 26, fontWeight: 800, color: 'var(--grape)' }}>
+            <div className="mono" style={{ fontSize: 26, fontWeight: 800, color: 'var(--ink)' }}>
               {formatBytes(totalSizeKept)}
             </div>
             {/* Meter */}
@@ -194,7 +194,7 @@ export const ResultScene: React.FC = () => {
               style={{
                 height: 12,
                 borderRadius: 999,
-                background: 'var(--canvas)',
+                background: 'var(--paper)',
                 border: '1.5px solid var(--ink)',
                 overflow: 'hidden',
               }}
@@ -203,7 +203,7 @@ export const ResultScene: React.FC = () => {
                 style={{
                   height: '100%',
                   width: `${fillPct}%`,
-                  background: 'var(--mint)',
+                  background: 'var(--kept)',
                 }}
               />
             </div>
@@ -221,16 +221,16 @@ export const ResultScene: React.FC = () => {
               display: 'flex',
               flexDirection: 'column',
               gap: 4,
-              background: 'var(--surface)',
+              background: 'var(--card)',
             }}
           >
-            <span style={{ fontSize: 'var(--text-xs)', color: 'var(--ink-muted)', fontWeight: 800 }}>
+            <span style={{ fontSize: 'var(--text-xs)', color: 'var(--color-ink-2)', fontWeight: 800 }}>
               IMPORTANCE KEPT
             </span>
-            <div className="mono" style={{ fontSize: 32, fontWeight: 800, color: 'var(--mint)' }}>
+            <div className="mono" style={{ fontSize: 32, fontWeight: 800, color: 'var(--kept)' }}>
               {importancePct}%
             </div>
-            <span style={{ fontSize: 11, color: 'var(--ink-muted)' }}>
+            <span style={{ fontSize: 11, color: 'var(--color-ink-2)' }}>
               Optimal mathematical mix
             </span>
           </div>
@@ -240,7 +240,7 @@ export const ResultScene: React.FC = () => {
         <div
           className="sticker-card"
           style={{
-            background: 'var(--surface)',
+            background: 'var(--card)',
             padding: '16px',
             display: 'flex',
             flexDirection: 'column',
@@ -252,7 +252,7 @@ export const ResultScene: React.FC = () => {
             <span style={{ fontWeight: 800, fontSize: 'var(--text-sm)' }}>
               Packed Box Treemap
             </span>
-            <span style={{ fontSize: 11, color: 'var(--ink-muted)' }}>
+            <span style={{ fontSize: 11, color: 'var(--color-ink-2)' }}>
               Hover or tap any tile for reasons
             </span>
           </div>
@@ -261,7 +261,7 @@ export const ResultScene: React.FC = () => {
           <div
             style={{
               flex: 1,
-              background: 'var(--canvas)',
+              background: 'var(--paper)',
               borderRadius: 14,
               border: '2px solid var(--ink)',
               padding: 8,
@@ -347,7 +347,7 @@ export const ResultScene: React.FC = () => {
                   bottom: 24,
                   left: 24,
                   right: 24,
-                  background: 'var(--surface)',
+                  background: 'var(--card)',
                   border: '2.5px solid var(--ink)',
                   boxShadow: '4px 4px 0 var(--ink)',
                   padding: '10px 14px',
@@ -361,7 +361,7 @@ export const ResultScene: React.FC = () => {
                   <span style={{ fontWeight: 800, fontSize: 13 }}>
                     {hoveredItem.item.name} ({formatBytes(getItemSize(hoveredItem.item))})
                   </span>
-                  <p style={{ fontSize: 11, color: 'var(--ink-muted)', marginTop: 2 }}>
+                  <p style={{ fontSize: 11, color: 'var(--color-ink-2)', marginTop: 2 }}>
                     {hoveredItem.reason}
                   </p>
                 </div>
@@ -381,7 +381,7 @@ export const ResultScene: React.FC = () => {
                     <button
                       className="sticker-chip"
                       onClick={() => handleActuallyKeep(hoveredItem.item.id)}
-                      style={{ fontSize: 11, background: 'var(--mint)', gap: 4 }}
+                      style={{ fontSize: 11, background: 'var(--kept)', gap: 4 }}
                       title="Pin and keep this file"
                     >
                       <Pin size={12} />
@@ -405,7 +405,7 @@ export const ResultScene: React.FC = () => {
         <div
           className="sticker-card"
           style={{
-            background: 'var(--surface)',
+            background: 'var(--card)',
             padding: '16px',
             display: 'flex',
             flexDirection: 'column',
@@ -413,10 +413,10 @@ export const ResultScene: React.FC = () => {
           }}
         >
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <span style={{ fontWeight: 800, fontSize: 'var(--text-sm)', color: 'var(--bubblegum)' }}>
+            <span style={{ fontWeight: 800, fontSize: 'var(--text-sm)', color: 'var(--moved)' }}>
               Move Pile ({movedItems.length})
             </span>
-            <span style={{ fontSize: 11, color: 'var(--ink-muted)' }}>
+            <span style={{ fontSize: 11, color: 'var(--color-ink-2)' }}>
               Doesn't fit
             </span>
           </div>
@@ -441,9 +441,9 @@ export const ResultScene: React.FC = () => {
                   className="sticker-card"
                   style={{
                     padding: '8px 10px',
-                    background: 'var(--canvas)',
-                    border: '1.5px solid var(--bubblegum)',
-                    boxShadow: '2px 2px 0 var(--bubblegum)',
+                    background: 'var(--paper)',
+                    border: '1.5px solid var(--moved)',
+                    boxShadow: '2px 2px 0 var(--moved)',
                     borderRadius: 10,
                     cursor: 'pointer',
                   }}
@@ -470,14 +470,14 @@ export const ResultScene: React.FC = () => {
                       style={{
                         padding: '2px 6px',
                         fontSize: 10,
-                        background: 'var(--mint)',
+                        background: 'var(--kept)',
                         fontWeight: 800,
                       }}
                     >
                       Actually keep
                     </button>
                   </div>
-                  <span className="mono" style={{ fontSize: 10, color: 'var(--ink-muted)' }}>
+                  <span className="mono" style={{ fontSize: 10, color: 'var(--color-ink-2)' }}>
                     {formatBytes(getItemSize(item))}
                   </span>
                 </div>
@@ -496,7 +496,7 @@ export const ResultScene: React.FC = () => {
           alignItems: 'center',
           marginTop: 'var(--space-md)',
           paddingTop: 'var(--space-sm)',
-          borderTop: '2px solid var(--canvas)',
+          borderTop: '2px solid var(--paper)',
         }}
       >
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: 10 }}>
@@ -555,7 +555,7 @@ export const ResultScene: React.FC = () => {
           style={{
             background: 'none',
             border: 'none',
-            color: 'var(--ink-muted)',
+            color: 'var(--color-ink-2)',
             fontSize: 'var(--text-xs)',
             fontWeight: 700,
             textDecoration: 'underline',

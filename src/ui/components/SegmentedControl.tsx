@@ -31,7 +31,7 @@ export const SegmentedControl: React.FC<SegmentedControlProps> = ({ options, sel
               cursor: 'pointer',
               backgroundColor: isSelected ? 'var(--color-surface-raised)' : 'transparent',
               color: isSelected ? 'var(--color-ink)' : 'var(--color-ink-2)',
-              boxShadow: isSelected ? '0 1px 2px rgba(20, 56, 43, 0.1)' : 'none',
+              boxShadow: isSelected ? '0 1px 2px color-mix(in srgb,var(--ink) 10%,transparent)' : 'none',
               transition: 'all var(--transition-color)'
             }}
           >

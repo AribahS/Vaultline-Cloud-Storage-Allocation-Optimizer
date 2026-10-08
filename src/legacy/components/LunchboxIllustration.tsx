@@ -70,7 +70,7 @@ export const LunchboxIllustration: React.FC<LunchboxProps> = ({
             width: 320 * scale,
             height: 48 * scale,
             borderRadius: 14 * scale,
-            background: 'var(--grape)',
+            background: 'var(--ink)',
             border: '2.5px solid var(--ink)',
             boxShadow: '4px 4px 0 var(--ink)',
             transformOrigin: 'top left',
@@ -86,7 +86,7 @@ export const LunchboxIllustration: React.FC<LunchboxProps> = ({
               width: 60 * scale,
               height: 12 * scale,
               borderRadius: 999,
-              background: 'var(--lemon)',
+              background: 'var(--highlight)',
               border: '2px solid var(--ink)',
             }}
           />
@@ -100,11 +100,11 @@ export const LunchboxIllustration: React.FC<LunchboxProps> = ({
             left: 0,
             width: '100%',
             height: 240 * scale,
-            background: 'var(--surface)',
+            background: 'var(--card)',
             borderRadius: 22 * scale,
             border: '2.5px solid var(--ink)',
             boxShadow: isDraggingOver
-              ? '6px 6px 0 var(--mint)'
+              ? '6px 6px 0 var(--kept)'
               : '4px 4px 0 var(--ink)',
             padding: 16 * scale,
             display: 'grid',
@@ -117,9 +117,9 @@ export const LunchboxIllustration: React.FC<LunchboxProps> = ({
           {/* Left Large Compartment */}
           <div
             style={{
-              background: isDraggingOver ? 'var(--mint-light)' : 'var(--canvas)',
+              background: isDraggingOver ? 'var(--color-file-archives)' : 'var(--paper)',
               borderRadius: 14 * scale,
-              border: `2px ${isDraggingOver ? 'solid var(--mint)' : 'dashed var(--outline-color)'}`,
+              border: `2px ${isDraggingOver ? 'solid var(--kept)' : 'dashed var(--card-border)'}`,
               padding: 10 * scale,
               overflow: 'hidden',
               display: 'flex',
@@ -176,9 +176,9 @@ export const LunchboxIllustration: React.FC<LunchboxProps> = ({
             {/* Top Compartment */}
             <div
               style={{
-                background: isDraggingOver ? 'var(--mint-light)' : 'var(--canvas)',
+                background: isDraggingOver ? 'var(--color-file-archives)' : 'var(--paper)',
                 borderRadius: 14 * scale,
-                border: `2px ${isDraggingOver ? 'solid var(--mint)' : 'dashed var(--outline-color)'}`,
+                border: `2px ${isDraggingOver ? 'solid var(--kept)' : 'dashed var(--card-border)'}`,
                 padding: 8 * scale,
                 overflow: 'hidden',
                 display: 'flex',
@@ -227,9 +227,9 @@ export const LunchboxIllustration: React.FC<LunchboxProps> = ({
             {/* Bottom Compartment */}
             <div
               style={{
-                background: isDraggingOver ? 'var(--mint-light)' : 'var(--canvas)',
+                background: isDraggingOver ? 'var(--color-file-archives)' : 'var(--paper)',
                 borderRadius: 14 * scale,
-                border: `2px ${isDraggingOver ? 'solid var(--mint)' : 'dashed var(--outline-color)'}`,
+                border: `2px ${isDraggingOver ? 'solid var(--kept)' : 'dashed var(--card-border)'}`,
                 padding: 8 * scale,
                 overflow: 'hidden',
                 display: 'flex',

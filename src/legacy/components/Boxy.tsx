@@ -117,8 +117,8 @@ export const Boxy: React.FC<BoxyProps> = ({
               bottom: size + 12,
               left: '50%',
               transform: 'translateX(-50%)',
-              background: 'var(--surface)',
-              border: '2px solid var(--outline-color)',
+              background: 'var(--card)',
+              border: '2px solid var(--card-border)',
               borderRadius: 14,
               padding: '8px 14px',
               fontSize: 'var(--text-sm)',
@@ -158,8 +158,8 @@ export const Boxy: React.FC<BoxyProps> = ({
                 marginLeft: -6,
                 width: 12,
                 height: 12,
-                background: 'var(--surface)',
-                border: '2px solid var(--outline-color)',
+                background: 'var(--card)',
+                border: '2px solid var(--card-border)',
                 borderTop: 'none',
                 borderLeft: 'none',
                 transform: 'rotate(45deg)',
@@ -182,20 +182,20 @@ export const Boxy: React.FC<BoxyProps> = ({
         <rect
           x="4" y="8" width="64" height="56" rx="14"
           fill="var(--primary)"
-          stroke="var(--outline-color)"
+          stroke="var(--card-border)"
           strokeWidth="2.5"
         />
 
         {/* Compartment lines */}
-        <line x1="4" y1="28" x2="68" y2="28" stroke="var(--outline-color)" strokeWidth="2" />
-        <line x1="36" y1="28" x2="36" y2="64" stroke="var(--outline-color)" strokeWidth="1.5" strokeDasharray="4 3" />
+        <line x1="4" y1="28" x2="68" y2="28" stroke="var(--card-border)" strokeWidth="2" />
+        <line x1="36" y1="28" x2="36" y2="64" stroke="var(--card-border)" strokeWidth="1.5" strokeDasharray="4 3" />
 
         {/* Left eye */}
         <circle
           cx={26 + eyeOffset.lx}
           cy={19 + eyeOffset.ly}
           r="4"
-          fill="var(--surface)"
+          fill="var(--card)"
         />
         <circle
           cx={26 + eyeOffset.lx}
@@ -209,7 +209,7 @@ export const Boxy: React.FC<BoxyProps> = ({
           cx={46 + eyeOffset.rx}
           cy={19 + eyeOffset.ry}
           r="4"
-          fill="var(--surface)"
+          fill="var(--card)"
         />
         <circle
           cx={46 + eyeOffset.rx}
@@ -222,7 +222,7 @@ export const Boxy: React.FC<BoxyProps> = ({
         {mood === 'idle' && (
           <motion.line
             x1="22" y1="19" x2="30" y2="19"
-            stroke="var(--surface)"
+            stroke="var(--card)"
             strokeWidth="8"
             strokeLinecap="round"
             initial={{ opacity: 0 }}
@@ -234,7 +234,7 @@ export const Boxy: React.FC<BoxyProps> = ({
         {/* Mouth */}
         <path
           d={mouthPath}
-          stroke="var(--surface)"
+          stroke="var(--card)"
           strokeWidth="2.5"
           strokeLinecap="round"
           fill="none"
@@ -243,8 +243,8 @@ export const Boxy: React.FC<BoxyProps> = ({
         {/* Cheeks for cheer */}
         {mood === 'cheer' && (
           <>
-            <circle cx="18" cy="24" r="4" fill="var(--bubblegum)" opacity="0.4" />
-            <circle cx="54" cy="24" r="4" fill="var(--bubblegum)" opacity="0.4" />
+            <circle cx="18" cy="24" r="4" fill="var(--moved)" opacity="0.4" />
+            <circle cx="54" cy="24" r="4" fill="var(--moved)" opacity="0.4" />
           </>
         )}
       </motion.svg>

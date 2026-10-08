@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest';
+import { readFileSync } from 'node:fs';
 import { solveFullKnapsack } from '../engine/knapsack';
 import { normaliseItemSize } from '../engine/normalizer';
 import { GREEDY_COUNTEREXAMPLE_DATASET } from '../engine/greedy';
@@ -69,12 +70,18 @@ describe('Play DP helpers', () => {
     expect(scoreSelection(items, ['a', 'b'])).toEqual({ totalImportance: 11, totalSize: 13, count: 2 });
   });
 
-  it('keeps vault, kept and moved text contrast above 4.5:1', () => {
+  it('keeps the new violet, mint, crimson and gold text contrast above 4.5:1', () => {
+    const css = readFileSync('src/index.css', 'utf8');
+    const token = (name: string): string => {
+      const value = css.match(new RegExp(`--${name}:\\s*(#[0-9a-f]{6}|var\\(--[a-z0-9-]+\\))`, 'i'))?.[1];
+      if (!value) throw new Error(`Missing token --${name}`);
+      return value.startsWith('var(') ? token(value.slice(6, -1)) : value;
+    };
     const pairs = checkContrastPairs([
-      { label: 'cream on vault', foreground: '#F4EBD3', background: '#0F2A1E', minimum: 4.5 },
-      { label: 'gold line on vault', foreground: '#E3D081', background: '#0F2A1E', minimum: 4.5 },
-      { label: 'kept block label', foreground: '#F4EBD3', background: '#0F2A1E', minimum: 4.5 },
-      { label: 'moved block label', foreground: '#F4EBD3', background: '#9C3D2F', minimum: 4.5 },
+      { label: 'paper on vault', foreground: token('paper'), background: token('vault'), minimum: 4.5 },
+      { label: 'gold highlight on vault', foreground: token('highlight'), background: token('vault'), minimum: 4.5 },
+      { label: 'ink on kept', foreground: token('ink'), background: token('kept'), minimum: 4.5 },
+      { label: 'paper on moved', foreground: token('paper'), background: token('moved'), minimum: 4.5 },
     ]);
     expect(pairs.every(pair => pair.ratio >= pair.minimum)).toBe(true);
   });

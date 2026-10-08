@@ -57,7 +57,7 @@ export const VaultGauge: React.FC<VaultGaugeProps> = ({
     ? 'var(--color-semantic-danger)'
     : animatedFill > 0.9
     ? 'var(--color-semantic-warning)'
-    : 'var(--color-forest-500)';
+    : 'var(--ink)';
 
   return (
     <div
@@ -94,7 +94,7 @@ export const VaultGauge: React.FC<VaultGaugeProps> = ({
           <line
             key={i}
             x1={t.x1} y1={t.y1} x2={t.x2} y2={t.y2}
-            stroke="var(--color-brass)"
+            stroke="var(--highlight)"
             strokeWidth={1.5}
             opacity={0.5}
           />
@@ -120,7 +120,7 @@ export const VaultGauge: React.FC<VaultGaugeProps> = ({
           fontFamily: 'var(--font-heading)',
           fontSize: size * 0.14,
           fontWeight: 600,
-          color: 'var(--color-forest)',
+          color: 'var(--ink)',
           fontVariantNumeric: 'tabular-nums',
           lineHeight: 1.1,
         }}>

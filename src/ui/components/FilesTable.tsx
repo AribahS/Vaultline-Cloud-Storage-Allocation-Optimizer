@@ -114,7 +114,7 @@ export const FilesTable: React.FC<{
                 fontSize: '12px',
                 fontWeight: 600,
                 fontFamily: 'var(--font-mono)',
-                backgroundColor: score >= 8 ? 'var(--color-forest-50)' : score >= 5 ? 'var(--color-brass-soft)' : 'var(--color-surface-sunken)',
+                backgroundColor: score >= 8 ? 'var(--paper)' : score >= 5 ? 'var(--paper)' : 'var(--color-surface-sunken)',
                 color: 'var(--color-ink-2)',
                 border: '1px solid var(--color-border-hairline)',
                 cursor: 'pointer'
@@ -146,7 +146,7 @@ export const FilesTable: React.FC<{
         return (
           <span style={{
             display: 'inline-flex', padding: '2px 8px', borderRadius: '12px', fontSize: '12px', fontWeight: 600,
-            backgroundColor: isKept ? 'rgba(145,199,177,0.2)' : 'rgba(179,57,81,0.1)',
+            backgroundColor: isKept ? 'color-mix(in srgb,var(--kept) 20%,transparent)' : 'color-mix(in srgb,var(--moved) 10%,transparent)',
             color: isKept ? 'var(--color-semantic-keep-stroke)' : 'var(--color-semantic-move)',
             border: `1px solid ${isKept ? 'var(--color-semantic-keep-stroke)' : 'var(--color-semantic-move)'}`
           }}>
@@ -220,7 +220,7 @@ export const FilesTable: React.FC<{
       {selectedIds.size > 0 && (
         <div style={{
           position: 'sticky', top: 0, zIndex: 10,
-          backgroundColor: 'var(--color-brass-soft)', padding: '12px 16px',
+          backgroundColor: 'var(--paper)', padding: '12px 16px',
           borderBottom: '1px solid var(--color-border-strong)',
           display: 'flex', alignItems: 'center', gap: '12px'
         }}>
@@ -276,7 +276,7 @@ export const FilesTable: React.FC<{
                     maxWidth: header.getSize(),
                     boxSizing: 'border-box',
                     cursor: header.column.getCanSort() ? 'pointer' : 'default',
-                    color: 'var(--color-forest)'
+                    color: 'var(--ink)'
                   }}
                   onClick={header.column.getToggleSortingHandler()}
                 >

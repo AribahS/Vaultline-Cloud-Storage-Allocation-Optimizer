@@ -145,7 +145,7 @@ export const PackScene: React.FC = () => {
           className="sticker-card"
           style={{
             maxWidth: 520,
-            background: 'var(--surface)',
+            background: 'var(--card)',
             display: 'flex',
             flexDirection: 'column',
             alignItems: 'center',
@@ -157,7 +157,7 @@ export const PackScene: React.FC = () => {
               width: 56,
               height: 56,
               borderRadius: '50%',
-              background: 'var(--bubblegum)',
+              background: 'var(--moved)',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
@@ -167,7 +167,7 @@ export const PackScene: React.FC = () => {
             <AlertTriangle size={32} color="var(--ink)" />
           </div>
           <h2 style={{ fontSize: 'var(--text-scene-title)' }}>Must-keep files over limit</h2>
-          <p style={{ fontSize: 'var(--text-body)', color: 'var(--ink-muted)' }}>
+          <p style={{ fontSize: 'var(--text-body)', color: 'var(--color-ink-2)' }}>
             Your must-keep files use {formatBytes(pinnedTotalSize)}, more than your{' '}
             {formatBytes(quotaBytes)}. Let one go, or make more room.
           </p>
@@ -228,7 +228,7 @@ export const PackScene: React.FC = () => {
           <h2 style={{ fontSize: 'var(--text-scene-title)', color: 'var(--ink)' }}>
             {phase === 'thinking' ? 'Vaultline is calculating...' : 'Packing your box'}
           </h2>
-          <p style={{ fontSize: 'var(--text-body)', color: 'var(--ink-muted)' }}>
+          <p style={{ fontSize: 'var(--text-body)', color: 'var(--color-ink-2)' }}>
             {visibleKept.length > 0
               ? `Kept: ${visibleKept.length} files, ${formatBytes(currentKeptSize)}`
               : 'Testing thousands of combinations in real time...'}
@@ -267,7 +267,7 @@ export const PackScene: React.FC = () => {
           className="sticker-card"
           style={{
             minHeight: 380,
-            background: 'var(--surface)',
+            background: 'var(--card)',
             border: '3px solid var(--ink)',
             boxShadow: '6px 6px 0 var(--ink)',
             borderRadius: 24,
@@ -279,7 +279,7 @@ export const PackScene: React.FC = () => {
         >
           <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 12 }}>
             <span style={{ fontWeight: 800, fontSize: 'var(--text-lg)' }}>Inside the Box</span>
-            <span className="mono" style={{ fontWeight: 800, color: 'var(--mint)' }}>
+            <span className="mono" style={{ fontWeight: 800, color: 'var(--kept)' }}>
               {formatBytes(quotaBytes)}
             </span>
           </div>
@@ -288,9 +288,9 @@ export const PackScene: React.FC = () => {
           <div
             style={{
               flex: 1,
-              background: 'var(--canvas)',
+              background: 'var(--paper)',
               borderRadius: 16,
-              border: '2px dashed var(--outline-color)',
+              border: '2px dashed var(--card-border)',
               padding: 12,
               display: 'flex',
               flexWrap: 'wrap',
@@ -309,7 +309,7 @@ export const PackScene: React.FC = () => {
                   alignItems: 'center',
                   justifyContent: 'center',
                   gap: 12,
-                  color: 'var(--ink-muted)',
+                  color: 'var(--color-ink-2)',
                 }}
               >
                 <motion.div
@@ -319,7 +319,7 @@ export const PackScene: React.FC = () => {
                     width: 28,
                     height: 28,
                     borderRadius: '50%',
-                    border: '3px solid var(--grape)',
+                    border: '3px solid var(--ink)',
                     borderTopColor: 'transparent',
                   }}
                 />
@@ -373,7 +373,7 @@ export const PackScene: React.FC = () => {
           className="sticker-card"
           style={{
             minHeight: 380,
-            background: 'var(--surface)',
+            background: 'var(--card)',
             border: '3px solid var(--ink)',
             boxShadow: '4px 4px 0 var(--ink)',
             borderRadius: 24,
@@ -384,7 +384,7 @@ export const PackScene: React.FC = () => {
         >
           <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 12 }}>
             <span style={{ fontWeight: 800, fontSize: 'var(--text-lg)' }}>Move Pile</span>
-            <span style={{ fontSize: 'var(--text-xs)', color: 'var(--ink-muted)' }}>
+            <span style={{ fontSize: 'var(--text-xs)', color: 'var(--color-ink-2)' }}>
               Doesn't fit
             </span>
           </div>
@@ -392,9 +392,9 @@ export const PackScene: React.FC = () => {
           <div
             style={{
               flex: 1,
-              background: 'var(--canvas)',
+              background: 'var(--paper)',
               borderRadius: 16,
-              border: '2px dashed var(--bubblegum)',
+              border: '2px dashed var(--moved)',
               padding: 12,
               display: 'flex',
               flexDirection: 'column',
@@ -413,8 +413,8 @@ export const PackScene: React.FC = () => {
                   animate={{ scale: 1, x: 0, rotate: 0 }}
                   transition={springs.bouncy}
                   style={{
-                    background: 'var(--surface)',
-                    border: '2px solid var(--bubblegum)',
+                    background: 'var(--card)',
+                    border: '2px solid var(--moved)',
                     borderRadius: 10,
                     padding: '6px 10px',
                     display: 'flex',
@@ -434,7 +434,7 @@ export const PackScene: React.FC = () => {
                   >
                     {item.name}
                   </span>
-                  <span className="mono" style={{ color: 'var(--ink-muted)' }}>
+                  <span className="mono" style={{ color: 'var(--color-ink-2)' }}>
                     {formatBytes(getItemSize(item))}
                   </span>
                 </motion.div>

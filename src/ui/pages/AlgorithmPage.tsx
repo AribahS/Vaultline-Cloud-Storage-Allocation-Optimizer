@@ -112,11 +112,11 @@ export const AlgorithmPage: React.FC = () => {
   };
 
   const cellColors: Record<string, { bg: string; text: string; border?: string }> = {
-    'current': { bg: 'var(--color-forest)', text: 'var(--card)' },
-    'dep-skip': { bg: 'transparent', text: 'var(--color-ink)', border: 'var(--color-brass)' },
-    'dep-take': { bg: 'transparent', text: 'var(--color-ink)', border: 'var(--color-brass)' },
+    'current': { bg: 'var(--ink)', text: 'var(--card)' },
+    'dep-skip': { bg: 'transparent', text: 'var(--color-ink)', border: 'var(--highlight)' },
+    'dep-take': { bg: 'transparent', text: 'var(--color-ink)', border: 'var(--highlight)' },
     'computed': { bg: 'var(--color-surface-sunken)', text: 'var(--color-ink)' },
-    'traceback': { bg: 'transparent', text: 'var(--color-forest)', border: 'var(--color-forest)' },
+    'traceback': { bg: 'transparent', text: 'var(--ink)', border: 'var(--ink)' },
     'empty': { bg: 'transparent', text: 'var(--color-ink-3)' },
   };
 
@@ -132,9 +132,9 @@ export const AlgorithmPage: React.FC = () => {
       {/* Terminology strip */}
       <div style={{
         display: 'flex', gap: '24px', padding: '12px 16px', marginBottom: '24px',
-        backgroundColor: 'var(--color-forest-50)',
+        backgroundColor: 'var(--paper)',
         borderRadius: 'var(--radius-control)',
-        fontSize: '13px', color: 'var(--color-forest-700)', flexWrap: 'wrap'
+        fontSize: '13px', color: 'var(--ink)', flexWrap: 'wrap'
       }}>
         <span><strong>space</strong> = capacity W</span>
         <span><strong>file</strong> = item</span>
@@ -253,8 +253,8 @@ export const AlgorithmPage: React.FC = () => {
             )}
 
             {currentStep?.type === 'traceback' && (
-              <Card style={{ backgroundColor: 'var(--color-forest-50)' }}>
-                <div className="text-caption" style={{ color: 'var(--color-forest-700)', marginBottom: '4px' }}>Chosen so far</div>
+              <Card style={{ backgroundColor: 'var(--paper)' }}>
+                <div className="text-caption" style={{ color: 'var(--ink)', marginBottom: '4px' }}>Chosen so far</div>
                 <div style={{ fontSize: '14px' }}>
                   {(currentStep as TracebackStep).chosenIds.map(id => items.find(it => it.id === id)?.name).join(', ') || 'None yet'}
                 </div>
@@ -319,19 +319,19 @@ export const AlgorithmPage: React.FC = () => {
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', marginBottom: '24px' }}>
             <div style={{ padding: '16px', backgroundColor: 'var(--color-surface-sunken)', borderRadius: '8px' }}>
               <div className="text-caption text-ink-3">Items (n)</div>
-              <div style={{ fontFamily: 'var(--font-mono)', fontSize: '24px', fontWeight: 600, color: 'var(--color-forest)' }}>{items.length}</div>
+              <div style={{ fontFamily: 'var(--font-mono)', fontSize: '24px', fontWeight: 600, color: 'var(--ink)' }}>{items.length}</div>
             </div>
             <div style={{ padding: '16px', backgroundColor: 'var(--color-surface-sunken)', borderRadius: '8px' }}>
               <div className="text-caption text-ink-3">Capacity (W)</div>
-              <div style={{ fontFamily: 'var(--font-mono)', fontSize: '24px', fontWeight: 600, color: 'var(--color-forest)' }}>{capacity}</div>
+              <div style={{ fontFamily: 'var(--font-mono)', fontSize: '24px', fontWeight: 600, color: 'var(--ink)' }}>{capacity}</div>
             </div>
             <div style={{ padding: '16px', backgroundColor: 'var(--color-surface-sunken)', borderRadius: '8px' }}>
               <div className="text-caption text-ink-3">Table size</div>
-              <div style={{ fontFamily: 'var(--font-mono)', fontSize: '24px', fontWeight: 600, color: 'var(--color-forest)' }}>{((items.length + 1) * (capacity + 1)).toLocaleString()} cells</div>
+              <div style={{ fontFamily: 'var(--font-mono)', fontSize: '24px', fontWeight: 600, color: 'var(--ink)' }}>{((items.length + 1) * (capacity + 1)).toLocaleString()} cells</div>
             </div>
             <div style={{ padding: '16px', backgroundColor: 'var(--color-surface-sunken)', borderRadius: '8px' }}>
               <div className="text-caption text-ink-3">Cells computed</div>
-              <div style={{ fontFamily: 'var(--font-mono)', fontSize: '24px', fontWeight: 600, color: 'var(--color-forest)' }}>{result.steps.filter(s => s.type === 'cell').length.toLocaleString()}</div>
+              <div style={{ fontFamily: 'var(--font-mono)', fontSize: '24px', fontWeight: 600, color: 'var(--ink)' }}>{result.steps.filter(s => s.type === 'cell').length.toLocaleString()}</div>
             </div>
           </div>
           <div style={{ fontSize: '14px', lineHeight: 1.8, color: 'var(--color-ink-2)' }}>
@@ -410,7 +410,7 @@ const ComparisonTab: React.FC<{ items: KnapsackItem[]; capacity: number }> = ({ 
       {greedyResult.totalValue < dpResult.totalValue && (
         <div style={{
           marginTop: '16px', padding: '12px 16px',
-          backgroundColor: 'var(--color-brass-soft)',
+          backgroundColor: 'var(--paper)',
           borderRadius: '8px', fontSize: '14px', lineHeight: 1.6
         }}>
           The greedy algorithm chose items by value-to-weight ratio, but for the 0/1 knapsack this does not guarantee
@@ -474,7 +474,7 @@ export const CorrectnessTab: React.FC = () => {
         <div style={{ marginTop: '16px', display: 'flex', gap: '16px' }}>
           <div style={{
             padding: '16px', borderRadius: '8px', flex: 1, textAlign: 'center',
-            backgroundColor: 'var(--color-forest-50)', border: '1px solid var(--color-forest-100)'
+            backgroundColor: 'var(--paper)', border: '1px solid var(--heat-1)'
           }}>
             <div style={{ fontFamily: 'var(--font-mono)', fontSize: '28px', fontWeight: 600, color: 'var(--color-semantic-keep)' }}>{passCount}</div>
             <div className="text-caption text-ink-2">Passed</div>

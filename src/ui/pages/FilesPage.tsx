@@ -82,7 +82,7 @@ export const FilesPage: React.FC = () => {
 
       {/* Warning */}
       {isOverQuota && (
-        <div style={{ padding: '12px 16px', backgroundColor: 'rgba(179,57,81,0.1)', border: '1px solid var(--color-semantic-move)', borderRadius: '8px', color: 'var(--color-semantic-move)', marginBottom: '24px', fontWeight: 600 }}>
+        <div style={{ padding: '12px 16px', backgroundColor: 'color-mix(in srgb,var(--moved) 10%,transparent)', border: '1px solid var(--color-semantic-move)', borderRadius: '8px', color: 'var(--color-semantic-move)', marginBottom: '24px', fontWeight: 600 }}>
           Warning: Always keep files ({formatSize(alwaysKeepSize)}) exceed target capacity ({formatSize(useAppStore.getState().quotaBytes)}).
         </div>
       )}
@@ -93,7 +93,7 @@ export const FilesPage: React.FC = () => {
           <h1 style={{ fontSize: '28px', margin: 0 }}>Files</h1>
           {files.length > 0 ? (
             <div style={{ display: 'flex', gap: '16px', flexWrap: 'wrap', marginTop: '8px', alignItems: 'center' }}>
-              <span style={{ fontSize: '24px', fontWeight: 600, color: 'var(--color-forest)' }}>
+              <span style={{ fontSize: '24px', fontWeight: 600, color: 'var(--ink)' }}>
                 {pluralize(files.length, 'file')}, {formatSize(totalSize)}
               </span>
               {dupCount > 0 && (

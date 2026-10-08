@@ -43,7 +43,7 @@ export const LabTwoConstraints: React.FC = () => {
             max="18"
             value={storageCap}
             onChange={(e) => setStorageCap(parseInt(e.target.value))}
-            style={{ width: '100%', accentColor: 'var(--color-success)' }}
+            style={{ width: '100%', accentColor: 'var(--kept)' }}
           />
         </div>
 
