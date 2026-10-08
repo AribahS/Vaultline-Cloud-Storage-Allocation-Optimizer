@@ -9,7 +9,6 @@ import { useAppStore, PresetType } from '../../store/useAppStore';
 import { scanWithFileSystemAccess } from '../../engine/fileScanner';
 
 import { formatSize, pluralize } from '../../lib/format';
-import { suggestFileScore } from '../../lib/scoring.js';
 
 export const FilesPage: React.FC = () => {
   const { files, addFiles, isScanning, setIsScanning, scanProgress, clearFiles, loadPreset, resetAllPrioritySuggestions } = useAppStore();

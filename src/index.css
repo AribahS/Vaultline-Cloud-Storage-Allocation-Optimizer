@@ -171,6 +171,36 @@
 .bulk-score-suggestions { display: flex; flex-direction: column; gap: 4px; max-width: 250px; font-size: 10px; }
 .bulk-score-suggestions > div { display: flex; flex-wrap: wrap; gap: 4px; align-items: center; }
 .bulk-score-suggestions > small { color: var(--color-ink-2); }
+.plan-page { max-width: 1400px; margin: 0 auto; padding: 28px 32px 56px; }
+.plan-header { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-bottom: 6px; }
+.plan-header h1 { margin: 0; color: var(--color-ink); font-size: 30px; }
+.plan-header p, .plan-section-copy { margin: 4px 0 0; color: var(--color-ink-2); }
+.plan-score-note { margin: 0 0 20px; color: var(--color-ink-2); font-size: 12px; }
+.plan-header .vault-btn { gap: 8px; }
+.plan-kpis { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; margin-bottom: 16px; }
+.plan-kpi { display: flex; flex-direction: column; min-width: 0; gap: 10px; padding: 18px !important; }
+.plan-kpi > span { color: var(--color-ink-2); font-size: 12px; }
+.plan-kpi > strong { position: relative; color: var(--color-ink); font-size: clamp(20px, 2vw, 30px); overflow-wrap: anywhere; }
+.plan-kpi > i { display: block; width: 34px; height: 3px; background: var(--gold); border-radius: 4px; }
+.plan-kpi-moved { background-image: repeating-linear-gradient(135deg,transparent 0,transparent 10px,color-mix(in srgb,var(--moved) 8%,transparent) 10px,color-mix(in srgb,var(--moved) 8%,transparent) 12px); }
+.plan-export-actions { display: flex; flex-wrap: wrap; gap: 8px; margin: 14px 0 20px; }
+.plan-treemap-section h2, .plan-file-list h2, .plan-constraints h2 { margin: 0 0 8px; color: var(--color-ink); font-size: 18px; }
+.plan-lists { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 16px; margin-top: 16px; }
+.plan-file-list h2 span { color: var(--color-ink-2); font-size: 12px; font-weight: 500; }
+.plan-file-scroll { max-height: 360px; overflow: auto; }
+.plan-file-row { display: grid; grid-template-columns: minmax(0,1fr) auto auto; align-items: center; gap: 12px; padding: 10px 4px; border-top: 1px solid var(--card-border); }
+.plan-file-row > span { min-width: 0; overflow: hidden; }
+.plan-file-row strong, .plan-file-row small { display: block; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+.plan-file-row small { color: var(--color-ink-2); font-size: 11px; margin-top: 2px; }
+.plan-file-row b, .plan-file-row em { color: var(--color-ink); white-space: nowrap; font-size: 12px; }
+.plan-file-row em { font-style: normal; }
+.plan-file-list-moved .plan-file-row { background-image: repeating-linear-gradient(135deg,transparent 0,transparent 10px,color-mix(in srgb,var(--moved) 8%,transparent) 10px,color-mix(in srgb,var(--moved) 8%,transparent) 12px); }
+.plan-constraints { margin-top: 16px; }
+.plan-constraint-columns { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 16px; }
+.plan-constraint-columns h3 { color: var(--color-ink); font-size: 14px; }
+.plan-constraint-columns ul { padding-left: 20px; color: var(--color-ink-2); }
+.plan-empty { padding: 44px 20px; text-align: center; }
+.plan-empty h2 { color: var(--color-ink); }
 .algorithm-workspace { display: grid; grid-template-columns: minmax(210px, .75fr) minmax(0, 2fr); gap: 16px; align-items: start; margin-bottom: 16px; }
 .algorithm-drawer-backdrop { position: fixed; inset: 0; z-index: 1400; background: color-mix(in srgb, var(--ink) 46%, transparent); }
 .algorithm-drawer { position: fixed; z-index: 1401; inset: 0 0 0 auto; width: min(1060px, 96vw); height: 100dvh; max-height: 100dvh; display: flex; flex-direction: column; background: var(--paper); color: var(--ink); box-shadow: var(--shadow-level-3); }

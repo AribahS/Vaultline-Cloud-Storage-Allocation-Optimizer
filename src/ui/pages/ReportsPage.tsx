@@ -1,255 +1,114 @@
-import React, { useState, useMemo } from 'react';
+import React, { useMemo } from 'react';
+import { FileJson2, FileSpreadsheet, Printer, Terminal } from 'lucide-react';
 import { useAppStore } from '../../store/useAppStore';
-import { Card } from '../components/Card';
 import { Button } from '../components/Button';
+import { Card } from '../components/Card';
+import { Treemap } from '../components/Treemap';
 import { formatSize, pluralize } from '../../lib/format';
-import { generateReportSummary } from '../../lib/reportSummary';
-import {
-  generateCsvExport,
-  generateJsonExport,
-  generateActionPlanBash,
-  generateActionPlanPowerShell,
-  generateWordDocumentHtml,
-  downloadTextFile
-} from '../../engine/exportPlan';
-import { Download, FileText, Check, Copy } from 'lucide-react';
+import { buildExportPlan, downloadPlanFile, generatePlanCsv, generatePlanJson, generateShellMigrationScript, planFileMetadata } from '../../lib/planExports';
 
-type ExportTab = 'pdf' | 'word' | 'summary' | 'bash' | 'ps1' | 'csv' | 'json';
-
-const FORMAT_META: Record<ExportTab, { label: string; desc: string; ext: string; mime: string }> = {
-  pdf:     { label: '📄 PDF Executive Report',        desc: 'Formatted multi-page PDF document',      ext: '.pdf', mime: 'application/pdf' },
-  word:    { label: '📝 Word Executive Report',        desc: 'Formatted Microsoft Word document',       ext: '.doc', mime: 'application/msword' },
-  summary: { label: '📃 Text Executive Summary',       desc: 'Plain text report',                       ext: '.txt', mime: 'text/plain' },
-  bash:    { label: '⚡ Bash Action Plan',              desc: 'Mac / Linux auto-archive script',         ext: '.sh',  mime: 'application/x-sh' },
-  ps1:     { label: '💻 PowerShell Action Plan',        desc: 'Windows auto-archive script',             ext: '.ps1', mime: 'text/plain' },
-  csv:     { label: '📊 CSV Spreadsheet Export',        desc: 'Raw spreadsheet table',                   ext: '.csv', mime: 'text/csv' },
-  json:    { label: '⚙️ JSON Metadata Dump',           desc: 'Structured JSON export',                  ext: '.json', mime: 'application/json' },
-};
+const sortForPlan = <T extends { priority: number; size: number }>(items: T[]) => [...items].sort((left, right) => right.priority - left.priority || right.size - left.size);
 
 export const ReportsPage: React.FC = () => {
-  const { files, knapsackResult: optimizationResult, quotaBytes: activeQuotaBytes } = useAppStore();
-  const [activeExportTab, setActiveExportTab] = useState<ExportTab>('pdf');
-  const [copied, setCopied] = useState(false);
-
-  const previewContent = useMemo(() => {
-    if (!optimizationResult || files.length === 0) return 'No optimization data available. Run the optimizer first on the Optimizer page.';
-    switch (activeExportTab) {
-      case 'pdf':
-      case 'summary': return generateReportSummary(optimizationResult);
-      case 'word':    return generateWordDocumentHtml(files, optimizationResult);
-      case 'bash':    return generateActionPlanBash(files, optimizationResult);
-      case 'ps1':     return generateActionPlanPowerShell(files, optimizationResult);
-      case 'csv':     return generateCsvExport(files, optimizationResult);
-      case 'json':    return generateJsonExport(files, optimizationResult);
-      default:        return '';
-    }
-  }, [files, optimizationResult, activeExportTab]);
-
-  const handleCopy = () => {
-    navigator.clipboard.writeText(previewContent);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
-  };
-
-  // A9: Single download/print action whose label follows the selected format
-  const handleDownload = () => {
-    if (!optimizationResult) return;
-    if (activeExportTab === 'pdf') {
-      window.print();
-      return;
-    }
-    const meta = FORMAT_META[activeExportTab];
-    downloadTextFile(`vaultline_export${meta.ext}`, previewContent, meta.mime);
-  };
-
-  const importanceRetainedPct = optimizationResult && optimizationResult.maxPossibleValue > 0
-    ? Math.round((optimizationResult.totalValue / optimizationResult.maxPossibleValue) * 100)
+  const { files, knapsackResult, quotaBytes } = useAppStore();
+  const plan = useMemo(() => knapsackResult ? buildExportPlan(files, knapsackResult) : null, [files, knapsackResult]);
+  const keptIds = useMemo(() => new Set(knapsackResult?.keptItems.map(item => item.id) ?? []), [knapsackResult]);
+  const keptFiles = useMemo(() => sortForPlan(planFileMetadata(files, knapsackResult?.keptItems.map(item => item.id) ?? [])), [files, knapsackResult]);
+  const movedFiles = useMemo(() => sortForPlan(planFileMetadata(files, knapsackResult?.droppedItems.map(item => item.id) ?? [])), [files, knapsackResult]);
+  const importancePct = knapsackResult && knapsackResult.maxPossibleValue > 0
+    ? Math.round(knapsackResult.totalValue / knapsackResult.maxPossibleValue * 100)
     : 0;
+  const runtime = knapsackResult && knapsackResult.executionTimeMs > 0 ? `${knapsackResult.executionTimeMs.toFixed(2)} ms` : 'Not measured yet';
 
-  // A9: Download button label follows format
-  const downloadLabel = activeExportTab === 'pdf'
-    ? 'Print / Save PDF'
-    : `Download ${FORMAT_META[activeExportTab].ext}`;
+  const saveFile = (filename: string, content: string, mime: string) => downloadPlanFile(filename, content, mime);
+  const printReport = () => window.print();
 
-  return (
-    <div className="page-container" style={{ padding: '24px 32px', maxWidth: '1400px', margin: '0 auto' }}>
-      {/* ── PRINT STYLES ── */}
-      <style>{`
-        .print-only { display: none !important; }
-        @media print {
-          header, nav, .no-print, .vaultline-sidebar, .vaultline-topbar { display: none !important; }
-          body, html, #root { background: var(--card) !important; color: var(--color-ink) !important; margin: 0 !important; padding: 0 !important; }
-          .page-container { padding: 0 !important; margin: 0 !important; max-width: 100% !important; }
-          .print-only { display: block !important; padding: 24px !important; }
-          .print-header { display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 2px solid var(--color-ink); padding-bottom: 16px; margin-bottom: 24px; }
-          .print-title { font-size: 24pt; font-weight: 700; color: var(--vault-bg); margin: 0; }
-          .print-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 12px; margin-bottom: 24px; }
-          .print-card { border: 1px solid var(--card-border); border-radius: 6px; padding: 12px; background: var(--paper); text-align: center; }
-          .print-card-label { font-size: 8pt; color: var(--color-ink-3); text-transform: uppercase; font-weight: 600; }
-          .print-card-val { font-size: 16pt; font-weight: 700; color: var(--vault-bg); margin-top: 4px; }
-          .print-section-title { font-size: 14pt; font-weight: 700; color: var(--vault-bg); border-bottom: 1px solid var(--card-border); padding-bottom: 6px; margin: 20px 0 12px; }
-          table.print-table { width: 100%; border-collapse: collapse; font-size: 9.5pt; margin-bottom: 20px; }
-          table.print-table th { background-color: var(--vault-bg); color: var(--card); padding: 8px 10px; text-align: left; }
-          table.print-table td { padding: 8px 10px; border-bottom: 1px solid var(--card-border); }
-          .print-footer { margin-top: 36px; border-top: 1px solid var(--card-border); padding-top: 12px; font-size: 8.5pt; color: var(--color-ink-3); display: flex; justify-content: space-between; }
-        }
-      `}</style>
+  return <div className="page-container plan-page">
+    <style>{`
+      @page { size: A4; margin: 16mm; }
+      .plan-print { display: none; }
+      @media print {
+        html, body, #root { background: #fff !important; color: #14231B !important; margin: 0 !important; }
+        .vaultline-topbar, .no-print, .algorithm-drawer, .algorithm-drawer-backdrop { display: none !important; }
+        .plan-page { width: 100% !important; max-width: none !important; padding: 0 !important; margin: 0 !important; }
+        .plan-print { display: block !important; }
+        .plan-print-header { border-bottom: 2px solid #14231B; margin-bottom: 8mm; padding-bottom: 4mm; }
+        .plan-print-kpis { display: grid; grid-template-columns: repeat(3,1fr); gap: 4mm; margin: 5mm 0 8mm; }
+        .plan-print-card { border: 1px solid #E6E1D3; border-radius: 4px; padding: 4mm; }
+        .plan-print-card strong { display: block; font-size: 18pt; color: #14231B; }
+        .plan-print-section { break-before: page; }
+        .plan-print-table { width: 100%; border-collapse: collapse; font-size: 9pt; }
+        .plan-print-table th, .plan-print-table td { border-bottom: 1px solid #E6E1D3; padding: 2mm; text-align: left; overflow-wrap: anywhere; }
+        .plan-print-table th { background: #0F2A1E !important; color: #F4EBD3 !important; print-color-adjust: exact; }
+        .plan-print-table tr.move-row td { background: repeating-linear-gradient(135deg,#fff 0,#fff 5px,#E9D9CE 5px,#E9D9CE 7px) !important; print-color-adjust: exact; }
+      }
+    `}</style>
 
-      {/* ── PRINT-ONLY DOCUMENT ── */}
-      {optimizationResult && (
-        <div className="print-only">
-          <div className="print-header">
-            <div>
-              <h1 className="print-title">Vaultline Storage Report</h1>
-              <div style={{ fontSize: '10pt', color: 'var(--color-ink-3)', marginTop: '4px' }}>
-                Generated: {new Date().toLocaleDateString()} · Target Device Allocation Plan
-              </div>
-            </div>
-          </div>
-          <div className="print-grid">
-            <div className="print-card"><div className="print-card-label">Target</div><div className="print-card-val">{formatSize(optimizationResult.quotaBytes)}</div></div>
-            <div className="print-card"><div className="print-card-label">Kept</div><div className="print-card-val" style={{ color: 'var(--color-forest)' }}>{formatSize(optimizationResult.totalSizeKept)}</div></div>
-            <div className="print-card"><div className="print-card-label">Offloaded</div><div className="print-card-val" style={{ color: 'var(--color-semantic-danger)' }}>{formatSize(optimizationResult.totalSizeDropped)}</div></div>
-            <div className="print-card"><div className="print-card-label">Importance</div><div className="print-card-val" style={{ color: 'var(--color-ink)' }}>{importanceRetainedPct}%</div></div>
-          </div>
-          <h2 className="print-section-title">Kept {pluralize(optimizationResult.keptItems.length, 'file')}</h2>
-          <table className="print-table">
-            <thead><tr><th>File</th><th>Size</th><th>Importance</th><th>Category</th></tr></thead>
-            <tbody>
-              {optimizationResult.keptItems.slice(0, 30).map(item => (
-                <tr key={item.id}><td><strong>{item.name}</strong></td><td>{formatSize(item.originalSize)}</td><td>{item.value}/10</td><td>{item.category || 'file'}</td></tr>
-              ))}
-            </tbody>
-          </table>
-          <h2 className="print-section-title">Move {pluralize(optimizationResult.droppedItems.length, 'file')}</h2>
-          <table className="print-table">
-            <thead><tr><th>File</th><th>Size</th><th>Importance</th><th>Category</th></tr></thead>
-            <tbody>
-              {optimizationResult.droppedItems.slice(0, 30).map(item => (
-                <tr key={item.id}><td>{item.name}</td><td>{formatSize(item.originalSize)}</td><td>{item.value}/10</td><td>{item.category || 'file'}</td></tr>
-              ))}
-            </tbody>
-          </table>
-          <div className="print-footer">
-            <span>Vaultline · Private Storage Allocation</span>
-            <span>Zero file contents uploaded off-device</span>
-          </div>
-        </div>
-      )}
+    <header className="plan-header no-print">
+      <div><h1>Plan</h1><p>Your storage decision, with files and totals you can save or print.</p></div>
+      <Button variant="primary" onClick={printReport} disabled={!knapsackResult}><Printer size={16} />Print / Save PDF</Button>
+    </header>
+    <p className="plan-score-note no-print">Suggested scores, a heuristic, not ground truth</p>
 
-      {/* ── SCREEN: Header — A2: SINGLE action button ── */}
-      <div className="no-print" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px', flexWrap: 'wrap', gap: '12px' }}>
-        <div>
-          <h1 style={{ fontSize: '28px', color: 'var(--color-ink)', margin: 0 }}>Reports &amp; Exports</h1>
-          <p style={{ color: 'var(--color-ink-3)', margin: '4px 0 0 0', fontSize: '14px' }}>
-            Export your plan as PDF, CSV, JSON, or a shell migration script.
-          </p>
-        </div>
-        {/* A2: Single primary button, label follows format */}
-        <Button variant="primary" onClick={handleDownload} disabled={!optimizationResult}>
-          <Download size={16} style={{ marginRight: '8px' }} />
-          {downloadLabel}
-        </Button>
-      </div>
-      <p className="no-print text-caption text-ink-3" style={{ marginTop: '-16px', marginBottom: '16px' }}>Suggested scores, a heuristic, not ground truth</p>
+    {!knapsackResult ? <Card className="no-print"><div className="plan-empty"><h2>No plan yet</h2><p>Add files and run the optimizer to see a plan here.</p></div></Card> : <>
+      <section className="plan-kpis no-print" aria-label="Plan summary">
+        <Kpi label="Files kept" value={pluralize(knapsackResult.keptItems.length, 'file')} />
+        <Kpi label="Files moved" value={pluralize(knapsackResult.droppedItems.length, 'file')} moved />
+        <Kpi label="Space kept" value={formatSize(knapsackResult.totalSizeKept)} />
+        <Kpi label="Space moved" value={formatSize(knapsackResult.totalSizeDropped)} moved />
+        <Kpi label="Importance retained" value={`${importancePct}% (${knapsackResult.totalValue} of ${knapsackResult.maxPossibleValue})`} />
+        <Kpi label="Target capacity" value={formatSize(knapsackResult.quotaBytes || quotaBytes)} />
+        <Kpi label="Solver runtime" value={runtime} />
+      </section>
 
-      {!optimizationResult ? (
-        <Card className="no-print">
-          <div style={{ padding: '48px', textAlign: 'center', color: 'var(--color-ink-3)' }}>
-            {/* C7: Empty state */}
-            <svg width="56" height="56" viewBox="0 0 64 64" fill="none" aria-hidden="true" style={{ margin: '0 auto 16px', display: 'block' }}>
-              <rect x="8" y="20" width="48" height="36" rx="6" fill="var(--color-surface-sunken)" stroke="var(--color-border-strong)" strokeWidth="1.5" />
-              <circle cx="32" cy="38" r="8" fill="var(--color-forest-50)" stroke="var(--color-brass)" strokeWidth="1.5" />
-              <path d="M29 38L31 40L35 36" stroke="var(--color-brass)" strokeWidth="1.5" strokeLinecap="round" />
-            </svg>
-            <h3 style={{ fontSize: '20px', color: 'var(--color-ink)', margin: '0 0 8px 0' }}>No plan generated yet</h3>
-            <p style={{ maxWidth: '460px', margin: '0 auto', fontSize: '14px', color: 'var(--color-ink-2)' }}>
-              Run the optimizer to generate your plan, then come back here to export it.
-            </p>
-          </div>
+      <section className="plan-export-actions no-print" aria-label="Save plan">
+        <Button variant="secondary" onClick={() => saveFile('vaultline-plan.csv', generatePlanCsv(plan!), 'text/csv;charset=utf-8')}><FileSpreadsheet size={16} />Download CSV</Button>
+        <Button variant="secondary" onClick={() => saveFile('vaultline-plan.json', generatePlanJson(plan!), 'application/json;charset=utf-8')}><FileJson2 size={16} />Download JSON</Button>
+        <Button variant="secondary" onClick={() => saveFile('vaultline-migration.sh', generateShellMigrationScript(plan!), 'text/x-shellscript;charset=utf-8')}><Terminal size={16} />Download shell script</Button>
+      </section>
+
+      <section className="plan-treemap-section no-print">
+        <Card><h2>Where the space goes</h2><p className="plan-section-copy">Each block represents a file. Green marks files kept; striped rust marks files moved.</p>
+          <Treemap files={files.map(file => ({ id: file.id, name: file.name, category: file.category, size: file.size, priority: file.priority }))} keptIds={keptIds} />
         </Card>
-      ) : (
-        <div className="no-print report-layout">
-          {/* Left: Overview + Format Picker */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
-            <Card>
-              <h3 style={{ margin: '0 0 14px 0' }}>Overview</h3>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-                {[
-                  { label: 'Target capacity', value: formatSize(optimizationResult.quotaBytes), color: undefined },
-                  { label: 'Kept payload', value: `${formatSize(optimizationResult.totalSizeKept)} (${Math.round((optimizationResult.totalSizeKept / Math.max(1, optimizationResult.quotaBytes)) * 100)}%)`, color: 'var(--color-semantic-keep)' },
-                  { label: 'Importance retained', value: `${optimizationResult.totalValue} / ${optimizationResult.maxPossibleValue} (${importanceRetainedPct}%)`, color: 'var(--color-ink)' },
-                  { label: 'Move', value: `${formatSize(optimizationResult.totalSizeDropped)} (${pluralize(optimizationResult.droppedItems.length, 'file')})`, color: 'var(--color-semantic-move)' },
-                ].map(row => (
-                  <div key={row.label} style={{ padding: '10px 12px', background: 'var(--color-surface-sunken)', borderRadius: '8px' }}>
-                    <div style={{ fontSize: '12px', color: 'var(--color-ink-3)' }}>{row.label}</div>
-                    <div style={{ fontSize: '16px', color: row.color || 'var(--color-ink)', fontWeight: 700 }}>{row.value}</div>
-                  </div>
-                ))}
-              </div>
-            </Card>
+      </section>
 
-            <Card>
-              <h3 style={{ margin: '0 0 12px 0' }}>Format</h3>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-                {(Object.entries(FORMAT_META) as [ExportTab, typeof FORMAT_META[ExportTab]][]).map(([id, meta]) => (
-                  <button
-                    key={id}
-                    onClick={() => setActiveExportTab(id)}
-                    style={{
-                      display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-                      padding: '10px 12px', borderRadius: '8px', textAlign: 'left', cursor: 'pointer',
-                      border: activeExportTab === id ? '2px solid var(--color-forest-500)' : '1px solid var(--color-border-hairline)',
-                      background: activeExportTab === id ? 'var(--color-forest-50)' : 'var(--color-surface-raised)',
-                      transition: 'all 0.15s ease',
-                    }}
-                  >
-                    <div>
-                      <div style={{ fontWeight: 600, fontSize: '13px', color: 'var(--color-ink)' }}>{meta.label} <span style={{ opacity: 0.5, fontWeight: 400 }}>{meta.ext}</span></div>
-                      <div style={{ fontSize: '12px', color: 'var(--color-ink-3)' }}>{meta.desc}</div>
-                    </div>
-                  </button>
-                ))}
-              </div>
-            </Card>
-          </div>
+      <section className="plan-lists no-print">
+        <FileList title="Keep" items={keptFiles} />
+        <FileList title="Move" items={movedFiles} moved />
+      </section>
+      <Card className="plan-constraints no-print"><h2>Constraints</h2><div className="plan-constraint-columns">
+        <ConstraintList title="Always keep" items={files.filter(file => file.isPinned)} />
+        <ConstraintList title="Never keep" items={files.filter(file => file.isExcluded)} />
+      </div></Card>
 
-          {/* Right: Preview */}
-          <Card>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
-              <span style={{ fontSize: '12px', color: 'var(--color-ink-3)', fontFamily: 'var(--font-mono)' }}>
-                vaultline_export{FORMAT_META[activeExportTab].ext}
-              </span>
-              <Button variant="ghost" size="sm" onClick={handleCopy}>
-                {copied ? <Check size={14} style={{ marginRight: '6px', color: 'var(--color-forest-500)' }} /> : <Copy size={14} style={{ marginRight: '6px' }} />}
-                {copied ? 'Copied' : 'Copy'}
-              </Button>
-            </div>
-
-            {/* A9: pre with proper wrap — no horizontal scroll */}
-            <pre style={{
-              fontFamily: 'var(--font-mono)',
-              fontSize: '12px',
-              lineHeight: '1.55',
-              padding: '16px',
-              background: 'var(--color-surface-sunken)',
-              color: 'var(--color-ink)',
-              borderRadius: '8px',
-              overflowX: 'auto',
-              maxHeight: '520px',
-              whiteSpace: 'pre-wrap',
-              wordBreak: 'break-word',
-              margin: 0,
-              border: '1px solid var(--color-border-hairline)',
-            }}>
-              {previewContent}
-            </pre>
-          </Card>
+      <article className="plan-print" aria-label="Printable storage plan">
+        <header className="plan-print-header"><h1>Vaultline storage plan</h1><p>Generated {plan!.generatedAt}</p></header>
+        <div className="plan-print-kpis">
+          <PrintCard title="Files kept" value={String(knapsackResult.keptItems.length)} />
+          <PrintCard title="Files moved" value={String(knapsackResult.droppedItems.length)} />
+          <PrintCard title="Space kept" value={formatSize(knapsackResult.totalSizeKept)} />
+          <PrintCard title="Space moved" value={formatSize(knapsackResult.totalSizeDropped)} />
+          <PrintCard title="Importance retained" value={`${importancePct}% (${knapsackResult.totalValue} of ${knapsackResult.maxPossibleValue})`} />
+          <PrintCard title="Target capacity" value={formatSize(knapsackResult.quotaBytes || quotaBytes)} />
+          <PrintCard title="Solver runtime" value={runtime} />
         </div>
-      )}
-    </div>
-  );
+        <PrintTable title="Keep" items={keptFiles} />
+        <PrintTable title="Move" items={movedFiles} moved />
+        <section className="plan-print-section"><h2>Constraints</h2><p>Always keep: {files.filter(file => file.isPinned).map(file => file.name).join(', ') || 'None'}</p><p>Never keep: {files.filter(file => file.isExcluded).map(file => file.name).join(', ') || 'None'}</p></section>
+      </article>
+    </>}
+  </div>;
 };
 
-export default ReportsPage;
+const Kpi: React.FC<{ label: string; value: string; moved?: boolean }> = ({ label, value, moved = false }) => <Card className={`plan-kpi ${moved ? 'plan-kpi-moved' : ''}`}><span>{label}</span><strong>{value}</strong><i aria-hidden="true" /></Card>;
 
+const FileList: React.FC<{ title: string; items: ReturnType<typeof planFileMetadata>; moved?: boolean }> = ({ title, items, moved = false }) => <Card className={`plan-file-list ${moved ? 'plan-file-list-moved' : ''}`}><h2>{title} <span>{pluralize(items.length, 'file')}</span></h2><div className="plan-file-scroll">{items.length ? items.map(file => <div key={file.id} className="plan-file-row"><span title={file.path}><strong>{file.name}</strong><small>{file.path}</small></span><b>{formatSize(file.size)}</b><em>{file.priority}/10</em></div>) : <p>No files in this list.</p>}</div></Card>;
+
+const ConstraintList: React.FC<{ title: string; items: ReturnType<typeof planFileMetadata> }> = ({ title, items }) => <div><h3>{title}</h3>{items.length ? <ul>{items.map(file => <li key={file.id}>{file.name} · {formatSize(file.size)}</li>)}</ul> : <p>None</p>}</div>;
+
+const PrintCard: React.FC<{ title: string; value: string }> = ({ title, value }) => <div className="plan-print-card"><small>{title}</small><strong>{value}</strong></div>;
+
+const PrintTable: React.FC<{ title: string; items: ReturnType<typeof planFileMetadata>; moved?: boolean }> = ({ title, items, moved = false }) => <section className="plan-print-section"><h2>{title} · {pluralize(items.length, 'file')}</h2><table className="plan-print-table"><thead><tr><th>Name</th><th>Path</th><th>Size</th><th>Importance</th><th>Constraint</th></tr></thead><tbody>{items.map(file => <tr className={moved ? 'move-row' : ''} key={file.id}><td>{file.name}</td><td>{file.path}</td><td>{formatSize(file.size)}</td><td>{file.priority}/10</td><td>{file.isPinned ? 'Always keep' : file.isExcluded ? 'Never keep' : '—'}</td></tr>)}</tbody></table></section>;
+
+export default ReportsPage;
