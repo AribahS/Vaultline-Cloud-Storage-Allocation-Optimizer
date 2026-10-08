@@ -30,7 +30,7 @@ export const TopBar: React.FC = () => {
     <header className="vaultline-topbar" style={{ height: 64, display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 24px', gap: 16, background: 'var(--card)', borderBottom: '1px solid var(--card-border)' }}>
       <button className="brand-button" onClick={() => navigate('/')} aria-label="Vaultline home">Vaultline</button>
       <nav className="vaultline-nav" aria-label="Main navigation">
-        <NavLink to="/files">Files</NavLink><NavLink to="/optimizer">Optimizer</NavLink><NavLink to="/reports">Reports</NavLink>
+        <NavLink to="/play">Play</NavLink><NavLink to="/files">Files</NavLink><NavLink to="/optimizer">Optimizer</NavLink><NavLink to="/reports">Reports</NavLink>
         <button onClick={() => navigate('/algorithm')}>Algorithm</button>
       </nav>
       <div className="vaultline-summary" aria-label="Current scan summary">{pluralize(files.length, 'file')}, {formatSize(total)}</div>

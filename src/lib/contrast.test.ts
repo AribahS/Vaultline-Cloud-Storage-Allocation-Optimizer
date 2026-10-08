@@ -24,6 +24,8 @@ describe('design token contrast', () => {
       { label: 'primary label on forest', foreground: cream, background: vault, minimum: 4.5 },
       { label: 'kept label on deep green', foreground: cream, background: vault, minimum: 4.5 },
       { label: 'moved label on rust', foreground: cream, background: rust, minimum: 4.5 },
+      { label: 'Play kept tile label', foreground: cream, background: vault, minimum: 4.5 },
+      { label: 'Play moved tile label', foreground: cream, background: rust, minimum: 4.5 },
       { label: 'gold accent text on vault', foreground: gold, background: vault, minimum: 4.5 },
       { label: 'danger text on paper', foreground: rust, background: paper, minimum: 4.5 },
       { label: 'danger text on alert surface', foreground: rust, background: dangerSurface, minimum: 4.5 },

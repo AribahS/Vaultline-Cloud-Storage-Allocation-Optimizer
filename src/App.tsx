@@ -7,6 +7,7 @@ import { DashboardPage } from './ui/pages/DashboardPage';
 import { FilesPage } from './ui/pages/FilesPage';
 import { OptimizerPage } from './ui/pages/OptimizerPage';
 import ReportsPage from './ui/pages/ReportsPage';
+import { PlayPage } from './ui/pages/PlayPage';
 const AlgorithmPage = () => <div className="page-container"><h1>Algorithm Analysis</h1></div>;
 
 export const App: React.FC = () => {
@@ -14,6 +15,7 @@ export const App: React.FC = () => {
     <AppShell>
       <Routes>
         <Route path="/" element={<DashboardPage />} />
+        <Route path="/play" element={<PlayPage />} />
         <Route path="/files" element={<FilesPage />} />
         <Route path="/optimizer" element={<OptimizerPage />} />
         <Route path="/algorithm" element={<AlgorithmPage />} />

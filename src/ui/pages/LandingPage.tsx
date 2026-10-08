@@ -193,7 +193,7 @@ const HeroSVG: React.FC = () => (
 /*  Landing page                                                         */
 /* ------------------------------------------------------------------ */
 interface LandingPageProps {
-  onEnter: () => void;
+  onEnter: (path?: string) => void;
 }
 
 export const LandingPage: React.FC<LandingPageProps> = ({ onEnter }) => {
@@ -268,7 +268,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onEnter }) => {
           </span>
         </div>
         <button
-          onClick={onEnter}
+          onClick={() => onEnter()}
           style={{
             display: 'flex', alignItems: 'center', gap: 6,
             padding: '8px 20px',
@@ -373,7 +373,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onEnter }) => {
 
               <motion.div variants={fadeUp} style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
                 <button
-                  onClick={onEnter}
+                  onClick={() => onEnter()}
                   id="landing-cta-primary"
                   style={{
                     display: 'flex', alignItems: 'center', gap: 8,
@@ -401,7 +401,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onEnter }) => {
 
                 <button
                   id="landing-cta-secondary"
-                  onClick={() => { setFiles(STUDENT_LAPTOP_DATASET); onEnter(); }}
+                  onClick={() => { setFiles(STUDENT_LAPTOP_DATASET); onEnter('/play'); }}
                   style={{
                     display: 'flex', alignItems: 'center', gap: 8,
                     padding: '14px 24px',
@@ -602,7 +602,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onEnter }) => {
             Drop files anywhere — it runs entirely in your browser.
           </p>
           <button
-            onClick={onEnter}
+            onClick={() => onEnter()}
             id="landing-footer-cta"
             style={{
               padding: '14px 36px',
