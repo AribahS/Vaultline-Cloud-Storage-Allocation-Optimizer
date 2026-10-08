@@ -422,7 +422,7 @@ const ComparisonTab: React.FC<{ items: KnapsackItem[]; capacity: number }> = ({ 
 };
 
 // --- Correctness sub-tab ---
-const CorrectnessTab: React.FC = () => {
+export const CorrectnessTab: React.FC = () => {
   const [testState, setTestState] = useState<'idle' | 'running' | 'done'>('idle');
   const [passCount, setPassCount] = useState(0);
   const [failCount, setFailCount] = useState(0);

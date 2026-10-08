@@ -9,6 +9,7 @@ import { SegmentedControl } from '../components/SegmentedControl';
 import { useAppStore } from '../../store/useAppStore';
 import { BYTE_UNITS } from '../../engine/normalizer';
 import { formatSize, pluralize } from '../../lib/format';
+import { useOpenAlgorithmDrawer } from '../components/AlgorithmDrawerContext';
 import {
   Play, CheckCircle, ArrowRightLeft,
   TrendingUp, Clock, AlertTriangle, Pin, EyeOff, ChevronDown, ChevronUp
@@ -32,6 +33,7 @@ const UNIT_OPTIONS = [
 ];
 
 export const OptimizerPage: React.FC = () => {
+  const openAlgorithm = useOpenAlgorithmDrawer();
   const navigate = useNavigate();
   const {
     files, quotaBytes, setQuotaBytes, knapsackResult,
@@ -381,7 +383,7 @@ export const OptimizerPage: React.FC = () => {
               )}
 
               <div style={{ marginTop: '16px' }}>
-                <Button variant="ghost" size="sm" onClick={() => navigate('/algorithm')}>
+                <Button variant="ghost" size="sm" onClick={openAlgorithm}>
                   Explain this plan (Algorithm analysis)
                 </Button>
               </div>

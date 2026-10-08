@@ -50,13 +50,13 @@ export const LabBenchmark: React.FC = () => {
     <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
       <div>
         <h3 style={{ fontSize: 'var(--text-lg)', fontWeight: 600, color: 'var(--color-ink)' }}>
-          Runtime Benchmark: O(nW) Linear vs 2ⁿ Exponential
+          Measure how work changes as files are added
         </h3>
         <p style={{ fontSize: 'var(--text-sm)', color: 'var(--color-muted)', marginTop: '4px' }}>
-          Real live measurements of browser execution time as problem size grows from n = 25 to n = 200 items.
+          This chart measures solve time in this browser, adding 25 files per step with capacity fixed at 1,000 columns. Times vary by device.
         </p>
         <div style={{ marginTop: '8px', fontSize: 'var(--text-xs)', color: 'var(--color-primary)', backgroundColor: 'var(--color-primary-surface)', padding: '6px 12px', borderRadius: 'var(--radius-sm)', display: 'inline-block' }}>
-          <strong>Compare with classic 0/1:</strong> Highlights why dynamic programming is practical for hundreds of files, while exhaustive brute-force explodes into millions of years of CPU time beyond n = 50.
+          <strong>Search estimate:</strong> The red curve shows the number of file combinations an exhaustive search would examine. It is a theoretical estimate, not a measured duration, and is capped at 2⁶⁰.
         </div>
       </div>
 
@@ -84,7 +84,7 @@ export const LabBenchmark: React.FC = () => {
           <div style={{ display: 'flex', gap: '16px', fontSize: 'var(--text-xs)' }}>
             <span style={{ color: 'var(--color-success)', fontWeight: 500 }}>● Measured DP (ms)</span>
             <span style={{ color: 'var(--color-primary)', fontWeight: 500 }}>— Fitted O(nW) line</span>
-            <span style={{ color: 'var(--color-danger)', fontWeight: 500 }}>- - Theoretical 2ⁿ (Explosive)</span>
+            <span style={{ color: 'var(--color-danger)', fontWeight: 500 }}>- - Estimated combinations (capped at 2⁶⁰)</span>
           </div>
         </div>
 
@@ -108,7 +108,7 @@ export const LabBenchmark: React.FC = () => {
           {/* O(nW) straight line overlay */}
           <path d={linearFitPath} fill="none" stroke="var(--color-primary)" strokeWidth="1.5" strokeDasharray="4 2" />
 
-          {/* Theoretical 2^n exponential curve up to explosive boundary */}
+          {/* Illustrative curve for the capped exhaustive-search estimate; not a measured time series. */}
           <path
             d="M 45,153 Q 120,150 160,25"
             fill="none"
@@ -139,7 +139,7 @@ export const LabBenchmark: React.FC = () => {
         </svg>
 
         <div style={{ fontSize: 'var(--text-xs)', color: 'var(--color-dim)', textAlign: 'right', marginTop: '8px' }}>
-          Notice how DP stays linear in n for a fixed W, while 2ⁿ explodes vertically past n = 30.
+          The green line shows measured solve times. The red curve is an illustrative estimate of exhaustive-search combinations, not elapsed time.
         </div>
       </div>
     </div>

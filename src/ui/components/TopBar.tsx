@@ -5,12 +5,14 @@ import { useAppStore } from '../../store/useAppStore';
 import { scanFileList } from '../../engine/fileScanner';
 import { formatSize, pluralize } from '../../lib/format';
 import { SettingsModal } from './SettingsModal';
+import { useOpenAlgorithmDrawer } from './AlgorithmDrawerContext';
 
 export const TopBar: React.FC = () => {
   const { files, addFiles, setIsScanning, searchQuery, setSearchQuery } = useAppStore();
   const [settingsOpen, setSettingsOpen] = useState(false);
   const fileInput = useRef<HTMLInputElement>(null);
   const navigate = useNavigate();
+  const openAlgorithm = useOpenAlgorithmDrawer();
   const total = files.reduce((sum, file) => sum + file.size, 0);
 
   const onFiles = async (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -31,7 +33,7 @@ export const TopBar: React.FC = () => {
       <button className="brand-button" onClick={() => navigate('/')} aria-label="Vaultline home">Vaultline</button>
       <nav className="vaultline-nav" aria-label="Main navigation">
         <NavLink to="/play">Play</NavLink><NavLink to="/files">Files</NavLink><NavLink to="/optimizer">Optimizer</NavLink><NavLink to="/reports">Reports</NavLink>
-        <button onClick={() => navigate('/algorithm')}>Algorithm</button>
+        <button type="button" onClick={openAlgorithm}>Algorithm</button>
       </nav>
       <div className="vaultline-summary" aria-label="Current scan summary">{pluralize(files.length, 'file')}, {formatSize(total)}</div>
       <div className="topbar-actions">

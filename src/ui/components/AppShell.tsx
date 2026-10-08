@@ -1,11 +1,15 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { TopBar } from './TopBar';
 import { PrintExecutiveSummary } from './PrintExecutiveSummary';
 import { scanDroppedItems } from '../../engine/fileScanner';
 import { useAppStore } from '../../store/useAppStore';
+import { AlgorithmDrawerContext } from './AlgorithmDrawerContext';
+import { AlgorithmDrawer } from './AlgorithmDrawer';
 
 export const AppShell: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [dragging, setDragging] = useState(false);
+  const [algorithmOpen, setAlgorithmOpen] = useState(false);
+  const openAlgorithm = useCallback(() => setAlgorithmOpen(true), []);
   const { addFiles, setIsScanning } = useAppStore();
   useEffect(() => {
     const over = (event: DragEvent) => { event.preventDefault(); setDragging(true); };
@@ -21,10 +25,13 @@ export const AppShell: React.FC<{ children: React.ReactNode }> = ({ children }) 
     window.addEventListener('dragover', over); window.addEventListener('dragleave', leave); window.addEventListener('drop', drop);
     return () => { window.removeEventListener('dragover', over); window.removeEventListener('dragleave', leave); window.removeEventListener('drop', drop); };
   }, [addFiles, setIsScanning]);
-  return <div className="vaultline-shell">
-    {dragging && <div className="drop-overlay">Drop to add to this scan</div>}
-    <TopBar />
-    <main id="main-app">{children}</main>
-    <PrintExecutiveSummary />
-  </div>;
+  return <AlgorithmDrawerContext.Provider value={openAlgorithm}>
+    <div className="vaultline-shell">
+      {dragging && <div className="drop-overlay">Drop to add to this scan</div>}
+      <TopBar />
+      <main id="main-app">{children}</main>
+      <PrintExecutiveSummary />
+      <AlgorithmDrawer open={algorithmOpen} onClose={() => setAlgorithmOpen(false)} />
+    </div>
+  </AlgorithmDrawerContext.Provider>;
 };

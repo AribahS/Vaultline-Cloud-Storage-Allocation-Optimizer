@@ -30,6 +30,10 @@ const fileText = ['#FFFFFF', ink, ink, '#FFFFFF', ink, '#FFFFFF', '#FFFFFF', '#F
 const textPairs = [
   ['body ink on paper', ink, paper, 4.5], ['body ink on white cards', ink, card, 4.5],
   ['cream stage text on vault green', cream, vault, 4.5], ['primary button label on forest', cream, vault, 4.5],
+  ['ink on lightest heat fill', ink, token('color-forest-100'), 4.5],
+  ['cream text on medium heat fill', cream, token('color-forest-500'), 4.5],
+  ['cream text on darker heat fill', cream, token('color-forest-700'), 4.5],
+  ['cream on darkest heat fill', cream, vault, 4.5],
   ['kept block label on deep green', cream, token('kept'), 4.5], ['moved block label on rust', cream, rust, 4.5],
   ['Play kept tile label', cream, vault, 4.5], ['Play moved tile label', cream, rust, 4.5],
   ['gold highlight text on vault', gold, vault, 4.5],

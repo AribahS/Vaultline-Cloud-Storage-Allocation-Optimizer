@@ -13,6 +13,7 @@ describe('design token contrast', () => {
   it('keeps all text token pairs at their required contrast ratios', () => {
     const ink = token('ink'); const paper = token('paper'); const card = token('card');
     const cream = token('vault-text'); const vault = token('vault-bg'); const gold = token('gold'); const rust = token('moved');
+    const forest100 = token('color-forest-100'); const forest500 = token('color-forest-500'); const forest700 = token('color-forest-700');
     const dangerSurface = token('color-danger-surface');
     const fileColors = ['docs','photos','videos','audio','archives','code','system','other'].map(name => token(`color-file-${name}`));
     const fileText = ['#FFFFFF', ink, ink, '#FFFFFF', ink, '#FFFFFF', '#FFFFFF', '#FFFFFF'];
@@ -22,6 +23,10 @@ describe('design token contrast', () => {
       { label: 'ink on card', foreground: ink, background: card, minimum: 4.5 },
       { label: 'cream on vault', foreground: cream, background: vault, minimum: 4.5 },
       { label: 'primary label on forest', foreground: cream, background: vault, minimum: 4.5 },
+      { label: 'ink on lightest heat fill', foreground: ink, background: forest100, minimum: 4.5 },
+      { label: 'cream on medium heat fill', foreground: cream, background: forest500, minimum: 4.5 },
+      { label: 'cream on darker heat fill', foreground: cream, background: forest700, minimum: 4.5 },
+      { label: 'cream on darkest heat fill', foreground: cream, background: vault, minimum: 4.5 },
       { label: 'kept label on deep green', foreground: cream, background: vault, minimum: 4.5 },
       { label: 'moved label on rust', foreground: cream, background: rust, minimum: 4.5 },
       { label: 'Play kept tile label', foreground: cream, background: vault, minimum: 4.5 },
