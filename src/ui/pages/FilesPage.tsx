@@ -146,6 +146,23 @@ export const FilesPage: React.FC = () => {
         </div>
       </div>
 
+      {/* Dashboard Overview Banner */}
+      {files.length > 0 && (
+        <div className="files-hero-card" style={{ padding: '16px 20px', borderRadius: '12px', marginBottom: '20px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px' }}>
+          <div>
+            <div style={{ color: 'var(--highlight)', fontSize: '12px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '.08em' }}>STORAGE DASHBOARD</div>
+            <div style={{ color: 'var(--paper)', fontSize: '20px', fontWeight: 700, fontFamily: 'var(--font-heading)' }}>
+              {pluralize(files.length, 'file')} scanned · {formatSize(files.reduce((sum, f) => sum + f.size, 0))} total
+            </div>
+          </div>
+          <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+            <span className="files-stat-pill">Always keep: {pluralize(files.filter(f => f.isPinned).length, 'file')}</span>
+            <span className="files-stat-pill">Never keep: {pluralize(files.filter(f => f.isExcluded).length, 'file')}</span>
+            {dupCount > 0 && <span className="files-stat-pill" style={{ background: 'color-mix(in srgb, var(--highlight) 30%, transparent)' }}>{pluralize(dupCount, 'duplicate')}</span>}
+          </div>
+        </div>
+      )}
+
       {/* Scanning progress */}
       {isScanning && scanProgress && (
         <Card style={{ marginBottom: '24px', backgroundColor: 'var(--color-surface-sunken)' }}>

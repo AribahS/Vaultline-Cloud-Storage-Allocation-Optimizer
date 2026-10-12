@@ -5,10 +5,14 @@ import { formatSize, pluralize } from '../../lib/format';
 import { buildTeachingWalkthrough, buildYourPlanDataset, cellSentences, type WalkStep } from '../../lib/walkthrough';
 import { GREEDY_COUNTER_ITEMS, TUTORIAL_ITEMS } from '../../lib/walkthroughDatasets';
 
-type DrawerTab = 'Watch it think' | 'Cost';
+import { solveGreedy } from '../../engine/greedy';
+import { solveBruteForce } from '../../engine/bruteForce';
+import type { KnapsackItem } from '../../engine/types';
+
+type DrawerTab = 'Watch it think' | 'Comparison' | 'Cost';
 type DatasetName = 'tutorial' | 'greedy' | 'your';
 
-const tabs: DrawerTab[] = ['Watch it think', 'Cost'];
+const tabs: DrawerTab[] = ['Watch it think', 'Comparison', 'Cost'];
 
 export interface AlgorithmDrawerProps { open: boolean; onClose: () => void }
 
@@ -124,7 +128,7 @@ export const AlgorithmDrawer: React.FC<AlgorithmDrawerProps> = ({ open, onClose 
     <div className="algorithm-drawer-backdrop" aria-hidden="true" onMouseDown={onClose} />
     <aside className="algorithm-drawer responsive-surface" role="dialog" aria-modal="true" aria-labelledby="algorithm-drawer-title" onKeyDown={onDialogKeyDown}>
       <header className="algorithm-drawer-header">
-        <div><p className="algorithm-drawer-eyebrow">VAULTLINE</p><h2 id="algorithm-drawer-title">How the plan is built</h2></div>
+        <div><p className="algorithm-drawer-eyebrow">VAULTLINE</p><h2 id="algorithm-drawer-title">How it works</h2></div>
         <button ref={closeButton} className="algorithm-close" aria-label="Close algorithm drawer" onClick={onClose}>Close <span aria-hidden="true">×</span></button>
       </header>
       <nav className="algorithm-tabs" role="tablist" aria-label="Algorithm topics">
@@ -137,10 +141,10 @@ export const AlgorithmDrawer: React.FC<AlgorithmDrawerProps> = ({ open, onClose 
             <select id="walk-dataset" aria-label="Walkthrough dataset" value={datasetName} onChange={event => selectDataset(event.target.value as DatasetName)}>
               <option value="tutorial">Tutorial (3 files)</option>
               <option value="greedy">Greedy counterexample</option>
-              <option value="your" disabled={!yourPlan.items.length}>Your plan (top 8 files)</option>
+              <option value="your" disabled={!yourPlan.items.length}>Your files</option>
             </select>
             {datasetName === 'your' && !yourPlan.items.length && <span>{yourPlan.hint}</span>}
-            {datasetName !== 'your' && !yourPlan.items.length && <span className="walk-your-plan-hint">Add files to enable “Your plan”.</span>}
+            {datasetName !== 'your' && !yourPlan.items.length && <span className="walk-your-plan-hint">Add files to enable “Your files”.</span>}
           </div>
           <div className="walk-layout">
             <section className="walk-files" aria-label="Files and placement trays">
@@ -204,7 +208,7 @@ export const AlgorithmDrawer: React.FC<AlgorithmDrawerProps> = ({ open, onClose 
               <p>Chosen: <strong>{currentStep.decision === 'take' ? 'take this file' : 'skip this file'}</strong></p>
             </> : currentStep?.phase === 'traceback' ? <>
               <h3>{currentStep.taken ? 'Keep' : 'Move'} {currentStep.item.name}</h3>
-              <p>{currentStep.taken ? `${currentStep.item.name} is on the best plan. ${formatSize(currentStep.item.originalSize)} is kept.` : `${currentStep.item.name} is left out of the best plan.`}</p>
+              <p>{currentStep.taken ? `${currentStep.item.name} is in the best fit. ${formatSize(currentStep.item.originalSize)} is kept.` : `${currentStep.item.name} is left out of the best fit.`}</p>
               {traceSteps.length === selected.items.length && <p data-testid="traceback-status">Traceback complete · {pluralize(walkthrough.result.keptItemIds.length, 'file')} in the Keep tray.</p>}
             </> : <p>Start stepping to fill the table.</p>}
           </section>
@@ -223,10 +227,26 @@ export const AlgorithmDrawer: React.FC<AlgorithmDrawerProps> = ({ open, onClose 
           </div>
         </>}
 
+        {tab === 'Comparison' && <ComparisonPanel items={selected.items} capacity={selected.capacity} columnBytes={selected.columnBytes} />}
         {tab === 'Cost' && <CostPanel fileCount={files.filter(file => !file.isExcluded && !file.isPinned).length} capacityUnits={capacityUnits} cells={knapsackResult?.cellsComputed ?? 0} />}
       </div>
     </aside>
   </>;
+};
+
+const ComparisonPanel: React.FC<{ items: KnapsackItem[]; capacity: number; columnBytes: number }> = ({ items, capacity, columnBytes }) => {
+  const dp = useMemo(() => buildTeachingWalkthrough(items, capacity).result, [items, capacity]);
+  const greedy = useMemo(() => solveGreedy(items, { quotaUnits: capacity, quotaBytes: capacity * columnBytes, unitBytes: columnBytes }), [items, capacity, columnBytes]);
+  const brute = useMemo(() => items.length <= 20 ? solveBruteForce(items, capacity) : null, [items, capacity]);
+  return <section className="algorithm-info-panel">
+    <h3>Compare complete search with shortcuts</h3>
+    <p>The table checks every file and capacity choice. Greedy takes the highest importance per unit of size first; checking every possible set is slower as files are added.</p>
+    <div className="algorithm-comparison-cards">
+      {[{ label: 'Dynamic programming', score: dp.totalValue, count: dp.keptItemIds.length }, { label: 'Greedy', score: greedy.totalValue, count: greedy.keptItems.length }, ...(brute ? [{ label: 'Check every set', score: brute.bestValue, count: brute.bestSubset.length }] : [])].map(result => <article key={result.label}><span>{result.label}</span><strong>{result.score} importance</strong><small>{pluralize(result.count, 'file')} kept</small></article>)}
+    </div>
+    <p>{greedy.totalValue < dp.totalValue ? `For this data, the table finds ${dp.totalValue - greedy.totalValue} more importance than the greedy shortcut.` : `For this data, both methods reach ${dp.totalValue} importance.`}</p>
+    {dp.keptItemIds.length > 0 && <p>Best set: {dp.keptItemIds.map(id => items.find(item => item.id === id)?.name).filter(Boolean).join(', ')}.</p>}
+  </section>;
 };
 
 const CostPanel: React.FC<{ fileCount: number; capacityUnits: number; cells: number }> = ({ fileCount, capacityUnits, cells }) => {
@@ -235,7 +255,7 @@ const CostPanel: React.FC<{ fileCount: number; capacityUnits: number; cells: num
   return <section className="algorithm-info-panel" aria-label="Solver cost">
     <h3>What the calculation costs</h3>
     <p><strong>Time: O(n × W).</strong> The solver compares each eligible file against each available capacity step.</p>
-    <p>Current scan: {pluralize(fileCount, 'file')} and {capacityUnits.toLocaleString()} capacity steps ({cells.toLocaleString()} production decisions in the last plan).</p>
+    <p>Current scan: {pluralize(fileCount, 'file')} and {capacityUnits.toLocaleString()} capacity steps ({cells.toLocaleString()} production decisions in the last run).</p>
     <p>The teaching view shows {teachingTableCells.toLocaleString()} table cells. The production solver uses two rolling rows plus a compact decision record (about {formatSize(productionBytes)} of numeric storage for this scale).</p>
     <p>The production solver is checked against brute force in the project test suite.</p>
   </section>;

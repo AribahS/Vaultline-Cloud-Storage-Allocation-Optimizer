@@ -141,7 +141,7 @@ export const FilesTable: React.FC<{
       size: 100,
       cell: info => {
         const file = info.row.original;
-        if (!knapsackResult) return 'Not planned';
+        if (!knapsackResult) return 'Not evaluated';
         const isKept = keptIds.has(file.id);
         return (
           <span style={{

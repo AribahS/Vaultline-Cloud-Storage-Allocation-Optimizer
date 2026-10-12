@@ -13,26 +13,31 @@ const Path = () => <output data-testid="pathname">{useLocation().pathname}</outp
 const renderAt = (path: string) => render(<MemoryRouter initialEntries={[path]}><App /><Path /></MemoryRouter>);
 
 describe('simplified navigation', () => {
-  it('has exactly Files, Play, Plan, and the Algorithm button', () => {
+  it('has exactly Files, Play, Results, and the Algorithm button', () => {
     useAppStore.setState({ files: [], knapsackResult: null, isPlanStale: false, isComputing: false });
     renderAt('/files');
     const nav = screen.getByRole('navigation', { name: 'Main navigation' });
-    expect([...nav.querySelectorAll('a')].map(link => link.textContent)).toEqual(['Files', 'Play', 'Plan']);
+    expect([...nav.querySelectorAll('a')].map(link => link.textContent)).toEqual(['Files', 'Play', 'Results']);
     expect(nav.querySelectorAll('button')).toHaveLength(1);
     expect(screen.getByRole('button', { name: 'Algorithm' })).toBeTruthy();
     expect(screen.queryByText('Dashboard')).toBeNull();
     expect(screen.queryByText('Optimizer')).toBeNull();
   });
 
-  it('routes old optimizer and reports paths to Plan, and tools through home', async () => {
+  it('routes old optimizer, reports and plan paths to Results, and tools through home', async () => {
     useAppStore.setState({ files: [], knapsackResult: null, isPlanStale: false, isComputing: false });
+    const plan = renderAt('/plan');
+    await waitFor(() => expect(screen.getByTestId('pathname').textContent).toBe('/results'));
+    expect(screen.getByRole('heading', { name: 'Results' })).toBeTruthy();
+    plan.unmount();
+
     const optimizer = renderAt('/optimizer');
-    await waitFor(() => expect(screen.getByTestId('pathname').textContent).toBe('/plan'));
-    expect(screen.getByRole('heading', { name: 'Plan' })).toBeTruthy();
+    await waitFor(() => expect(screen.getByTestId('pathname').textContent).toBe('/results'));
+    expect(screen.getByRole('heading', { name: 'Results' })).toBeTruthy();
     optimizer.unmount();
 
     const reports = renderAt('/reports');
-    await waitFor(() => expect(screen.getByTestId('pathname').textContent).toBe('/plan'));
+    await waitFor(() => expect(screen.getByTestId('pathname').textContent).toBe('/results'));
     reports.unmount();
 
     renderAt('/tools');
@@ -50,21 +55,56 @@ describe('simplified navigation', () => {
     }
   });
 
-  it('renders one title on Files, Play and Plan', async () => {
+  it('renders one title on Files, Play and Results', async () => {
     useAppStore.setState({ files: [], knapsackResult: null, isPlanStale: false, isComputing: false });
-    for (const [path, title] of [['/files', 'Files'], ['/play', 'Play'], ['/plan', 'Plan']]) {
+    for (const [path, title] of [['/files', 'Files'], ['/play', 'Play'], ['/results', 'Results']]) {
       const view = renderAt(path);
       expect(await screen.findAllByRole('heading', { name: title, level: 1 })).toHaveLength(1);
       view.unmount();
     }
   });
 
-  it('keeps only Watch it think and Cost in the Algorithm drawer', async () => {
+  it('contains no user-visible word "plan" or "plans" across routes and the open drawer', async () => {
+    useAppStore.setState({ files: [], knapsackResult: null, isPlanStale: false, isComputing: false });
+    for (const path of ['/files', '/play', '/results']) {
+      const view = renderAt(path);
+      // Scan all elements for aria-label, title, or textContent matching /\bplans?\b/i
+      const checkNode = (node: Element) => {
+        const ariaLabel = node.getAttribute('aria-label') || '';
+        const title = node.getAttribute('title') || '';
+        const text = node.childNodes.length === 1 && node.childNodes[0].nodeType === 3 ? node.textContent || '' : '';
+        expect(ariaLabel).not.toMatch(/\bplans?\b/i);
+        expect(title).not.toMatch(/\bplans?\b/i);
+        if (text) {
+          expect(text).not.toMatch(/\bplans?\b/i);
+        }
+      };
+      view.container.querySelectorAll('*').forEach(checkNode);
+      view.unmount();
+    }
+
+    const drawerHost = renderAt('/files');
+    fireEvent.click(screen.getByRole('button', { name: 'Algorithm' }));
+    const drawer = await screen.findByRole('dialog', { name: 'How it works' });
+    drawer.querySelectorAll('*').forEach((node) => {
+      const ariaLabel = node.getAttribute('aria-label') || '';
+      const title = node.getAttribute('title') || '';
+      const text = node.childNodes.length === 1 && node.childNodes[0].nodeType === 3 ? node.textContent || '' : '';
+      expect(ariaLabel).not.toMatch(/\bplans?\b/i);
+      expect(title).not.toMatch(/\bplans?\b/i);
+      if (text) {
+        expect(text).not.toMatch(/\bplans?\b/i);
+      }
+    });
+    drawerHost.unmount();
+  });
+
+  it('keeps Watch it think, Comparison and Cost in the Algorithm drawer for now', async () => {
     useAppStore.setState({ files: [], knapsackResult: null, isPlanStale: false, isComputing: false });
     renderAt('/files');
     fireEvent.click(screen.getByRole('button', { name: 'Algorithm' }));
-    const drawer = await screen.findByRole('dialog', { name: 'How the plan is built' });
-    expect([...drawer.querySelectorAll('[role="tab"]')].map(tab => tab.textContent)).toEqual(['Watch it think', 'Cost']);
+    const drawer = await screen.findByRole('dialog', { name: 'How it works' });
+    expect([...drawer.querySelectorAll('[role="tab"]')].map(tab => tab.textContent)).toEqual(['Watch it think', 'Comparison', 'Cost']);
     fireEvent.click(screen.getByRole('tab', { name: 'Cost' }));
     expect(screen.getByText(/O\(n × W\)/)).toBeTruthy();
     expect(screen.getByText(/checked against brute force in the project test suite/)).toBeTruthy();

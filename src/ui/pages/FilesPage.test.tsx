@@ -262,7 +262,7 @@ describe('Files page Step D behavior', () => {
     expect(screen.getAllByText('/Documents/alpha.txt')).toHaveLength(2);
     expect(screen.getAllByText('08/10/2026', { exact: false })).toHaveLength(3);
     expect(screen.getByText('Auto')).toBeTruthy();
-    expect(screen.getAllByText('Not planned')).toHaveLength(3);
+    expect(screen.getAllByText('Not evaluated')).toHaveLength(3);
     expect(screen.getByText('alpha.txt___1024')).toBeTruthy();
     expect(document.querySelector('.generic-drawer-panel.responsive-surface')).toBeTruthy();
     expect(screen.getAllByText('Suggested scores, a heuristic, not ground truth')).toHaveLength(2);

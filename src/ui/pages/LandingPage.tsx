@@ -39,12 +39,12 @@ const FEATURES = [
   {
     icon: Cpu,
     title: 'Dynamic programming',
-    body: 'Exact dynamic programming, O(n × W), finds the best plan on the selected size scale.',
+    body: 'Exact dynamic programming, O(n × W), finds the best fit on the selected size scale.',
   },
   {
     icon: HardDrive,
     title: 'Works with folders',
-    body: 'Add files or choose a folder. Vaultline uses their names, sizes and dates to build a plan in your browser.',
+    body: 'Add files or choose a folder. Vaultline uses their names, sizes and dates to find recommendations in your browser.',
   },
 ];
 
@@ -312,7 +312,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onEnter }) => {
                   maxWidth: 440,
                 }}
               >
-                Vaultline reads file names, sizes and dates on this device. Dynamic programming, O(n × W), finds the best plan on the selected size scale.
+                Vaultline reads file names, sizes and dates on this device. Dynamic programming, O(n × W), finds the best fit on the selected size scale.
               </motion.p>
 
               <motion.div variants={fadeUp} style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
@@ -543,7 +543,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onEnter }) => {
             Drop files anywhere — it runs entirely in your browser.
           </p>
           <p style={{ marginTop: 24, fontSize: 12, color: 'var(--text-muted)', opacity: .8 }}>
-            Your plan is calculated in this browser from file metadata.
+            Your recommendation is calculated in this browser from file metadata.
           </p>
         </motion.footer>
       )}

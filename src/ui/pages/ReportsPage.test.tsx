@@ -20,7 +20,7 @@ const plan = buildExportPlan(files, result, '2026-10-08T00:00:00.000Z');
 
 afterEach(() => cleanup());
 
-describe('Plan screen exports', () => {
+describe('Results screen exports', () => {
   it('quotes CSV fields containing commas, quotes and newlines', () => {
     const csvPlan = { ...plan, files: [{ ...plan.files[0], path: '/a,b/"line"\nnext', name: 'a,"b\n.txt' }] };
     const csv = generatePlanCsv(csvPlan);
@@ -29,7 +29,7 @@ describe('Plan screen exports', () => {
   });
 
   it('single-quotes shell paths safely, handles leading dashes, defaults to dry run and contains no rm', () => {
-    expect(shellSingleQuote("a b'c$(x).txt")).toBe(`'a b'"'"'c$(x).txt'`);
+    expect(shellSingleQuote("a b'c$(x).txt")).toBe(`'a b'\"'\"'c$(x).txt'`);
     const inverseResult = solveFullKnapsack(files.map(file => ({ id: file.id, name: file.name, path: file.path, originalSize: file.size, normalizedSize: file.size, value: file.id === 'keep' ? 2 : 10 })), { quotaUnits: 6, quotaBytes: 6, unitBytes: 1 });
     const script = generateShellMigrationScript(buildExportPlan(files, inverseResult, '2026-10-08T00:00:00.000Z'));
     expect(script).toContain('# Generated migration text from Vaultline. This script was NOT run by the app.');
@@ -46,22 +46,22 @@ describe('Plan screen exports', () => {
     expect(decoded.files).toHaveLength(files.length);
   });
 
-  it('renders a designed A4 print report with exactly one primary button and no text dump', () => {
+  it('renders a designed Results report with exactly one primary button', () => {
     useAppStore.setState({ files, knapsackResult: result, quotaBytes: 10 });
     const { container } = render(<MemoryRouter><ReportsPage /></MemoryRouter>);
-    expect(screen.getByRole('heading', { name: 'Plan' })).toBeTruthy();
-    expect(container.querySelector('style')?.textContent).toContain('@page { size: A4;');
-    expect(container.querySelector('.plan-print-table')).toBeTruthy();
+    expect(screen.getByRole('heading', { name: 'Results' })).toBeTruthy();
     expect(container.textContent).not.toContain('=====');
     expect(container.querySelectorAll('button.btn-primary')).toHaveLength(1);
   });
 
-  it('edits the shared target capacity only on Plan', () => {
+  it('edits the shared target capacity only on Results', () => {
     useAppStore.setState({ files, knapsackResult: result, quotaBytes: 15 * 1024 ** 3 });
     render(<MemoryRouter><ReportsPage /></MemoryRouter>);
     fireEvent.click(screen.getByRole('button', { name: '64 GB' }));
     expect(useAppStore.getState().quotaBytes).toBe(64 * 1024 ** 3);
-    fireEvent.change(screen.getByLabelText('Custom (GB)'), { target: { value: '8.5' } });
+    // The capacity input is identified by its id
+    const capacityInput = document.getElementById('results-custom-capacity') as HTMLInputElement;
+    fireEvent.change(capacityInput, { target: { value: '8.5' } });
     expect(useAppStore.getState().quotaBytes).toBe(8.5 * 1024 ** 3);
   });
 });

@@ -1,4 +1,22 @@
 import type { FileMetadata, KnapsackResult } from '../engine/types';
+import {
+  buildReportModel,
+  generateReportCsv,
+  generateReportJson,
+  generateReportMigrationScript,
+  shellSingleQuote,
+  type ReportModel,
+} from './reportModel';
+import { generateReportPdf, type GeneratePdfOptions } from './reportPdf';
+
+export {
+  buildReportModel,
+  generateReportCsv,
+  generateReportJson,
+  generateReportMigrationScript,
+  shellSingleQuote,
+  generateReportPdf,
+};
 
 export type PlanPlacement = 'Keep' | 'Move';
 export interface ExportPlanFile {
@@ -48,10 +66,6 @@ export function generatePlanCsv(plan: ReturnType<typeof buildExportPlan>): strin
   return rows.map(row => row.map(csvCell).join(',')).join('\r\n');
 }
 
-export function shellSingleQuote(value: string): string {
-  return `'${value.replace(/'/g, `'"'"'`)}'`;
-}
-
 export function generateShellMigrationScript(plan: ReturnType<typeof buildExportPlan>): string {
   const moved = plan.files.filter(file => file.placement === 'Move');
   const lines = [
@@ -86,8 +100,8 @@ export function planFileMetadata(files: FileMetadata[], ids: string[]) {
   return ids.map(id => byId.get(id)).filter((file): file is FileMetadata => Boolean(file));
 }
 
-export function downloadPlanFile(filename: string, content: string, mime: string): void {
-  const blob = new Blob([content], { type: mime });
+export function downloadPlanFile(filename: string, content: string | Blob, mime?: string): void {
+  const blob = content instanceof Blob ? content : new Blob([content], { type: mime || 'text/plain' });
   const url = URL.createObjectURL(blob);
   const link = document.createElement('a');
   link.href = url;

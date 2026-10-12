@@ -446,7 +446,7 @@ export const Treemap: React.FC<TreemapProps> = ({
                   color: hoveredTile.tile.kept ? 'var(--color-semantic-keep)' : 'var(--color-semantic-move)'
                 }}
               >
-                {hoveredTile.tile.kept ? '✓ Kept in Vault Plan' : '→ Move to External Storage'}
+                {hoveredTile.tile.kept ? '✓ Kept in Vault' : '→ Move to External Storage'}
               </span>
             </div>
           </div>

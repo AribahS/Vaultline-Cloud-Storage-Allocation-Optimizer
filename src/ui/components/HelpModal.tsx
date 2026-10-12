@@ -72,13 +72,13 @@ export const HelpModal: React.FC<HelpModalProps> = ({ onClose }) => {
         {/* What is Vaultline */}
         <Section title="What is Vaultline?">
           <p style={{ fontSize: "14px", color: "var(--color-ink)", lineHeight: 1.7, margin: "0 0 16px" }}>
-            Vaultline is a <strong>privacy-first storage optimizer</strong> that uses dynamic programming to find the best plan for the selected size scale and constraints.
+            Vaultline is a <strong>privacy-first storage optimizer</strong> that uses dynamic programming to find the best fit for the selected size scale and constraints.
           </p>
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "10px" }}>
             {[
               { icon: Shield, label: "Private by design", desc: "Nothing is uploaded: only names, sizes and dates are read." },
               { icon: Cpu, label: "Dynamic programming", desc: "O(n × W) on the selected size scale." },
-              { icon: HardDrive, label: "Works with folders", desc: "Add files or choose a folder; planning runs in your browser." },
+              { icon: HardDrive, label: "Works with folders", desc: "Add files or choose a folder; optimization runs in your browser." },
             ].map(({ icon: Icon, label, desc }) => (
               <div key={label} style={{
                 padding: "14px 12px", borderRadius: "10px",
@@ -97,10 +97,10 @@ export const HelpModal: React.FC<HelpModalProps> = ({ onClose }) => {
         <Section title="Getting started">
           <ol style={{ margin: 0, paddingLeft: "20px", color: "var(--color-ink)", lineHeight: 1 }}>
             {[
-              ["Add files", "Drag & drop a folder onto the app, or use the sample presets on the Dashboard."],
-              ["Set your quota", "Enter the target storage size in the Optimizer tab."],
-              ["Review the plan", "The optimizer automatically finds the best keep/move split."],
-              ["Export", "Download a report or a copy script from the Reports tab."],
+              ["Add files", "Drag & drop a folder onto the app, or use sample data."],
+              ["Set your capacity", "Enter the target storage size in Results or Play."],
+              ["Review results", "The optimizer automatically finds the best keep/move split."],
+              ["Export", "Download a report or a migration script from Results."],
             ].map(([step, detail]) => (
               <li key={step} style={{ marginBottom: "10px", fontSize: "14px" }}>
                 <strong>{step}</strong> — <span style={{ color: "var(--color-ink-muted)" }}>{detail}</span>

@@ -37,7 +37,7 @@ describe('responsive layout structure', () => {
     expect(play.container.querySelector('.play-page.responsive-page')).toBeTruthy();
     play.unmount();
 
-    const plan = render(<ReportsPage />);
+    const plan = render(<MemoryRouter><ReportsPage /></MemoryRouter>);
     expect(plan.container.querySelector('.plan-page.responsive-page')).toBeTruthy();
   });
 });

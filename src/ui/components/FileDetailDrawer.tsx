@@ -185,7 +185,7 @@ export const FileDetailDrawer: React.FC<FileDetailDrawerProps> = ({ file, onClos
       <div style={{ marginTop: '16px', padding: '16px', backgroundColor: 'var(--color-surface-sunken)', borderRadius: 'var(--radius-card)', border: '1px solid var(--color-border-hairline)' }}>
         <div style={{ fontWeight: 600, fontSize: '14px', marginBottom: '8px' }}>Placement</div>
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-          {!knapsackResult ? <span className="text-caption text-ink-3">Not planned</span> : (() => {
+          {!knapsackResult ? <span className="text-caption text-ink-3">Not evaluated</span> : (() => {
             const isKept = knapsackResult.keptItems.some(i => i.id === file.id);
             return (
               <span style={{
