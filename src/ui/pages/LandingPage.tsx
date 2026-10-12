@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { Shield, Cpu, HardDrive } from 'lucide-react';
 
 const FEATURES = [
@@ -42,7 +41,6 @@ const HeroSVG: React.FC = () => (
 interface LandingPageProps { onEnter: (path?: string) => void }
 
 export const LandingPage: React.FC<LandingPageProps> = ({ onEnter }) => {
-  const navigate = useNavigate();
   const [, setReady] = useState(false);
   useEffect(() => { const t = setTimeout(() => setReady(true), 30); return () => clearTimeout(t); }, []);
 
@@ -94,7 +92,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onEnter }) => {
             {STEPS.map((step) => (
               <div key={step.n} style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
                 <div style={{ width: 40, height: 40, borderRadius: '50%', background: 'var(--ink)', color: 'var(--paper)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800, fontSize: 16, fontFamily: 'var(--font-heading)', flexShrink: 0 }}>{step.n}</div>
-                <button onClick={() => navigate(step.to)} style={{ border: 0, background: 'transparent', cursor: 'pointer', textAlign: 'left', padding: 0 }}>
+                <button onClick={() => onEnter(step.to)} style={{ border: 0, background: 'transparent', cursor: 'pointer', textAlign: 'left', padding: 0 }}>
                   <strong style={{ fontFamily: 'Fraunces, serif', fontSize: 18, color: 'var(--ink)', display: 'block', marginBottom: 4 }}>{step.label}</strong>
                   <span style={{ fontSize: 14, color: 'var(--text-muted)', lineHeight: 1.6 }}>{step.sub}</span>
                 </button>

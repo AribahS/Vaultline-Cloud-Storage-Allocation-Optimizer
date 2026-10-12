@@ -34,7 +34,9 @@ function Root() {
   if (showLanding) {
     return (
       <ErrorBoundary fallbackType="root">
-        <LandingPage onEnter={handleEnter} />
+        <HashRouter>
+          <LandingPage onEnter={handleEnter} />
+        </HashRouter>
       </ErrorBoundary>
     );
   }
