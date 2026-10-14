@@ -1,4 +1,5 @@
 import React, { Suspense, lazy, useCallback, useEffect, useState } from 'react';
+import { useLocation } from 'react-router-dom';
 import { TopBar } from './TopBar';
 import { scanDroppedItems } from '../../engine/fileScanner';
 import { useAppStore } from '../../store/useAppStore';
@@ -10,6 +11,8 @@ export const AppShell: React.FC<{ children: React.ReactNode }> = ({ children }) 
   const [algorithmOpen, setAlgorithmOpen] = useState(false);
   const openAlgorithm = useCallback(() => setAlgorithmOpen(true), []);
   const { addFiles, setIsScanning } = useAppStore();
+  const { pathname } = useLocation();
+  const isLandingPage = pathname === '/landing';
   useEffect(() => {
     const over = (event: DragEvent) => { event.preventDefault(); setDragging(true); };
     const leave = (event: DragEvent) => { event.preventDefault(); if (!event.relatedTarget) setDragging(false); };
@@ -27,7 +30,7 @@ export const AppShell: React.FC<{ children: React.ReactNode }> = ({ children }) 
   return <AlgorithmDrawerContext.Provider value={openAlgorithm}>
     <div className="vaultline-shell">
       {dragging && <div className="drop-overlay">Drop to add to this scan</div>}
-      <TopBar />
+      {!isLandingPage && <TopBar />}
       <main id="main-app">{children}</main>
       <Suspense fallback={null}><AlgorithmDrawer open={algorithmOpen} onClose={() => setAlgorithmOpen(false)} /></Suspense>
     </div>

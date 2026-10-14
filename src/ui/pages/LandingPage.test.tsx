@@ -12,6 +12,13 @@ afterEach(() => cleanup());
 const RoutePath: React.FC = () => <output data-testid="current-path">{useLocation().pathname}</output>;
 
 describe('Landing page', () => {
+  it('hides the app top bar when the Vaultline brand returns to the landing route', async () => {
+    render(<MemoryRouter initialEntries={['/files']}><App /><RoutePath /></MemoryRouter>);
+    fireEvent.click(screen.getByRole('button', { name: 'Vaultline landing page' }));
+    await waitFor(() => expect(screen.getByTestId('current-path').textContent).toBe('/landing'));
+    expect(document.querySelector('.vaultline-topbar')).toBeNull();
+  });
+
   it('offers the sample as the primary action and opens it in Play', async () => {
     useAppStore.setState({ files: [], knapsackResult: null, autoRunOptimizer: false, isPlanStale: false });
     const { container } = render(<MemoryRouter initialEntries={['/landing']}><App /><RoutePath /></MemoryRouter>);
