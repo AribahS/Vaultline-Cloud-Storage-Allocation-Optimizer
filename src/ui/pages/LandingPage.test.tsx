@@ -23,7 +23,7 @@ describe('Landing page', () => {
     useAppStore.setState({ files: [], knapsackResult: null, autoRunOptimizer: false, isPlanStale: false });
     const { container } = render(<MemoryRouter initialEntries={['/landing']}><App /><RoutePath /></MemoryRouter>);
     const primary = await screen.findByRole('button', { name: 'Try sample data' }, { timeout: 8000 });
-    expect(container.querySelectorAll('.landing-hero button')).toHaveLength(2);
+    expect(container.querySelectorAll('.landing-hero-copy button')).toHaveLength(2);
     expect(container.querySelectorAll('.landing-hero .btn-primary')).toHaveLength(1);
     expect(primary.id).toBe('landing-cta-primary');
     expect(screen.queryByText('Skip to app')).toBeNull();

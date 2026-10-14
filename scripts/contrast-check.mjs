@@ -20,6 +20,7 @@ const ratio = (foreground, background) => {
 
 for (const [name, expected] of [
   ['ink', '#2B1A4A'], ['vault', '#2B1A4A'], ['paper', '#F1F7ED'], ['card', '#FFFFFF'],
+  ['navy', '#23496B'],
   ['kept', '#91C7B1'], ['moved', '#B33951'], ['highlight', '#E3D081'], ['danger', '#B33951'],
 ]) if (token(name) !== expected) throw new Error(`--${name} is ${token(name)}; expected ${expected}`);
 
@@ -27,6 +28,8 @@ const pairs = [
   ['ink on paper', 'ink', 'paper'], ['ink on card', 'ink', 'card'],
   ['paper on vault', 'paper', 'vault'], ['paper on primary ink button', 'paper', 'ink'],
   ['landing Open app label', 'paper', 'vault'],
+  ['paper on landing navy', 'paper', 'navy'], ['highlight on landing navy', 'highlight', 'navy'],
+  ['muted on landing navy', 'text-muted-on-dark', 'navy'],
   ['ink on kept mint', 'ink', 'kept'], ['paper on moved crimson', 'paper', 'moved'],
   ['highlight on vault', 'highlight', 'vault'], ['danger on paper', 'danger', 'paper'],
   ['danger on alert surface', 'danger', 'alert-surface'],
