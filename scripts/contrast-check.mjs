@@ -26,6 +26,7 @@ for (const [name, expected] of [
 const pairs = [
   ['ink on paper', 'ink', 'paper'], ['ink on card', 'ink', 'card'],
   ['paper on vault', 'paper', 'vault'], ['paper on primary ink button', 'paper', 'ink'],
+  ['landing Open app label', 'paper', 'vault'],
   ['ink on kept mint', 'ink', 'kept'], ['paper on moved crimson', 'paper', 'moved'],
   ['highlight on vault', 'highlight', 'vault'], ['danger on paper', 'danger', 'paper'],
   ['danger on alert surface', 'danger', 'alert-surface'],
@@ -37,6 +38,11 @@ const pairs = [
     [0, 'ink'], [1, 'ink'], [2, 'ink'], [3, 'paper'], [4, 'paper'],
   ].map(([step, foreground]) => [`DP heat-map step ${step}`, foreground, `heat-${step}`]),
 ];
+
+const landingSecondaryRule = css.match(/\.landing-page\s+\.landing-hero\s+\.btn-secondary\s*\{([^}]*)\}/i)?.[1] ?? '';
+if (!/color\s*:\s*var\(--paper\)\s*!important/i.test(landingSecondaryRule)) {
+  throw new Error('Landing Open app button must use the light foreground on the dark hero.');
+}
 
 for (const [label, foregroundToken, backgroundToken] of pairs) {
   const foreground = token(foregroundToken);
