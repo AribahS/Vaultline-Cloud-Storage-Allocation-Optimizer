@@ -11,7 +11,6 @@ import {
   choosePlayScale,
   greedyPlan,
   importanceCurve,
-  mapCapacityToUnits,
   normalizePlayItems,
   planForCapacity,
   scoreSelection,
@@ -30,7 +29,8 @@ const greedyTrapItems: PlayItem[] = [
 
 export const PlayPage: React.FC = () => {
   const navigate = useNavigate();
-  const { files, quotaBytes, setQuotaBytes } = useAppStore();
+  const openAlgorithm = useOpenAlgorithmDrawer();
+  const { files, quotaBytes, setQuotaBytes, knapsackResult } = useAppStore();
 
   const [source, setSource] = useState<Source>(() => (files.length ? 'your' : 'tight'));
   const [sourceWasChosen, setSourceWasChosen] = useState(false);
@@ -80,8 +80,24 @@ export const PlayPage: React.FC = () => {
 
   // Shared capacity mapped to units
   const currentCapacityBytes = Math.max(0, Math.min(quotaBytes, totalBytes || quotaBytes));
-  const capacityUnits = mapCapacityToUnits(currentCapacityBytes, totalBytes, maxCapacity);
-  const bestFitResult = useMemo(() => planForCapacity(table, capacityUnits), [table, capacityUnits]);
+  const capacityUnits = currentCapacityBytes >= totalBytes
+    ? maxCapacity
+    : Math.max(0, Math.floor(currentCapacityBytes / scale.unitBytes));
+  const bestFitResult = useMemo(() => {
+    if (activeSource === 'your' && knapsackResult?.quotaBytes === quotaBytes) {
+      const keptIds = knapsackResult.keptItems.map(item => item.id);
+      const keptSet = new Set(keptIds);
+      const keptItems = items.filter(item => keptSet.has(item.id));
+      return {
+        keptIds,
+        movedIds: items.filter(item => !keptSet.has(item.id)).map(item => item.id),
+        totalImportance: knapsackResult.totalValue,
+        totalSize: knapsackResult.totalSizeKept,
+        capacity: capacityUnits,
+      };
+    }
+    return planForCapacity(table, capacityUnits);
+  }, [activeSource, knapsackResult, quotaBytes, items, table, capacityUnits]);
   const greedyResult = useMemo(() => greedyPlan(items, capacityUnits), [items, capacityUnits]);
 
   // User pack score

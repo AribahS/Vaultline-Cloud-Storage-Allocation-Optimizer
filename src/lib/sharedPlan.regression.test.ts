@@ -6,7 +6,7 @@ import { useAppStore } from '../store/useAppStore';
 import { solveFullKnapsack } from '../engine/knapsack';
 import { normaliseItemSize, normaliseQuota, resolveUnitBytes } from '../engine/normalizer';
 import { BYTE_UNITS } from '../engine/normalizer';
-import { buildTeachingWalkthrough } from './walkthrough';
+import { buildTeachingWalkthrough, buildYourPlanDataset } from './walkthrough';
 import { runFullKnapsackAsync } from '../workers/solverClient';
 import { includeProfitableZeroWeightItems } from './solverResult';
 import { choosePlayScale } from './playKnapsack';
@@ -69,6 +69,10 @@ describe('shared capacity and exact plan regressions', () => {
     const oracle = solveFullKnapsack(candidates, { quotaUnits: quotaBytes, quotaBytes, unitBytes: 1 });
     expect(result!.totalValue).toBe(oracle.totalValue);
     expect(result!.keptItems.map(file => file.id).sort()).toEqual(oracle.keptItems.map(file => file.id).sort());
+    const teaching = buildYourPlanDataset(files, quotaBytes, result!.unitBytes);
+    const walk = buildTeachingWalkthrough(teaching.items, teaching.capacity);
+    expect(walk.result.totalValue).toBe(result!.totalValue);
+    expect(walk.result.keptItemIds.slice().sort()).toEqual(result!.keptItems.map(file => file.id).sort());
   });
 
   it('handles zero, all-fit, oversized, duplicate-size, and zero-size items', () => {

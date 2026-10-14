@@ -10,6 +10,8 @@ import { ProfileId, ProfileToggles, applyProfileToFiles } from '../engine/profil
 import { StoragePlace } from '../engine/multiPlace';
 import { pluralize } from '../lib/format';
 import { resetScoresToSuggested, scoreIncomingFiles } from '../lib/scoring.js';
+import { choosePlayScale } from '../lib/playKnapsack';
+import { includeProfitableZeroWeightItems } from '../lib/solverResult';
 
 export type PresetType = 'student' | 'photographer' | 'company';
 
@@ -489,8 +491,12 @@ export const useAppStore = create<AppState>((set, get) => ({
         computeProgress: { stage: 'Preparing files', percent: 5, cellsComputed: 0 }
       });
 
-      const unitBytes = resolveUnitBytes(quotaBytes, quotaUnitOption);
-      const quotaUnits = normaliseQuota(quotaBytes, unitBytes);
+      // Use the same conservative byte scale as Play. Auto's 1 MB minimum
+      // erased every capacity below 1 MB (for example 200 KB became zero).
+      const unitBytes = quotaUnitOption === 'auto'
+        ? choosePlayScale(files.reduce((sum, file) => sum + file.size, 0), files.length).unitBytes
+        : resolveUnitBytes(quotaBytes, quotaUnitOption);
+      let quotaUnits = normaliseQuota(quotaBytes, unitBytes);
 
       let itemsToSolve: KnapsackItem[] = [];
 
@@ -514,17 +520,23 @@ export const useAppStore = create<AppState>((set, get) => ({
         itemsToSolve = items;
       }
 
+      const totalCandidateBytes = itemsToSolve.filter(item => !item.isExcluded).reduce((sum, item) => sum + item.originalSize, 0);
+      if (quotaBytes >= totalCandidateBytes) {
+        quotaUnits = itemsToSolve.filter(item => !item.isExcluded).reduce((sum, item) => sum + item.normalizedSize, 0);
+      }
+
       try {
         set({ computeProgress: { stage: 'Rounding sizes', percent: 15, cellsComputed: 0 } });
         await new Promise(r => setTimeout(r, 200));
 
         set({ computeProgress: { stage: 'Building the table', percent: 40, cellsComputed: 0 } });
         
-        const result = await runFullKnapsackAsync(itemsToSolve, {
+        const rawResult = await runFullKnapsackAsync(itemsToSolve, {
           quotaUnits,
           quotaBytes,
           unitBytes,
         });
+        const result = includeProfitableZeroWeightItems(itemsToSolve, rawResult);
         
         set({ computeProgress: { stage: 'Tracing back', percent: 85, cellsComputed: result.cellsComputed, totalCells: itemsToSolve.length * quotaUnits } });
         await new Promise(r => setTimeout(r, 300));

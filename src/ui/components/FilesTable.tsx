@@ -79,10 +79,10 @@ export const FilesTable: React.FC<{
       size: 120,
       cell: info => {
         const size = info.getValue<number>();
-        const isWarning = size > quotaBytes * 0.1;
+        const isWarning = size > quotaBytes;
         return (
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: '6px' }}>
-            {isWarning && <span title="Over 10% of target capacity" style={{ display: 'flex' }}><AlertTriangle size={14} color="var(--color-semantic-warning)" /></span>}
+            {isWarning && <span title="File is larger than target capacity" style={{ display: 'flex' }}><AlertTriangle size={14} color="var(--color-semantic-warning)" /></span>}
             <div style={{ textAlign: 'right', fontVariantNumeric: 'tabular-nums' }}>{formatSize(size)}</div>
           </div>
         );

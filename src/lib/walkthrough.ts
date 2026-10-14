@@ -1,7 +1,8 @@
 import { formatSize } from './format.js';
 import { solveTeachingKnapsack } from '../engine/knapsack';
-import type { KnapsackItem, TeachingEngineResult } from '../engine/types';
+import type { KnapsackItem, TeachingEngineResult, TableStep, TracebackStep } from '../engine/types';
 import type { FileMetadata } from '../engine/types';
+import { normaliseQuota } from '../engine/normalizer';
 
 export interface WalkCell { row: number; column: number; value: number }
 
@@ -60,7 +61,63 @@ export function walkthroughFromResult(result: TeachingEngineResult): TeachingWal
 }
 
 export function buildTeachingWalkthrough(items: KnapsackItem[], capacity: number): TeachingWalkthrough {
-  return walkthroughFromResult(solveTeachingKnapsack(items, capacity));
+  return walkthroughFromResult(capacity <= 25
+    ? solveTeachingKnapsack(items, capacity)
+    : solveScaledTeachingKnapsack(items, capacity));
+}
+
+function solveScaledTeachingKnapsack(items: KnapsackItem[], quota: number): TeachingEngineResult {
+  const W = Math.max(0, Math.floor(quota));
+  const dp: number[][] = Array.from({ length: items.length + 1 }, () => Array(W + 1).fill(0));
+  const counts: number[][] = Array.from({ length: items.length + 1 }, () => Array(W + 1).fill(0));
+  const steps: (TableStep | TracebackStep)[] = [];
+  let stepIndex = 0;
+  for (let i = 1; i <= items.length; i++) {
+    const item = items[i - 1];
+    for (let w = 0; w <= W; w++) {
+      const previous = dp[i - 1][w];
+      const previousCount = counts[i - 1][w];
+      let takeValue: number | null = null;
+      let takeBase: number | null = null;
+      let decision: TableStep['decision'] = 'fit_skip';
+      let value = previous;
+      let count = previousCount;
+      let isTie = false;
+      if (item.normalizedSize <= w) {
+        takeBase = dp[i - 1][w - item.normalizedSize];
+        takeValue = item.value + takeBase;
+        const takeCount = counts[i - 1][w - item.normalizedSize] + 1;
+        if (takeValue > previous || (takeValue === previous && takeCount < previousCount)) {
+          value = takeValue; count = takeCount; decision = 'take';
+        } else {
+          decision = 'skip';
+          isTie = takeValue === previous;
+        }
+      }
+      dp[i][w] = value;
+      counts[i][w] = count;
+      steps.push({
+        stepIndex: stepIndex++, type: 'cell', i, w, item, cellValue: value,
+        prevCellValue: previous, takeRemainingValue: takeBase, candidateTakeValue: takeValue,
+        decision, isTie, prevItemsCount: previousCount, takeItemsCount: count,
+        explanation: decision === 'fit_skip' ? `${item.name} does not fit at capacity ${w}.` : decision === 'take' ? `Taking ${item.name} gives ${value}.` : `Skipping ${item.name} keeps ${previous}.`,
+        recurrenceFormula: takeValue === null ? `dp[${i}][${w}] = dp[${i - 1}][${w}]` : `dp[${i}][${w}] = max(${previous}, ${item.value} + dp[${i - 1}][${w - item.normalizedSize}]) = ${value}`,
+      });
+    }
+  }
+  let remaining = W;
+  const keptIds: string[] = [];
+  const chosen: string[] = [];
+  for (let i = items.length; i >= 1; i--) {
+    const item = items[i - 1];
+    const value = dp[i][remaining];
+    const above = dp[i - 1][remaining];
+    const taken = item.normalizedSize <= remaining && value === item.value + dp[i - 1][remaining - item.normalizedSize] && (value !== above || counts[i][remaining] !== counts[i - 1][remaining]);
+    if (taken) { keptIds.push(item.id); chosen.push(item.id); remaining -= item.normalizedSize; }
+    steps.push({ stepIndex: stepIndex++, type: 'traceback', i, w: remaining, item, taken, reason: taken ? `${item.name} is kept.` : `${item.name} is skipped.`, chosenIds: [...chosen], remainingQuota: remaining });
+  }
+  keptIds.reverse();
+  return { items, W, table: dp, steps, keptItemIds: keptIds, totalValue: dp[items.length][W], isTruncated: false };
 }
 
 export function cellSentences(step: FillWalkStep, columnBytes: number): string[] {
@@ -89,19 +146,23 @@ export interface YourPlanDataset {
   hint: string;
 }
 
-/** Builds the teaching version from up to eight of the user's highest-importance files. */
-export function buildYourPlanDataset(files: FileMetadata[], quotaBytes: number): YourPlanDataset {
-  const columnBytes = Math.max(1, quotaBytes / YOUR_PLAN_COLUMNS);
-  const topFiles = [...files]
-    .filter(file => file.size > 0 && !file.isExcluded)
-    .sort((left, right) => right.priority - left.priority)
-    .slice(0, 8);
+/** Builds the teaching version from the user's eligible files. */
+export function buildYourPlanDataset(files: FileMetadata[], quotaBytes: number, sharedUnitBytes?: number): YourPlanDataset {
+  const columnBytes = sharedUnitBytes ?? Math.max(1, quotaBytes / YOUR_PLAN_COLUMNS);
+  const topFiles = [...files].filter(file => file.size > 0 && !file.isExcluded).sort((left, right) => right.priority - left.priority);
+  const scaledItems = topFiles.map(file => ({
+    id: file.id, name: file.name, originalSize: file.size,
+    normalizedSize: yourPlanWeight(file.size, columnBytes), value: file.priority,
+    isPinned: file.isPinned, isExcluded: file.isExcluded,
+  }));
+  const capacity = sharedUnitBytes
+    ? (quotaBytes >= topFiles.reduce((sum, file) => sum + file.size, 0)
+      ? scaledItems.reduce((sum, item) => sum + item.normalizedSize, 0)
+      : normaliseQuota(quotaBytes, columnBytes))
+    : YOUR_PLAN_COLUMNS;
   return {
-    items: topFiles.map(file => ({
-      id: file.id, name: file.name, originalSize: file.size,
-      normalizedSize: yourPlanWeight(file.size, columnBytes), value: file.priority,
-    })),
-    capacity: YOUR_PLAN_COLUMNS,
+    items: scaledItems,
+    capacity,
     columnBytes,
     hint: topFiles.length ? '' : 'Add files to use your plan here.',
   };

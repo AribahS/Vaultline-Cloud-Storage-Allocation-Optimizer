@@ -7,6 +7,7 @@ import { Card } from '../components/Card';
 import { ResultsSummary } from '../components/ResultsSummary';
 import { Treemap } from '../components/Treemap';
 import { formatSize, pluralize, formatScore } from '../../lib/format';
+import { CAPACITY_UNITS, capacityToBytes } from '../../lib/capacity';
 import {
   buildReportModel,
   generateReportCsv,
@@ -16,12 +17,7 @@ import {
   downloadPlanFile,
 } from '../../lib/planExports';
 
-const UNITS: Record<string, number> = {
-  KB: 1024,
-  MB: 1024 ** 2,
-  GB: 1024 ** 3,
-  TB: 1024 ** 4,
-};
+const UNITS = CAPACITY_UNITS;
 
 function formatValueForUnit(bytes: number, unit: string): string {
   const multiplier = UNITS[unit] || UNITS.GB;
@@ -37,7 +33,7 @@ function detectBestUnit(bytes: number): string {
 }
 
 export const ReportsPage: React.FC = () => {
-  const { files, knapsackResult, quotaBytes, setQuotaBytes } = useAppStore();
+  const { files, knapsackResult, quotaBytes, setQuotaBytes, triggerRecompute, isPlanStale, isComputing } = useAppStore();
   const totalFilesBytes = useMemo(() => files.reduce((sum, f) => sum + f.size, 0), [files]);
   const [selectedUnit, setSelectedUnit] = useState<string>(() => detectBestUnit(quotaBytes));
   const [inputValue, setInputValue] = useState<string>(() => formatValueForUnit(quotaBytes, detectBestUnit(quotaBytes)));
@@ -47,16 +43,21 @@ export const ReportsPage: React.FC = () => {
     setInputValue(formatValueForUnit(quotaBytes, selectedUnit));
   }, [quotaBytes, selectedUnit]);
 
+  useEffect(() => {
+    if (files.length > 0 && !isComputing && (isPlanStale || !knapsackResult || knapsackResult.quotaBytes !== quotaBytes)) {
+      void triggerRecompute();
+    }
+  }, [files, quotaBytes, isPlanStale, isComputing, knapsackResult, triggerRecompute]);
+
   const reportModel = useMemo(() => buildReportModel(files, knapsackResult, quotaBytes), [files, knapsackResult, quotaBytes]);
   const keptIds = useMemo(() => new Set(knapsackResult?.keptItems.map(item => item.id) ?? []), [knapsackResult]);
 
   const allFilesFit = files.length > 0 && quotaBytes >= totalFilesBytes;
   const runtime = knapsackResult && knapsackResult.executionTimeMs > 0 ? `${knapsackResult.executionTimeMs.toFixed(2)} ms` : 'Not measured yet';
 
-  const downloadPdf = (full = false) => {
-    const doc = generateReportPdf(reportModel, { full });
-    const filename = full ? 'vaultline-storage-report-full.pdf' : 'vaultline-storage-report.pdf';
-    doc.save(filename);
+  const downloadPdf = () => {
+    const doc = generateReportPdf(reportModel);
+    doc.save('vaultline-storage-report.pdf');
   };
 
   const downloadCsv = () => {
@@ -80,8 +81,7 @@ export const ReportsPage: React.FC = () => {
     setInputValue(raw);
     const parsed = Number(raw);
     if (Number.isFinite(parsed) && parsed >= 0) {
-      const multiplier = UNITS[selectedUnit] || UNITS.GB;
-      setQuotaBytes(Math.round(parsed * multiplier));
+      setQuotaBytes(capacityToBytes(parsed, selectedUnit));
     }
   };
 
@@ -105,18 +105,9 @@ export const ReportsPage: React.FC = () => {
           <p>Your storage decision, with files and totals you can save or export.</p>
         </div>
         <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', alignItems: 'center' }}>
-          <Button variant="primary" onClick={() => downloadPdf(false)} disabled={files.length === 0}>
+          <Button variant="primary" onClick={downloadPdf} disabled={files.length === 0}>
             <Download size={16} /> Download report (PDF)
           </Button>
-          <button
-            type="button"
-            className="play-inline-link"
-            style={{ fontSize: '13px', marginLeft: '6px' }}
-            onClick={() => downloadPdf(true)}
-            disabled={files.length === 0}
-          >
-            Download full report (all files)
-          </button>
         </div>
       </header>
 
