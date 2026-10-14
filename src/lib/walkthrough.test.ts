@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { solveTeachingKnapsack } from '../engine/knapsack';
 import { BYTE_UNITS } from '../engine/normalizer';
 import { STUDENT_LAPTOP_DATASET } from '../data/sampleDatasets';
-import { buildYourPlanDataset, buildTeachingWalkthrough, cellSentences, yourPlanWeight } from './walkthrough';
+import { buildYourPlanDataset, buildTeachingWalkthrough, cellSentences, limitWalkthroughPlayback, yourPlanWeight } from './walkthrough';
 import { GREEDY_COUNTER_ITEMS, TUTORIAL_ITEMS } from './walkthroughDatasets';
 
 describe('Algorithm walkthrough data', () => {
@@ -34,6 +34,22 @@ describe('Algorithm walkthrough data', () => {
     expect(yourPlanWeight(3.4 * BYTE_UNITS.GB, your.columnBytes)).toBe(3);
     expect(walk.result.table.at(-1)?.at(-1)).toBeGreaterThan(0);
     expect(buildYourPlanDataset([], quota).hint).toMatch(/add files/i);
+  });
+
+  it('keeps large user-file walkthroughs responsive while preserving exact checkpoint values', () => {
+    const items = Array.from({ length: 11 }, (_, index) => ({
+      id: `file-${index}`, name: `File ${index}`, originalSize: 20_000 + index * 100,
+      normalizedSize: 120 + index, value: 8,
+    }));
+    const full = buildTeachingWalkthrough(items, 1_200);
+    const playback = limitWalkthroughPlayback(full);
+    const fillSteps = playback.steps.filter(step => step.phase === 'fill');
+    expect(playback.result.totalValue).toBe(full.result.totalValue);
+    expect(fillSteps.length).toBeLessThanOrEqual(items.length * 13);
+    for (const step of fillSteps) {
+      if (step.phase === 'fill') expect(step.value).toBe(full.result.table[step.row][step.column]);
+    }
+    expect(playback.steps.at(-1)?.phase).toBe('traceback');
   });
 
   it('fills skip, take, winner, and does-not-fit sentences with real values', () => {

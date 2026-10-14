@@ -2,7 +2,7 @@ import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { useAppStore } from '../../store/useAppStore';
 import { BYTE_UNITS, resolveUnitBytes, normaliseQuota } from '../../engine/normalizer';
 import { formatSize, pluralize } from '../../lib/format';
-import { buildTeachingWalkthrough, buildYourPlanDataset, cellSentences, type WalkStep } from '../../lib/walkthrough';
+import { buildTeachingWalkthrough, buildYourPlanDataset, cellSentences, limitWalkthroughPlayback, type WalkStep } from '../../lib/walkthrough';
 import { GREEDY_COUNTER_ITEMS, TUTORIAL_ITEMS } from '../../lib/walkthroughDatasets';
 
 import { solveGreedy } from '../../engine/greedy';
@@ -33,7 +33,10 @@ export const AlgorithmDrawer: React.FC<AlgorithmDrawerProps> = ({ open, onClose 
     : datasetName === 'greedy'
       ? { items: GREEDY_COUNTER_ITEMS, capacity: 10, columnBytes: BYTE_UNITS.GB }
       : { items: yourPlan.items, capacity: yourPlan.capacity, columnBytes: yourPlan.columnBytes };
-  const walkthrough = useMemo(() => buildTeachingWalkthrough(selected.items, selected.capacity), [selected.items, selected.capacity]);
+  const walkthrough = useMemo(() => {
+    const exact = buildTeachingWalkthrough(selected.items, selected.capacity);
+    return datasetName === 'your' ? limitWalkthroughPlayback(exact) : exact;
+  }, [datasetName, selected.items, selected.capacity]);
   const steps = walkthrough.steps;
   const lastIndex = Math.max(0, steps.length - 1);
   const activeIndex = Math.min(stepIndex, lastIndex);

@@ -66,6 +66,18 @@ export function buildTeachingWalkthrough(items: KnapsackItem[], capacity: number
     : solveScaledTeachingKnapsack(items, capacity));
 }
 
+/** Limits playback work while keeping each shown checkpoint equal to the exact full-table DP value. */
+export function limitWalkthroughPlayback(walkthrough: TeachingWalkthrough, maxColumns = 12): TeachingWalkthrough {
+  const capacity = walkthrough.result.W;
+  if (capacity <= maxColumns) return walkthrough;
+  const stride = Math.ceil(capacity / maxColumns);
+  const steps = walkthrough.steps.filter(step =>
+    step.phase === 'traceback' || step.column === capacity || step.column % stride === 0,
+  ).map((step, index) => ({ ...step, index }));
+  const fillCount = steps.filter(step => step.phase === 'fill').length;
+  return { ...walkthrough, steps, fillCount };
+}
+
 function solveScaledTeachingKnapsack(items: KnapsackItem[], quota: number): TeachingEngineResult {
   const W = Math.max(0, Math.floor(quota));
   const dp: number[][] = Array.from({ length: items.length + 1 }, () => Array(W + 1).fill(0));
