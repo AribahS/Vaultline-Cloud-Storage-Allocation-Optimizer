@@ -105,6 +105,10 @@ export const AlgorithmDrawer: React.FC<AlgorithmDrawerProps> = ({ open, onClose 
   if (!open) return null;
 
   const traceSteps = steps.slice(walkthrough.fillCount, activeIndex + 1).filter((step): step is Extract<WalkStep, { phase: 'traceback' }> => step.phase === 'traceback');
+  const fillStepIndexes = new Map(steps.slice(0, walkthrough.fillCount).map(step => [
+    `${step.row}:${step.column}`,
+    step.index,
+  ]));
   const traceCells = traceSteps.map(step => ({ row: step.row, column: step.column }));
   const traceKeys = new Set(traceCells.map(cell => `${cell.row}:${cell.column}`));
   const columnSet = new Set<number>();
@@ -180,12 +184,14 @@ export const AlgorithmDrawer: React.FC<AlgorithmDrawerProps> = ({ open, onClose 
                       {visibleColumns.map((column, displayColumn) => {
                         const key = `${row}:${column}`;
                         const value = walkthrough.result.table[row][column];
+                        const fillStepIndex = fillStepIndexes.get(key);
+                        const computed = row === 0 || (fillStepIndex !== undefined && fillStepIndex <= activeIndex);
                         const level = value === 0 ? 0 : value / maxCellValue < .25 ? 1 : value / maxCellValue < .5 ? 2 : value / maxCellValue < .75 ? 3 : 4;
                         const current = currentStep?.phase === 'fill' && currentStep.row === row && currentStep.column === column;
                         const onPath = traceKeys.has(key);
                         const winner = current && currentStep.phase === 'fill' ? currentStep.decision : null;
-                        return <td key={column} data-column-index={displayColumn} className={`walk-cell heat-${level} walk-cell-computed ${current ? 'walk-cell-current' : ''} ${onPath ? 'walk-cell-path' : ''} ${winner ? `walk-winner-${winner}` : ''}`} aria-label={`Row ${row}, capacity ${formatSize(column * selected.columnBytes)}, score ${value}`}>
-                          {value}
+                        return <td key={column} data-column-index={displayColumn} className={`walk-cell ${computed ? `heat-${level} walk-cell-computed` : 'walk-cell-pending'} ${current ? 'walk-cell-current' : ''} ${onPath ? 'walk-cell-path' : ''} ${winner ? `walk-winner-${winner}` : ''}`} aria-label={computed ? `Row ${row}, capacity ${formatSize(column * selected.columnBytes)}, score ${value}` : `Row ${row}, capacity ${formatSize(column * selected.columnBytes)}, not computed`}>
+                          {computed ? value : ''}
                         </td>;
                       })}
                     </tr>)}</tbody>
