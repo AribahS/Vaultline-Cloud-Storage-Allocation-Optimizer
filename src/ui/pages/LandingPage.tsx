@@ -1,25 +1,51 @@
-import React, { useState } from 'react';
-import { Cpu, FileText, HardDrive, Shield } from 'lucide-react';
+import React, { lazy, Suspense, useEffect, useRef, useState } from 'react';
+import { FileText } from 'lucide-react';
 import { HeroDemo } from '../components/HeroDemo';
 import { useOpenAlgorithmDrawer } from '../components/AlgorithmDrawerContext';
-
-const FEATURES = [
-  { icon: Shield, title: 'Private by design', body: 'Nothing is uploaded. Only names, sizes and dates are read in your browser.' },
-  { icon: Cpu, title: 'Exact 0/1 knapsack', body: 'Dynamic programming, O(n × W), finds the optimal fit — not a greedy shortcut.' },
-  { icon: HardDrive, title: 'Works with files and folders', body: 'Add files or choose a folder. Vaultline uses their metadata to find the best selection.' },
-];
-
-const STEPS = [
-  { n: '1', label: 'Add your files', sub: 'Use the Files page to add files or pick a folder.', to: '/files' },
-  { n: '2', label: 'Set your capacity', sub: 'Choose how much space you want to fill on the Play page.', to: '/play' },
-  { n: '3', label: 'See your results', sub: 'Check Results for what to keep and a printable report.', to: '/results' },
-];
+const LandingSections = lazy(() => import('../components/LandingSections').then(module => ({ default: module.LandingSections })));
 
 interface LandingPageProps { onEnter: (path?: string) => void }
 
 export const LandingPage: React.FC<LandingPageProps> = ({ onEnter }) => {
   const [glow, setGlow] = useState({ x: 0, y: 0 });
+  const [belowFoldReady, setBelowFoldReady] = useState(false);
+  const [scrollProgress, setScrollProgress] = useState(0);
+  const belowFoldAnchor = useRef<HTMLDivElement>(null);
   const openAlgorithm = useOpenAlgorithmDrawer();
+  useEffect(() => {
+    const anchor = belowFoldAnchor.current;
+    if (!anchor || !('IntersectionObserver' in window)) { setBelowFoldReady(true); return; }
+    const observer = new IntersectionObserver(([entry]) => {
+      if (entry.isIntersecting) { setBelowFoldReady(true); observer.disconnect(); }
+    }, { rootMargin: '600px 0px' });
+    observer.observe(anchor);
+    return () => observer.disconnect();
+  }, []);
+  useEffect(() => {
+    document.documentElement.classList.add('landing-smooth-scroll');
+    return () => document.documentElement.classList.remove('landing-smooth-scroll');
+  }, []);
+  useEffect(() => {
+    const root = document.documentElement;
+    let frame = 0;
+    const measure = () => {
+      if (frame) return;
+      frame = requestAnimationFrame(() => {
+        frame = 0;
+        const range = root.scrollHeight - root.clientHeight;
+        setScrollProgress(range > 0 ? Math.min(1, window.scrollY / range) : 0);
+      });
+    };
+    const resizeObserver = 'ResizeObserver' in window ? new ResizeObserver(measure) : null;
+    resizeObserver?.observe(root);
+    window.addEventListener('scroll', measure, { passive: true }); window.addEventListener('resize', measure);
+    measure();
+    return () => {
+      if (frame) cancelAnimationFrame(frame);
+      resizeObserver?.disconnect();
+      window.removeEventListener('scroll', measure); window.removeEventListener('resize', measure);
+    };
+  }, [belowFoldReady]);
   const trackPointer = (event: React.PointerEvent<HTMLElement>) => {
     const bounds = event.currentTarget.getBoundingClientRect();
     setGlow({
@@ -30,6 +56,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onEnter }) => {
 
   return (
     <div className="landing-page" style={{ minHeight: '100vh', backgroundColor: 'var(--paper)', color: 'var(--ink)', display: 'flex', flexDirection: 'column', fontFamily: 'Inter, sans-serif', overflowX: 'clip' }}>
+      <div className="landing-progress" role="progressbar" aria-label="Page reading progress" aria-valuemin={0} aria-valuemax={100} aria-valuenow={Math.round(scrollProgress * 100)}><span style={{ transform: `scaleX(${scrollProgress})` }} /></div>
 
       <section className="landing-hero" style={{ position: 'relative', backgroundColor: 'var(--vault)', color: 'var(--paper)', overflow: 'hidden', '--glow-x': `${glow.x}px`, '--glow-y': `${glow.y}px` } as React.CSSProperties} onPointerMove={trackPointer} onPointerLeave={() => setGlow({ x: 0, y: 0 })}>
         <div className="landing-hero-glow" aria-hidden="true" />
@@ -67,55 +94,13 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onEnter }) => {
               <span>Names, sizes and dates stay on this device.</span>
               <span>Exact 0/1 knapsack · O(n × W)</span>
             </div>
+            <a className="landing-scroll-link" href="#landing-how" onClick={(event) => { event.preventDefault(); belowFoldAnchor.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }); }}>Explore how it works <span aria-hidden="true">↓</span></a>
           </div>
           <HeroDemo onWatchAlgorithm={openAlgorithm} />
         </div>
       </section>
-
-      {/* ── 3-step strip ── */}
-      <section style={{ backgroundColor: 'var(--paper)', padding: '56px 40px 48px', borderBottom: '1px solid var(--card-border)' }}>
-        <div style={{ maxWidth: 1200, margin: '0 auto' }}>
-          <h2 style={{ fontFamily: 'Fraunces, serif', fontSize: 'clamp(22px, 3vw, 32px)', color: 'var(--ink)', marginBottom: 40, textAlign: 'center' }}>How it works</h2>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: 32 }}>
-            {STEPS.map((step) => (
-              <div key={step.n} style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-                <div style={{ width: 40, height: 40, borderRadius: '50%', background: 'var(--ink)', color: 'var(--paper)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800, fontSize: 16, fontFamily: 'var(--font-heading)', flexShrink: 0 }}>{step.n}</div>
-                <button onClick={() => onEnter(step.to)} style={{ border: 0, background: 'transparent', cursor: 'pointer', textAlign: 'left', padding: 0 }}>
-                  <strong style={{ fontFamily: 'Fraunces, serif', fontSize: 18, color: 'var(--ink)', display: 'block', marginBottom: 4 }}>{step.label}</strong>
-                  <span style={{ fontSize: 14, color: 'var(--text-muted)', lineHeight: 1.6 }}>{step.sub}</span>
-                </button>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* ── Feature cards ── */}
-      <section className="landing-features" style={{ backgroundColor: 'var(--paper)', padding: '56px 40px' }}>
-        <div style={{ maxWidth: 1200, margin: '0 auto' }}>
-          <h2 style={{ fontFamily: 'Fraunces, serif', fontSize: 'clamp(22px, 3vw, 32px)', color: 'var(--ink)', textAlign: 'center', marginBottom: 12 }}>Why Vaultline?</h2>
-          <p style={{ textAlign: 'center', color: 'var(--text-muted)', fontSize: 16, marginBottom: 48 }}>A clear view of what fits your target, entirely in your browser.</p>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: 24 }}>
-            {FEATURES.map((feat) => (
-              <div key={feat.title} style={{ backgroundColor: 'var(--card)', border: '1px solid var(--card-border)', borderRadius: 14, padding: '28px 24px', boxShadow: 'var(--shadow-level-1)' }}>
-                {/* Mint tile + violet icon */}
-                <div style={{ width: 44, height: 44, borderRadius: 10, backgroundColor: 'color-mix(in srgb, var(--kept) 30%, var(--paper))', border: '1px solid color-mix(in srgb, var(--kept) 50%, transparent)', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 16 }}>
-                  <feat.icon size={20} color="var(--ink)" />
-                </div>
-                <h3 style={{ fontFamily: 'Fraunces, serif', fontSize: 18, fontWeight: 600, color: 'var(--ink)', margin: '0 0 8px' }}>{feat.title}</h3>
-                <p style={{ fontSize: 14, lineHeight: 1.65, color: 'var(--text-muted)', margin: 0 }}>{feat.body}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* ── Closing band (violet, gold CTA) ── */}
-      <section style={{ backgroundColor: 'var(--vault)', padding: '56px 40px', textAlign: 'center' }}>
-        <h2 style={{ fontFamily: 'Fraunces, serif', fontSize: 'clamp(24px, 3vw, 36px)', fontWeight: 600, color: 'var(--paper)', marginBottom: 16 }}>Ready to organise your files?</h2>
-        <p style={{ color: 'var(--text-muted-on-dark)', marginBottom: 20, fontSize: 15 }}>Add files or choose a folder — it runs entirely in your browser.</p>
-        <p style={{ fontSize: 12, color: 'var(--text-muted-on-dark)', opacity: 0.8 }}>Your selection is calculated in this browser from file metadata.</p>
-      </section>
+      <div ref={belowFoldAnchor} className="landing-lazy-anchor" aria-hidden="true" />
+      {belowFoldReady && <Suspense fallback={<div className="landing-sections-loading" role="status">Loading Vaultline details…</div>}><LandingSections onEnter={onEnter} /></Suspense>}
     </div>
   );
 };
