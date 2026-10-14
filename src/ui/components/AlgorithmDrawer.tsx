@@ -108,10 +108,6 @@ export const AlgorithmDrawer: React.FC<AlgorithmDrawerProps> = ({ open, onClose 
   if (!open) return null;
 
   const traceSteps = steps.slice(walkthrough.fillCount, activeIndex + 1).filter((step): step is Extract<WalkStep, { phase: 'traceback' }> => step.phase === 'traceback');
-  const fillStepIndexes = new Map(steps.slice(0, walkthrough.fillCount).map(step => [
-    `${step.row}:${step.column}`,
-    step.index,
-  ]));
   const traceCells = traceSteps.map(step => ({ row: step.row, column: step.column }));
   const traceKeys = new Set(traceCells.map(cell => `${cell.row}:${cell.column}`));
   const columnSet = new Set<number>();
@@ -187,8 +183,9 @@ export const AlgorithmDrawer: React.FC<AlgorithmDrawerProps> = ({ open, onClose 
                       {visibleColumns.map((column, displayColumn) => {
                         const key = `${row}:${column}`;
                         const value = walkthrough.result.table[row][column];
-                        const fillStepIndex = fillStepIndexes.get(key);
-                        const computed = row === 0 || (fillStepIndex !== undefined && fillStepIndex <= activeIndex);
+                        const computed = row === 0
+                          || currentStep?.phase === 'traceback'
+                          || (currentStep?.phase === 'fill' && (row < currentStep.row || (row === currentStep.row && column <= currentStep.column)));
                         const level = value === 0 ? 0 : value / maxCellValue < .25 ? 1 : value / maxCellValue < .5 ? 2 : value / maxCellValue < .75 ? 3 : 4;
                         const current = currentStep?.phase === 'fill' && currentStep.row === row && currentStep.column === column;
                         const onPath = traceKeys.has(key);
