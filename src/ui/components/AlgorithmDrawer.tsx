@@ -27,7 +27,7 @@ export const AlgorithmDrawer: React.FC<AlgorithmDrawerProps> = ({ open, onClose 
   const { files, quotaBytes, quotaUnitOption, knapsackResult } = useAppStore();
   const unitBytes = knapsackResult?.unitBytes ?? resolveUnitBytes(quotaBytes, quotaUnitOption);
   const capacityUnits = normaliseQuota(quotaBytes, unitBytes);
-  const yourPlan = useMemo(() => buildYourPlanDataset(files, quotaBytes), [files, quotaBytes]);
+  const yourPlan = useMemo(() => buildYourPlanDataset(files, quotaBytes, knapsackResult?.unitBytes), [files, quotaBytes, knapsackResult?.unitBytes]);
   const selected = datasetName === 'tutorial'
     ? { items: TUTORIAL_ITEMS, capacity: 5, columnBytes: BYTE_UNITS.GB }
     : datasetName === 'greedy'
@@ -44,7 +44,6 @@ export const AlgorithmDrawer: React.FC<AlgorithmDrawerProps> = ({ open, onClose 
   const labelColumnWidth = 158;
   const headerHeight = 38;
   const cellHeight = 38;
-  const gridWidth = labelColumnWidth + (selected.capacity + 1) * baseCellWidth;
   const gridHeight = headerHeight + (selected.items.length + 1) * cellHeight;
 
   useEffect(() => {
@@ -105,15 +104,26 @@ export const AlgorithmDrawer: React.FC<AlgorithmDrawerProps> = ({ open, onClose 
 
   if (!open) return null;
 
-  const computedCells = new Set(steps.slice(0, activeIndex + 1).filter((step): step is Extract<WalkStep, { phase: 'fill' }> => step.phase === 'fill').map(step => `${step.row}:${step.column}`));
   const traceSteps = steps.slice(walkthrough.fillCount, activeIndex + 1).filter((step): step is Extract<WalkStep, { phase: 'traceback' }> => step.phase === 'traceback');
   const traceCells = traceSteps.map(step => ({ row: step.row, column: step.column }));
   const traceKeys = new Set(traceCells.map(cell => `${cell.row}:${cell.column}`));
+  const columnSet = new Set<number>();
+  const columnStride = Math.max(1, Math.ceil(selected.capacity / 24));
+  for (let column = 0; column <= selected.capacity; column += columnStride) columnSet.add(column);
+  columnSet.add(selected.capacity);
+  if (currentStep?.phase === 'fill') {
+    columnSet.add(currentStep.column);
+    columnSet.add(currentStep.skip.column);
+    if (currentStep.take) columnSet.add(currentStep.take.column);
+  }
+  traceCells.forEach(cell => columnSet.add(cell.column));
+  const visibleColumns = [...columnSet].sort((a, b) => a - b);
+  const gridWidth = labelColumnWidth + visibleColumns.length * baseCellWidth;
   const finalTraceStep = traceSteps[traceSteps.length - 1];
   const justMoved = finalTraceStep?.item.id;
   const tracedById = new Map(traceSteps.map(step => [step.item.id, step]));
   const tablePoint = (row: number, column: number) => ({
-    x: labelColumnWidth + column * baseCellWidth + baseCellWidth / 2,
+    x: labelColumnWidth + Math.max(0, visibleColumns.indexOf(column)) * baseCellWidth + baseCellWidth / 2,
     y: headerHeight + row * cellHeight + cellHeight / 2,
   });
   const winnerArrows = currentStep?.phase === 'fill'
@@ -160,23 +170,22 @@ export const AlgorithmDrawer: React.FC<AlgorithmDrawerProps> = ({ open, onClose 
 
             <section className="walk-table-section" aria-label="Dynamic programming table">
               <h3>Best score at each capacity</h3>
-              <p className="walk-caption">Rows add one file at a time. Columns show available storage.</p>
+              <p className="walk-caption">Columns show available storage in {formatSize(selected.columnBytes)} units (file weights round up; capacity rounds down). The table displays capacity checkpoints plus the active step.</p>
               <div className="walk-table-scroll" data-testid="walk-table-scroll">
                 <div className="walk-table-inner" style={{ width: gridWidth, height: gridHeight }}>
                   <table className="walk-table" aria-label="Step-by-step score table" style={{ width: gridWidth, height: gridHeight }}>
-                    <thead><tr><th>Files considered</th>{Array.from({ length: selected.capacity + 1 }, (_, column) => <th key={column}>{column}</th>)}</tr></thead>
+                    <thead><tr><th>Files considered</th>{visibleColumns.map(column => <th key={column} aria-label={`Capacity ${formatSize(column * selected.columnBytes)}`}>{formatSize(column * selected.columnBytes)}</th>)}</tr></thead>
                     <tbody>{Array.from({ length: selected.items.length + 1 }, (_, row) => <tr key={row}>
                       <th scope="row" title={row ? selected.items[row - 1].name : 'Starting row'}>{row ? selected.items[row - 1].name : 'Start'}</th>
-                      {Array.from({ length: selected.capacity + 1 }, (_, column) => {
+                      {visibleColumns.map((column, displayColumn) => {
                         const key = `${row}:${column}`;
-                        const computed = row === 0 || computedCells.has(key);
-                        const value = row === 0 ? 0 : computed ? walkthrough.result.table[row][column] : null;
-                        const level = value === null || value === 0 ? 0 : value / maxCellValue < .25 ? 1 : value / maxCellValue < .5 ? 2 : value / maxCellValue < .75 ? 3 : 4;
+                        const value = walkthrough.result.table[row][column];
+                        const level = value === 0 ? 0 : value / maxCellValue < .25 ? 1 : value / maxCellValue < .5 ? 2 : value / maxCellValue < .75 ? 3 : 4;
                         const current = currentStep?.phase === 'fill' && currentStep.row === row && currentStep.column === column;
                         const onPath = traceKeys.has(key);
                         const winner = current && currentStep.phase === 'fill' ? currentStep.decision : null;
-                        return <td key={column} className={`walk-cell heat-${level} ${computed ? 'walk-cell-computed' : 'walk-cell-placeholder'} ${current ? 'walk-cell-current' : ''} ${onPath ? 'walk-cell-path' : ''} ${winner ? `walk-winner-${winner}` : ''}`} aria-label={computed ? `Row ${row}, capacity ${column}, score ${value}` : `Row ${row}, capacity ${column}, not calculated yet`}>
-                          {computed ? value : <span aria-hidden="true">?</span>}
+                        return <td key={column} data-column-index={displayColumn} className={`walk-cell heat-${level} walk-cell-computed ${current ? 'walk-cell-current' : ''} ${onPath ? 'walk-cell-path' : ''} ${winner ? `walk-winner-${winner}` : ''}`} aria-label={`Row ${row}, capacity ${formatSize(column * selected.columnBytes)}, score ${value}`}>
+                          {value}
                         </td>;
                       })}
                     </tr>)}</tbody>
@@ -227,7 +236,7 @@ export const AlgorithmDrawer: React.FC<AlgorithmDrawerProps> = ({ open, onClose 
           </div>
         </>}
 
-        {tab === 'Comparison' && <ComparisonPanel items={selected.items} capacity={selected.capacity} columnBytes={selected.columnBytes} />}
+        {tab === 'Comparison' && <ComparisonPanel items={files.filter(file => file.size > 0).map(file => ({ id: file.id, name: file.name, originalSize: file.size, normalizedSize: Math.max(1, Math.ceil(file.size / unitBytes)), value: file.priority, isPinned: file.isPinned, isExcluded: file.isExcluded }))} capacity={capacityUnits} columnBytes={unitBytes} />}
         {tab === 'Cost' && <CostPanel fileCount={files.filter(file => !file.isExcluded && !file.isPinned).length} capacityUnits={capacityUnits} cells={knapsackResult?.cellsComputed ?? 0} />}
       </div>
     </aside>
@@ -236,17 +245,18 @@ export const AlgorithmDrawer: React.FC<AlgorithmDrawerProps> = ({ open, onClose 
 
 const ComparisonPanel: React.FC<{ items: KnapsackItem[]; capacity: number; columnBytes: number }> = ({ items, capacity, columnBytes }) => {
   const dp = useMemo(() => buildTeachingWalkthrough(items, capacity).result, [items, capacity]);
-  const greedy = useMemo(() => solveGreedy(items, { quotaUnits: capacity, quotaBytes: capacity * columnBytes, unitBytes: columnBytes }), [items, capacity, columnBytes]);
-  const brute = useMemo(() => items.length <= 20 ? solveBruteForce(items, capacity) : null, [items, capacity]);
-  return <section className="algorithm-info-panel">
-    <h3>Compare complete search with shortcuts</h3>
-    <p>The table checks every file and capacity choice. Greedy takes the highest importance per unit of size first; checking every possible set is slower as files are added.</p>
-    <div className="algorithm-comparison-cards">
-      {[{ label: 'Dynamic programming', score: dp.totalValue, count: dp.keptItemIds.length }, { label: 'Greedy', score: greedy.totalValue, count: greedy.keptItems.length }, ...(brute ? [{ label: 'Check every set', score: brute.bestValue, count: brute.bestSubset.length }] : [])].map(result => <article key={result.label}><span>{result.label}</span><strong>{result.score} importance</strong><small>{pluralize(result.count, 'file')} kept</small></article>)}
-    </div>
-    <p>{greedy.totalValue < dp.totalValue ? `For this data, the table finds ${dp.totalValue - greedy.totalValue} more importance than the greedy shortcut.` : `For this data, both methods reach ${dp.totalValue} importance.`}</p>
-    {dp.keptItemIds.length > 0 && <p>Best set: {dp.keptItemIds.map(id => items.find(item => item.id === id)?.name).filter(Boolean).join(', ')}.</p>}
-  </section>;
+  const greedy = useMemo(() => { const start = performance.now(); const value = solveGreedy(items, { quotaUnits: capacity, quotaBytes: capacity * columnBytes, unitBytes: columnBytes }); return { value, ms: performance.now() - start }; }, [items, capacity, columnBytes]);
+  const eligible = items.filter(item => !item.isExcluded && !item.isPinned);
+  const brute = useMemo(() => eligible.length <= 20 ? solveBruteForce(eligible, capacity) : null, [items, capacity]);
+  const moved = items.filter(item => !dp.keptItemIds.includes(item.id) && !item.isPinned && !item.isExcluded);
+  const detail = (ids: string[]) => <ul className="comparison-file-list">{items.map(item => <li key={item.id}><span>{item.name}</span><span>{ids.includes(item.id) ? 'Kept' : item.isExcluded ? 'Excluded' : 'Moved'} · {formatSize(item.originalSize)} · {item.value} importance</span></li>)}</ul>;
+  const keptSize = dp.keptItemIds.reduce((sum, id) => sum + (items.find(item => item.id === id)?.originalSize ?? 0), 0);
+  const possible = items.filter(item => !item.isExcluded).reduce((sum, item) => sum + item.value, 0);
+  return <section className="comparison-panel"><p className="comparison-summary">Best fit at {formatSize(capacity * columnBytes)}: keeps {dp.keptItemIds.length} of {items.length} files ({formatSize(keptSize)}), importance {dp.totalValue} of {possible} ({possible ? Math.round(dp.totalValue / possible * 100) : 0}%). Moves out {moved.length} files ({formatSize(moved.reduce((sum, item) => sum + item.originalSize, 0))}).</p>
+    <h3>Method comparison on current files</h3><div className="algorithm-comparison-cards">{[{ label: 'Exact (best fit)', score: dp.totalValue, count: dp.keptItemIds.length, size: formatSize(keptSize), ms: 0 }, { label: 'Greedy', score: greedy.value.totalValue, count: greedy.value.keptItems.length, size: formatSize(greedy.value.totalSizeKept), ms: greedy.ms }, ...(brute ? [{ label: 'Brute force', score: brute.bestValue, count: brute.bestSubset.length, size: formatSize(brute.bestSize * columnBytes), ms: brute.executionTimeMs }] : [])].map(card => <article key={card.label}><span>{card.label}</span><strong>{card.score} importance</strong><small>Kept: {pluralize(card.count, 'file')}</small><small>Size: {card.size}</small><small>Time: {card.ms.toFixed(2)} ms</small></article>)}</div>
+    <p>{greedy.value.totalValue < dp.totalValue ? `For this dataset and capacity, greedy scores ${dp.totalValue - greedy.value.totalValue} less importance than the exact method.` : `For this dataset and capacity, greedy ties the exact method at ${dp.totalValue} importance because the highest-density files fit neatly into the target size without awkward leftover gaps.`}</p>
+    <details className="comparison-details"><summary>Show file details</summary><h4>Exact best fit</h4>{detail(dp.keptItemIds)}<h4>Greedy selection</h4>{detail(greedy.value.keptItems.map(item => item.id))}</details>
+    <section className="greedy-trap"><h4>The classic greedy trap (arithmetic breakdown)</h4><p>At capacity 10: Item A (size 6, importance 30, ratio 5.0) vs Items B &amp; C (each size 5, importance 24, ratio 4.8).</p><div className="greedy-trap-grid"><div><b>Greedy choice: A</b><br/>Score: 30<br/>Remaining room: 4 (neither B nor C fits)</div><div><b>Exact 0/1 choice: B + C</b><br/>Score: 24 + 24 = 48<br/>Remaining room: 0 (optimal fit)</div></div></section></section>;
 };
 
 const CostPanel: React.FC<{ fileCount: number; capacityUnits: number; cells: number }> = ({ fileCount, capacityUnits, cells }) => {
