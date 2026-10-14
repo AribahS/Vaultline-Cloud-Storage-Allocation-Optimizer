@@ -17,6 +17,8 @@ describe('Landing page', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Vaultline landing page' }));
     await waitFor(() => expect(screen.getByTestId('current-path').textContent).toBe('/landing'));
     expect(document.querySelector('.vaultline-topbar')).toBeNull();
+    expect(document.querySelectorAll('.landing-page')).toHaveLength(1);
+    expect(document.querySelectorAll('.landing-hero')).toHaveLength(1);
   });
 
   it('offers the sample as the primary action and opens it in Play', async () => {

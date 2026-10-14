@@ -1,4 +1,4 @@
-import { StrictMode, useState } from 'react'
+import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import { HashRouter } from 'react-router-dom'
 import '@fontsource/fraunces/600.css'
@@ -11,47 +11,25 @@ import './index.css'
 import App from './App.tsx'
 
 import { ErrorBoundary } from './ui/components/ErrorBoundary'
-import { LandingPage } from './ui/pages/LandingPage'
 import { clearStaleSession } from './lib/clearSession'
 
 // Wipe any stale IndexedDB currentSession from old builds so the file count
 // always comes from the initial store state (12 sample files), not a cached list.
 clearStaleSession();
 
-// Landing page shows on every fresh page load.
-// sessionStorage/localStorage keys cleaned up.
+// Landing page shows on every fresh page load through the same router used by
+// every other screen, so it can only be mounted by the /landing route.
 localStorage.removeItem('vaultline_landing_seen');
 sessionStorage.removeItem('vaultline_landing_seen_session');
 
-function Root() {
-  const [showLanding, setShowLanding] = useState(() => !window.location.hash);
+if (!window.location.hash) window.location.hash = '#/landing';
 
-  const handleEnter = (path = '/') => {
-    window.location.hash = `#${path}`;
-    setShowLanding(false);
-  };
-
-  if (showLanding) {
-    return (
-      <ErrorBoundary fallbackType="root">
-        <HashRouter>
-          <LandingPage onEnter={handleEnter} />
-        </HashRouter>
-      </ErrorBoundary>
-    );
-  }
-
-  return (
+createRoot(document.getElementById('root')!).render(
+  <StrictMode>
     <ErrorBoundary fallbackType="root">
       <HashRouter>
         <App />
       </HashRouter>
     </ErrorBoundary>
-  );
-}
-
-createRoot(document.getElementById('root')!).render(
-  <StrictMode>
-    <Root />
   </StrictMode>,
 )
