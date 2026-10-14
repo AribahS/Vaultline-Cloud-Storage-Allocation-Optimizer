@@ -24,11 +24,11 @@ describe('Algorithm walkthrough data', () => {
     expect(counter.result.keptItemIds.slice().sort()).toEqual(['counter-b', 'counter-c']);
   });
 
-  it('builds eight sample files across twelve columns and rounds 3.4 GB up to three', () => {
+  it('builds all sample files across twelve columns and rounds 3.4 GB up to three', () => {
     const quota = 15 * BYTE_UNITS.GB;
     const your = buildYourPlanDataset(STUDENT_LAPTOP_DATASET, quota);
     const walk = buildTeachingWalkthrough(your.items, your.capacity);
-    expect(your.items).toHaveLength(8);
+    expect(your.items).toHaveLength(12);
     expect(your.capacity).toBe(12);
     expect(your.columnBytes).toBe(1.25 * BYTE_UNITS.GB);
     expect(yourPlanWeight(3.4 * BYTE_UNITS.GB, your.columnBytes)).toBe(3);

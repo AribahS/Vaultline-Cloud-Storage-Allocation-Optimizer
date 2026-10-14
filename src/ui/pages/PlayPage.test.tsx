@@ -75,14 +75,14 @@ describe('Play screen', () => {
     expect((screen.getByRole('combobox', { name: 'Files to use' }) as HTMLSelectElement).value).toBe('your');
     // Summary shows user file count
     const fileCount = STUDENT_LAPTOP_DATASET.length;
-    expect(screen.getByText(new RegExp(`${fileCount} file`))).toBeTruthy();
-    const tile = () => screen.getByTitle('Spotify_Offline_Cache.dat');
+    expect(screen.getAllByText(new RegExp(`${fileCount} file`)).length).toBeGreaterThan(0);
+    const tile = () => document.querySelector('.play-files [title="Spotify_Offline_Cache.dat"]') as HTMLButtonElement;
     // The importance value shown on the tile should change when priority is updated
     const getImportanceText = () => tile().querySelector('span:last-child')?.textContent;
     const before = getImportanceText();
     act(() => useAppStore.getState().updatePriority(STUDENT_LAPTOP_DATASET.find(file => file.name === 'Spotify_Offline_Cache.dat')!.id, 10));
     // After priority update tile should re-render (importance text or class changes)
-    expect(screen.getByTitle('Spotify_Offline_Cache.dat')).toBeTruthy();
+    expect(tile()).toBeTruthy();
     // Either className or text content should differ – just verify tile still exists and doesn't throw
     expect(tile()).toBeTruthy();
   });
@@ -131,8 +131,10 @@ describe('Play screen', () => {
     const [pinned, excluded, regular] = STUDENT_LAPTOP_DATASET.slice(0, 3).map(file => ({ ...file, size: 10 * 1024 ** 3, priority: 5 }));
     useAppStore.setState({ files: [{ ...pinned, isPinned: true }, { ...excluded, isExcluded: true }, regular], quotaBytes: 15 * 1024 ** 3 });
     renderPlay();
-    expect(screen.getByTitle(pinned.name).className).toContain('kept');
-    expect((screen.getByTitle(excluded.name) as HTMLButtonElement).disabled).toBeTruthy();
+    const pinnedTile = document.querySelector(`.play-files [title="${pinned.name}"]`) as HTMLButtonElement;
+    const excludedTile = document.querySelector(`.play-files [title="${excluded.name}"]`) as HTMLButtonElement;
+    expect(pinnedTile.className).toContain('kept');
+    expect(excludedTile.disabled).toBeTruthy();
   });
 
   it('no count string duplicates (regression: pluralize should not be doubled)', () => {

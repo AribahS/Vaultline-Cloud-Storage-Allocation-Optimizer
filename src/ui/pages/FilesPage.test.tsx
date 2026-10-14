@@ -61,6 +61,15 @@ afterEach(() => {
 });
 
 describe('Files page Step D behavior', () => {
+  it('shows a file-size warning only when the file exceeds the current capacity', () => {
+    const small = file({ id: 'small', name: 'small.bin', size: 20 });
+    const tooLarge = file({ id: 'large', name: 'large.bin', size: 120 });
+    useAppStore.setState({ files: [small, tooLarge], quotaBytes: 100, knapsackResult: null });
+    render(<FilesPage />);
+    expect(screen.queryByTitle('Over 10% of target capacity')).toBeNull();
+    expect(screen.getByTitle('File is larger than target capacity')).toBeTruthy();
+  });
+
   it('replaces with 12 sample rows, including when loaded twice', () => {
     render(<FilesPage />);
     const openSampleMenu = () => fireEvent.click(screen.getByRole('button', { name: 'Sample data' }));
