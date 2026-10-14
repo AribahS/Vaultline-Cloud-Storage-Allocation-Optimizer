@@ -257,8 +257,9 @@
 .walk-dataset-control label { font-weight: 700; }
 .walk-dataset-control select, .algorithm-playback select { border: 1px solid var(--card-border); border-radius: 7px; background: var(--card); color: var(--ink); padding: 7px 9px; }
 .walk-dataset-control span { color: var(--color-ink-2); font-size: 12px; }
-.walk-layout { display: grid; grid-template-columns: minmax(190px, .72fr) minmax(0, 2fr); align-items: start; gap: 16px; }
+.walk-layout { display: grid; grid-template-columns: minmax(280px, .9fr) minmax(0, 2fr); align-items: start; gap: 16px; }
 .walk-files, .walk-table-section { min-width: 0; }
+@media (min-width: 761px) { .walk-table-section { position: sticky; top: 0; align-self: start; } }
 .walk-files h3, .walk-table-section h3, .walk-explanation h3, .algorithm-info-panel h3 { margin: 0 0 6px; color: var(--ink); font-size: 16px; }
 .walk-file-list { display: flex; flex-wrap: wrap; align-items: stretch; gap: 7px; min-height: 48px; }
 .walk-file { min-width: 90px; min-height: 58px; flex: 0 1 130px; display: grid; align-content: center; gap: 3px; overflow: hidden; padding: 7px 9px; border: 1px solid var(--card-border); border-radius: 8px; background: var(--card); color: var(--ink); font-size: 11px; transition: transform .24s ease, opacity .24s ease; }
