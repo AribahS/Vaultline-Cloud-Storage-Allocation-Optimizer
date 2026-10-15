@@ -7,7 +7,7 @@ export interface GeneratePdfOptions {
   full?: boolean;
 }
 
-export function generateReportPdf(model: ReportModel, options: GeneratePdfOptions = {}): jsPDF {
+export function generateReportPdf(model: ReportModel, _options: GeneratePdfOptions = {}): jsPDF {
   const doc = new jsPDF({
     orientation: 'portrait',
     unit: 'mm',
@@ -27,83 +27,100 @@ export function generateReportPdf(model: ReportModel, options: GeneratePdfOption
   const darkGray = [80, 80, 90];
   const borderGray = [215, 229, 220];
 
-  const KEEP_CAP = options.full ? Infinity : 28;
-  const MOVE_CAP = options.full ? Infinity : 20;
+  const KEEP_CAP = model.keepItems.length;
+  const MOVE_CAP = model.moveItems.length;
 
-  // PAGE 1: Header + Summary + Keep List
+  // PAGE 1: Executive summary
   // Header band
   doc.setFillColor(violet[0], violet[1], violet[2]);
   doc.rect(margin, margin, pageWidth - margin * 2, 18, 'F');
 
   doc.setTextColor(paper[0], paper[1], paper[2]);
   doc.setFont('helvetica', 'bold');
-  doc.setFontSize(14);
-  doc.text('Vaultline — Storage report', margin + 6, margin + 8);
+  doc.setFontSize(15);
+  doc.text('Storage optimization report', margin + 6, margin + 8);
 
   doc.setFont('helvetica', 'normal');
   doc.setFontSize(9);
   doc.text(`Generated: ${model.generatedAt}`, margin + 6, margin + 14);
-  doc.text('Exact Dynamic Programming · Private & Local', pageWidth - margin - 6, margin + 14, { align: 'right' });
+  doc.text('Vaultline | Private and local', pageWidth - margin - 6, margin + 14, { align: 'right' });
 
-  // Summary 2-row grid block
+  // Summary grid: readable labels and values with consistent spacing.
   const summaryTop = margin + 22;
-  const summaryHeight = 20;
-  doc.setFillColor(255, 255, 255);
-  doc.setDrawColor(borderGray[0], borderGray[1], borderGray[2]);
-  doc.rect(margin, summaryTop, pageWidth - margin * 2, summaryHeight, 'FD');
+  const summaryGap = 2;
+  const summaryCardHeight = 19;
+  const summaryHeight = summaryCardHeight * 2 + summaryGap;
+  const summaryWidth = pageWidth - margin * 2;
+  const summaryCardWidth = (summaryWidth - summaryGap * 2) / 3;
+  const summaryCards = [
+    ['TARGET CAPACITY', model.spaceGivenFormatted],
+    ['FILES ANALYZED', `${model.totalFilesCount} files | ${model.totalFilesSizeFormatted}`],
+    ['SPACE USED', model.spaceUsedFormatted],
+    ['SPACE AVAILABLE', model.spaceFreeFormatted],
+    ['FILES KEPT', `${model.keptCount} files | ${model.keptSizeFormatted}`],
+    ['FILES MOVED OUT', `${model.movedCount} files | ${model.movedSizeFormatted}`],
+  ];
+  summaryCards.forEach(([label, value], index) => {
+    const row = Math.floor(index / 3);
+    const column = index % 3;
+    const x = margin + column * (summaryCardWidth + summaryGap);
+    const y = summaryTop + row * (summaryCardHeight + summaryGap);
+    doc.setFillColor(255, 255, 255);
+    doc.setDrawColor(borderGray[0], borderGray[1], borderGray[2]);
+    doc.roundedRect(x, y, summaryCardWidth, summaryCardHeight, 1.5, 1.5, 'FD');
+    doc.setTextColor(darkGray[0], darkGray[1], darkGray[2]);
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(7.5);
+    doc.text(label, x + 2.5, y + 4.5);
+    doc.setTextColor(violet[0], violet[1], violet[2]);
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(10.5);
+    const valueLines = doc.splitTextToSize(value, summaryCardWidth - 5);
+    doc.text(valueLines.slice(0, 2), x + 2.5, y + 11, { lineHeightFactor: 1.1 });
+  });
 
+  let summaryY = summaryTop + summaryHeight + 10;
+  doc.setFont('helvetica', 'bold');
+  doc.setFontSize(12);
   doc.setTextColor(violet[0], violet[1], violet[2]);
-  doc.setFontSize(8);
-
-  // Row 1
-  const colWidth = (pageWidth - margin * 2) / 4;
+  doc.text('Optimization outcome', margin, summaryY);
+  summaryY += 7;
+  doc.setFillColor(248, 246, 250);
+  doc.setDrawColor(borderGray[0], borderGray[1], borderGray[2]);
+  doc.roundedRect(margin, summaryY, summaryWidth, 29, 2, 2, 'FD');
   doc.setFont('helvetica', 'bold');
-  doc.text('Space given (capacity):', margin + 4, summaryTop + 6);
+  doc.setFontSize(19);
+  doc.setTextColor(violet[0], violet[1], violet[2]);
+  doc.text(`${model.importancePercent}%`, margin + 5, summaryY + 10);
+  doc.setFontSize(9);
   doc.setFont('helvetica', 'normal');
-  doc.text(model.spaceGivenFormatted, margin + 42, summaryTop + 6);
-
-  doc.setFont('helvetica', 'bold');
-  doc.text('Space used:', margin + colWidth + 4, summaryTop + 6);
-  doc.setFont('helvetica', 'normal');
-  doc.text(model.spaceUsedFormatted, margin + colWidth + 24, summaryTop + 6);
-
-  doc.setFont('helvetica', 'bold');
-  doc.text('Space free:', margin + colWidth * 2 + 4, summaryTop + 6);
-  doc.setFont('helvetica', 'normal');
-  doc.text(model.spaceFreeFormatted, margin + colWidth * 2 + 22, summaryTop + 6);
-
-  doc.setFont('helvetica', 'bold');
-  doc.text('Total files:', margin + colWidth * 3 + 4, summaryTop + 6);
-  doc.setFont('helvetica', 'normal');
-  doc.text(`${model.totalFilesCount} (${model.totalFilesSizeFormatted})`, margin + colWidth * 3 + 22, summaryTop + 6);
-
-  // Row 2
-  doc.setFont('helvetica', 'bold');
-  doc.text('Files kept:', margin + 4, summaryTop + 14);
-  doc.setFont('helvetica', 'normal');
-  doc.text(`${model.keptCount} (${model.keptSizeFormatted})`, margin + 22, summaryTop + 14);
-
-  doc.setFont('helvetica', 'bold');
-  doc.text('Files moved out:', margin + colWidth + 4, summaryTop + 14);
-  doc.setFont('helvetica', 'normal');
-  doc.text(`${model.movedCount} (${model.movedSizeFormatted})`, margin + colWidth + 30, summaryTop + 14);
-
-  doc.setFont('helvetica', 'bold');
-  doc.text('Importance retained:', margin + colWidth * 2 + 4, summaryTop + 14);
-  doc.setFont('helvetica', 'normal');
-  doc.text(`${model.importancePercent}% (${model.importanceKept}/${model.importanceTotal})`, margin + colWidth * 2 + 34, summaryTop + 14);
-
-  doc.setFont('helvetica', 'bold');
-  doc.text('Method:', margin + colWidth * 3 + 4, summaryTop + 14);
-  doc.setFont('helvetica', 'normal');
-  doc.text('0/1 Knapsack DP', margin + colWidth * 3 + 18, summaryTop + 14);
-
-  // Keep table section title
-  const keepSectionTop = summaryTop + summaryHeight + 6;
+  doc.text(`of total importance retained (${model.importanceKept} of ${model.importanceTotal})`, margin + 5, summaryY + 17);
+  doc.setFillColor(225, 229, 232);
+  doc.roundedRect(margin + 5, summaryY + 21, summaryWidth - 10, 3, 1.5, 1.5, 'F');
+  doc.setFillColor(gold[0], gold[1], gold[2]);
+  doc.roundedRect(margin + 5, summaryY + 21, Math.max(1, (summaryWidth - 10) * model.importancePercent / 100), 3, 1.5, 1.5, 'F');
+  summaryY += 37;
   doc.setFont('helvetica', 'bold');
   doc.setFontSize(11);
+  doc.text('Plan summary', margin, summaryY);
+  doc.setFont('helvetica', 'normal');
+  doc.setFontSize(9.5);
+  const summaryText = `The selected plan keeps ${model.keptCount} of ${model.totalFilesCount} files and uses ${model.spaceUsedFormatted} of the ${model.spaceGivenFormatted} target. ${model.movedCount} files (${model.movedSizeFormatted}) are moved out, leaving ${model.spaceFreeFormatted} available.`;
+  doc.text(doc.splitTextToSize(summaryText, summaryWidth), margin, summaryY + 6, { lineHeightFactor: 1.35 });
+  doc.setFontSize(8.5);
+  doc.setTextColor(darkGray[0], darkGray[1], darkGray[2]);
+  doc.text(`Exact dynamic programming | Runtime: ${model.solverRuntimeMs > 0 ? `${model.solverRuntimeMs.toFixed(2)} ms` : 'not measured'}`, margin, summaryY + 22);
+
+  // PAGE 2: Complete kept-file list
+  doc.addPage('a4', 'portrait');
+  const keepSectionTop = margin + 9;
+  doc.setFont('helvetica', 'bold');
+  doc.setFontSize(15);
   doc.setTextColor(violet[0], violet[1], violet[2]);
-  doc.text(`Files to keep (${model.keptCount} files · ${model.keptSizeFormatted})`, margin, keepSectionTop);
+  doc.text(`Files kept - ${model.keptCount} files`, margin, keepSectionTop);
+  doc.setFont('helvetica', 'normal');
+  doc.setFontSize(9);
+  doc.text(`Total size: ${model.keptSizeFormatted} | Importance scores are out of 10; * marks a manually edited score.`, margin, keepSectionTop + 6);
 
   const keepRows = model.keepItems.slice(0, KEEP_CAP).map((item, idx) => [
     String(idx + 1),
@@ -119,8 +136,8 @@ export function generateReportPdf(model: ReportModel, options: GeneratePdfOption
   }
 
   autoTable(doc, {
-    startY: keepSectionTop + 3,
-    head: [['#', 'File', 'Folder', 'Size', 'Importance']],
+    startY: keepSectionTop + 10,
+    head: [['#', 'File name', 'Folder', 'Size', 'Score / 10']],
     body: keepRows,
     theme: 'plain',
     margin: { left: margin, right: margin },
@@ -128,23 +145,23 @@ export function generateReportPdf(model: ReportModel, options: GeneratePdfOption
       fillColor: [240, 245, 242],
       textColor: violet as [number, number, number],
       fontStyle: 'bold',
-      fontSize: 8,
+      fontSize: 9,
       lineColor: borderGray as [number, number, number],
       lineWidth: 0.2,
     },
     bodyStyles: {
-      fontSize: 8,
+      fontSize: 9,
       textColor: [40, 40, 50],
-      cellPadding: 1.5,
+      cellPadding: 2,
       lineColor: [235, 240, 237],
       lineWidth: 0.1,
     },
     columnStyles: {
       0: { cellWidth: 10, halign: 'center' },
-      1: { cellWidth: 70 },
-      2: { cellWidth: 66 },
+      1: { cellWidth: 68 },
+      2: { cellWidth: 60 },
       3: { cellWidth: 22, halign: 'right' },
-      4: { cellWidth: 18, halign: 'center' },
+      4: { cellWidth: 24, halign: 'center' },
     },
     didDrawCell: (data) => {
       // Thin mint accent on first column of keep rows
@@ -155,15 +172,18 @@ export function generateReportPdf(model: ReportModel, options: GeneratePdfOption
     },
   });
 
-  // PAGE 2: Files to move out + Constraints + Method note
+  // PAGE 3: Complete moved-file list
   doc.addPage('a4', 'portrait');
 
   // Move table section title
-  const moveSectionTop = margin + 4;
+  const moveSectionTop = margin + 9;
   doc.setFont('helvetica', 'bold');
-  doc.setFontSize(11);
+  doc.setFontSize(15);
   doc.setTextColor(violet[0], violet[1], violet[2]);
-  doc.text(`Files to move out (${model.movedCount} files · ${model.movedSizeFormatted})`, margin, moveSectionTop);
+  doc.text(`Files moved out - ${model.movedCount} files`, margin, moveSectionTop);
+  doc.setFont('helvetica', 'normal');
+  doc.setFontSize(9);
+  doc.text(`Total size: ${model.movedSizeFormatted} | These files are outside the selected storage plan.`, margin, moveSectionTop + 6);
 
   const moveRows = model.moveItems.slice(0, MOVE_CAP).map((item, idx) => [
     `M${idx + 1}`,
@@ -179,32 +199,32 @@ export function generateReportPdf(model: ReportModel, options: GeneratePdfOption
   }
 
   autoTable(doc, {
-    startY: moveSectionTop + 3,
-    head: [['#', 'File', 'Folder', 'Size', 'Importance']],
-    body: moveRows.length > 0 ? moveRows : [['—', 'No files to move out. Everything fits in capacity.', '', '', '']],
+    startY: moveSectionTop + 10,
+    head: [['#', 'File name', 'Folder', 'Size', 'Score / 10']],
+    body: moveRows.length > 0 ? moveRows : [['-', 'No files to move out. Everything fits in capacity.', '', '', '']],
     theme: 'plain',
     margin: { left: margin, right: margin },
     headStyles: {
       fillColor: [248, 240, 242],
       textColor: violet as [number, number, number],
       fontStyle: 'bold',
-      fontSize: 8,
+      fontSize: 9,
       lineColor: borderGray as [number, number, number],
       lineWidth: 0.2,
     },
     bodyStyles: {
-      fontSize: 8,
+      fontSize: 9,
       textColor: [40, 40, 50],
-      cellPadding: 1.5,
+      cellPadding: 2,
       lineColor: [235, 240, 237],
       lineWidth: 0.1,
     },
     columnStyles: {
       0: { cellWidth: 10, halign: 'center' },
-      1: { cellWidth: 70 },
-      2: { cellWidth: 66 },
+      1: { cellWidth: 68 },
+      2: { cellWidth: 60 },
       3: { cellWidth: 22, halign: 'right' },
-      4: { cellWidth: 18, halign: 'center' },
+      4: { cellWidth: 24, halign: 'center' },
     },
     didDrawCell: (data) => {
       // Thin crimson accent on first column of moved rows
@@ -215,52 +235,57 @@ export function generateReportPdf(model: ReportModel, options: GeneratePdfOption
     },
   });
 
-  // Constraints & Notes
-  const lastY = (doc as any).lastAutoTable?.finalY ?? 160;
-  let currentY = lastY + 8;
+  // Constraints and notes follow the complete moved-file table and may continue on new pages.
+  let currentY = (doc as any).lastAutoTable?.finalY ?? margin + 8;
+  const constraintRows = [
+    ...model.alwaysKeepItems.map(item => ['Always keep', item.name, formatSize(item.size)]),
+    ...model.neverKeepItems.map(item => ['Never keep', item.name, formatSize(item.size)]),
+  ];
 
-  if (model.alwaysKeepItems.length > 0 || model.neverKeepItems.length > 0) {
+  if (constraintRows.length > 0) {
+    if (currentY + 24 > pageHeight - margin - 10) {
+      doc.addPage('a4', 'portrait');
+      currentY = margin + 8;
+    }
     doc.setFont('helvetica', 'bold');
-    doc.setFontSize(9);
+    doc.setFontSize(10);
     doc.setTextColor(violet[0], violet[1], violet[2]);
-    doc.text('Constraints:', margin, currentY);
-    currentY += 4;
-
-    doc.setFont('helvetica', 'normal');
-    doc.setFontSize(8);
-    doc.setTextColor(darkGray[0], darkGray[1], darkGray[2]);
-    if (model.alwaysKeepItems.length > 0) {
-      const names = model.alwaysKeepItems.map(i => i.name).join(', ');
-      doc.text(`Always keep: ${names}`, margin, currentY, { maxWidth: pageWidth - margin * 2 });
-      currentY += 5;
-    }
-    if (model.neverKeepItems.length > 0) {
-      const names = model.neverKeepItems.map(i => i.name).join(', ');
-      doc.text(`Never keep: ${names}`, margin, currentY, { maxWidth: pageWidth - margin * 2 });
-      currentY += 5;
-    }
-    currentY += 4;
+    doc.text('Constraints', margin, currentY + 4);
+    autoTable(doc, {
+      startY: currentY + 7,
+      head: [['Rule', 'File', 'Size']],
+      body: constraintRows,
+      theme: 'plain',
+      margin: { left: margin, right: margin },
+      headStyles: { fillColor: [240, 245, 242], textColor: violet as [number, number, number], fontStyle: 'bold', fontSize: 9, lineColor: borderGray as [number, number, number], lineWidth: 0.2 },
+      bodyStyles: { fontSize: 9, textColor: [40, 40, 50], cellPadding: 2, lineColor: [235, 240, 237], lineWidth: 0.1 },
+      columnStyles: { 0: { cellWidth: 32 }, 1: { cellWidth: 130 }, 2: { cellWidth: 24, halign: 'right' } },
+    });
+    currentY = ((doc as any).lastAutoTable?.finalY ?? currentY) + 7;
   }
 
-  // Method note
+  if (currentY + 34 > pageHeight - margin - 10) {
+    doc.addPage('a4', 'portrait');
+    currentY = margin + 8;
+  }
   doc.setFont('helvetica', 'bold');
-  doc.setFontSize(8.5);
+  doc.setFontSize(10);
   doc.setTextColor(violet[0], violet[1], violet[2]);
-  doc.text('Method & Privacy note:', margin, currentY);
-  currentY += 4;
+  doc.text('Method and privacy', margin, currentY + 4);
 
-  doc.setFont('helvetica', 'normal');
-  doc.setFontSize(7.5);
-  doc.setTextColor(darkGray[0], darkGray[1], darkGray[2]);
   const notes = [
-    '• Exact dynamic programming (O(n × W)) computes the optimal selection for the specified capacity.',
-    '• Privacy guarantee: No files or file contents are uploaded. Only metadata (name, size, dates) was processed in your browser.',
-    '• Importance scores are suggested by a local heuristic based on file type, age and duplicate detection unless marked with an asterisk (*), which indicates manual user edits.',
-    '• For complete list of all files, download the CSV or JSON report.',
+    'Exact dynamic programming (O(n x W)) computes the optimal selection for the specified capacity.',
+    'Privacy: No files or file contents are uploaded. Only file metadata was processed in your browser.',
+    'Importance scores use a local heuristic unless marked with an asterisk, which indicates a manual edit.',
+    'This PDF lists every kept and moved file. CSV and JSON exports are also available.',
   ];
-  notes.forEach(note => {
-    doc.text(note, margin, currentY, { maxWidth: pageWidth - margin * 2 });
-    currentY += 3.5;
+  autoTable(doc, {
+    startY: currentY + 7,
+    body: notes.map(note => [note]),
+    theme: 'plain',
+    margin: { left: margin, right: margin },
+    styles: { font: 'helvetica', fontSize: 8.5, textColor: darkGray as [number, number, number], cellPadding: { top: 1.5, right: 1, bottom: 1.5, left: 0 }, overflow: 'linebreak', lineColor: [255, 255, 255], lineWidth: 0 },
+    columnStyles: { 0: { cellWidth: pageWidth - margin * 2 } },
   });
 
   // Page footers
@@ -274,7 +299,7 @@ export function generateReportPdf(model: ReportModel, options: GeneratePdfOption
     doc.setFont('helvetica', 'normal');
     doc.setFontSize(8);
     doc.setTextColor(darkGray[0], darkGray[1], darkGray[2]);
-    doc.text(`Vaultline Storage Report — Page ${i} of ${totalPages}`, margin, pageHeight - margin + 1);
+    doc.text(`Vaultline Storage Report - Page ${i} of ${totalPages}`, margin, pageHeight - margin + 1);
     doc.text(`Generated: ${model.generatedAt}`, pageWidth - margin, pageHeight - margin + 1, { align: 'right' });
   }
 

@@ -30,7 +30,7 @@ export const TopBar: React.FC = () => {
   return <>
     <input ref={fileInput} type="file" multiple hidden onChange={onFiles} />
     <header className="vaultline-topbar">
-      <button className="brand-button" onClick={() => navigate('/files')} aria-label="Vaultline home">Vaultline</button>
+      <button className="brand-button" onClick={() => navigate('/landing')} aria-label="Vaultline landing page">Vaultline</button>
       <nav className="vaultline-nav" aria-label="Main navigation">
         <NavLink to="/files">Files</NavLink><NavLink to="/play">Play</NavLink><NavLink to="/results">Results</NavLink>
         <button type="button" onClick={openAlgorithm}>Algorithm</button>

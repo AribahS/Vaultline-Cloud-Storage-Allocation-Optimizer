@@ -1,5 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useOpenAlgorithmDrawer } from '../components/AlgorithmDrawerContext';
 import { FilePlus, Pin, Eye, CheckCircle2, RotateCcw } from 'lucide-react';
 import { GREEDY_COUNTEREXAMPLE_DATASET } from '../../engine/greedy';
 import { formatScore, formatSize, pluralize } from '../../lib/format';
@@ -168,17 +169,17 @@ export const PlayPage: React.FC = () => {
   const curvePoints = curve.filter((_, idx) => idx % Math.max(1, Math.ceil(curve.length / 100)) === 0 || idx === curve.length - 1);
   const chartPath = curvePoints
     .map((point, index) => {
-      const x = maxCapacity ? (point.capacity / maxCapacity) * 600 : 0;
-      const y = 84 - (point.percent / 100) * 70;
-      return `${index === 0 ? 'M' : 'L'}${x + 40},${y}`;
+      const x = maxCapacity ? (point.capacity / maxCapacity) * 888 : 0;
+      const y = 282 - (point.percent / 100) * 232;
+      return `${index === 0 ? 'M' : 'L'}${x + 72},${y}`;
     })
     .join(' ');
-
-  const bestFitX = maxCapacity ? (capacityUnits / maxCapacity) * 600 + 40 : 40;
-  const bestFitY = 84 - (totalImportance > 0 ? (bestFitResult.totalImportance / totalImportance) * 70 : 0);
-
-  const userPackX = maxCapacity ? Math.min(640, (userPackWeight / maxCapacity) * 600 + 40) : 40;
-  const userPackY = 84 - (totalImportance > 0 ? (userPack.totalImportance / totalImportance) * 70 : 0);
+  const areaPath = chartPath ? chartPath + ' L960,282 L72,282 Z' : '';
+  const bestFitX = maxCapacity ? (capacityUnits / maxCapacity) * 888 + 72 : 72;
+  const bestFitY = 282 - (totalImportance > 0 ? (bestFitResult.totalImportance / totalImportance) * 232 : 0);
+  const userPackX = maxCapacity ? Math.min(960, (userPackWeight / maxCapacity) * 888 + 72) : 72;
+  const userPackY = 282 - (totalImportance > 0 ? (userPack.totalImportance / totalImportance) * 232 : 0);
+  const calloutX = bestFitX > 700 ? bestFitX - 266 : bestFitX + 16;
 
   // Computed summary sentence for curve
   const kneePoint = curve.find(p => p.percent >= 80) ?? curve[curve.length - 1] ?? { capacity: 0, percent: 100 };
@@ -207,6 +208,19 @@ export const PlayPage: React.FC = () => {
             Open results
           </button>
         </div>
+
+        <section className="score-comparison play-overview" aria-label="Best fit overview">
+          <div className="play-overview-metrics">
+            <article><strong>{totalImportance > 0 ? Math.round(bestFitResult.totalImportance / totalImportance * 100) : 0}%</strong><span>importance kept ({formatScore(bestFitResult.totalImportance)} of {formatScore(totalImportance)})</span></article>
+            <article><strong>{formatSize(bestFitResult.totalSize)}</strong><span>used of {formatSize(currentCapacityBytes)}</span></article>
+            <article><strong>{bestFitResult.keptIds.length} · {items.filter(item => !bestFitResult.keptIds.includes(item.id)).length}</strong><span>kept · moved out</span></article>
+          </div>
+          <p className="play-overview-summary">Best fit at {formatSize(currentCapacityBytes)}: keeps {bestFitResult.keptIds.length} of {items.length} files ({formatSize(bestFitResult.totalSize)}), importance {formatScore(bestFitResult.totalImportance)} of {formatScore(totalImportance)}. Moves out {items.filter(item => !bestFitResult.keptIds.includes(item.id)).length} files ({formatSize(items.filter(item => !bestFitResult.keptIds.includes(item.id)).reduce((sum,item) => sum + item.size,0))}).</p>
+          <details className="play-overview-list"><summary>Keeps ({bestFitResult.keptIds.length})</summary><div>{items.filter(item => bestFitResult.keptIds.includes(item.id)).map(item => <span className="play-overview-chip play-overview-kept" key={item.id} title={item.name}>{truncateTreemapLabel(item.name,22)}</span>)}</div></details>
+          <details className="play-overview-list"><summary>Moves out ({items.filter(item => !bestFitResult.keptIds.includes(item.id)).length})</summary><div>{items.filter(item => !bestFitResult.keptIds.includes(item.id)).map(item => <span className="play-overview-chip play-overview-moved" key={item.id} title={item.name}>{truncateTreemapLabel(item.name,22)}</span>)}</div></details>
+          <p className="play-overview-pack">Your pack: {formatScore(userPack.totalImportance)} ({formatSize(usedBytes)}), {Math.max(0,bestFitResult.totalImportance-userPack.totalImportance)} below the best fit.</p>
+          <div className="play-overview-actions"><button type="button" className="play-outline" onClick={() => navigate('/results')}>Open results</button><button type="button" className="play-outline" onClick={openAlgorithm}>How it works</button></div>
+        </section>
 
         {/* Source selector */}
         <div className="play-controls" style={{ flexWrap: 'wrap', gap: '12px', marginBottom: '16px' }}>
@@ -314,24 +328,6 @@ export const PlayPage: React.FC = () => {
           </div>
         </div>
 
-        {/* Action Controls */}
-        <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', alignItems: 'center', margin: '16px 0' }}>
-          <button
-            type="button"
-            className="vault-btn btn-primary"
-            onClick={() => setShowBestFit(prev => !prev)}
-            aria-pressed={showBestFit}
-          >
-            <Eye size={16} /> {showBestFit ? 'Hide best fit' : 'Show best fit'}
-          </button>
-          <button type="button" className="vault-btn btn-secondary" onClick={handleUseBestFit}>
-            <CheckCircle2 size={16} /> Use best fit
-          </button>
-          <button type="button" className="vault-btn btn-secondary" onClick={handleClearPack}>
-            <RotateCcw size={16} /> Clear pack
-          </button>
-        </div>
-
         {/* Status Line for Notices */}
         {notice && (
           <p role="alert" className="challenge-notice" style={{ margin: '12px 0' }}>
@@ -341,8 +337,8 @@ export const PlayPage: React.FC = () => {
 
         {/* Best Fit Comparison View */}
         {showBestFit && (
-          <section className="score-comparison" aria-label="Best fit comparison" data-testid="challenge-results" style={{ margin: '16px 0', background: 'var(--paper)', color: 'var(--ink)' }}>
-            <div style={{ display: 'flex', gap: '24px', flexWrap: 'wrap', marginBottom: '12px' }}>
+          <section className="score-comparison play-best-fit" aria-label="Best fit comparison" data-testid="challenge-results" style={{ margin: '16px 0', background: 'var(--paper)', color: 'var(--ink)' }}>
+            <div className="play-best-fit-scores" style={{ display: 'flex', gap: '24px', flexWrap: 'wrap', marginBottom: '12px' }}>
               <article>
                 <span>Your pack</span>
                 <strong data-testid="your-score">{formatScore(userPack.totalImportance)}</strong>
@@ -473,46 +469,46 @@ export const PlayPage: React.FC = () => {
           })}
         </div>
 
-        {/* Staircase Chart with Axes */}
-        <div className="curve-card" aria-label="Importance kept vs storage chart" style={{ marginTop: '24px', height: 'auto', padding: '16px' }}>
-          <span className="curve-title" style={{ fontSize: '14px', fontWeight: 700, marginBottom: '8px' }}>
+        {/* Action Controls */}
+        <div className="play-actions" style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', alignItems: 'center', margin: '16px 0' }}>
+          <button
+            type="button"
+            className="vault-btn btn-primary"
+            onClick={() => setShowBestFit(prev => !prev)}
+            aria-pressed={showBestFit}
+          >
+            <Eye size={16} /> {showBestFit ? 'Hide best fit' : 'Show best fit'}
+          </button>
+          <button type="button" className="vault-btn btn-secondary" onClick={handleUseBestFit}>
+            <CheckCircle2 size={16} /> Use best fit
+          </button>
+          <button type="button" className="vault-btn btn-secondary" onClick={handleClearPack}>
+            <RotateCcw size={16} /> Clear pack
+          </button>
+        </div>
+
+        {/* Capacity and importance trade-off graph */}
+        <section className="curve-card play-curve-card" aria-label="Importance kept vs storage chart" style={{ marginTop: '24px', height: 'auto', padding: '20px 24px' }}>
+          <span className="curve-title" style={{ fontSize: '18px', fontWeight: 700, marginBottom: '6px' }}>
             Importance kept vs storage (0/1 Knapsack curve)
           </span>
-
-          <svg viewBox="0 0 660 110" role="img" aria-label="Importance vs storage chart" style={{ width: '100%', height: '110px' }}>
-            {/* Axes */}
-            <line x1="40" y1="14" x2="40" y2="84" stroke="var(--paper)" strokeWidth="1.5" />
-            <line x1="40" y1="84" x2="640" y2="84" stroke="var(--paper)" strokeWidth="1.5" />
-
-            {/* Y axis ticks */}
-            <text x="8" y="18" fill="var(--paper)" fontSize="10">100%</text>
-            <text x="14" y="52" fill="var(--paper)" fontSize="10">50%</text>
-            <text x="20" y="88" fill="var(--paper)" fontSize="10">0%</text>
-
-            {/* Curve line */}
-            <path d={chartPath} fill="none" stroke="var(--highlight)" strokeWidth="2.5" />
-
-            {/* Current best fit dot */}
-            <circle cx={bestFitX} cy={bestFitY} r="5" fill="var(--highlight)" />
-            <text x={Math.max(40, bestFitX - 25)} y={Math.max(14, bestFitY - 8)} fill="var(--highlight)" fontSize="9" fontWeight="bold">
-              Best fit
-            </text>
-
-            {/* User pack marker dot */}
-            <circle cx={userPackX} cy={userPackY} r="4" fill="var(--kept)" stroke="var(--ink)" strokeWidth="1.5" />
-            <text x={Math.min(580, userPackX + 6)} y={Math.min(94, userPackY + 12)} fill="var(--kept)" fontSize="9" fontWeight="bold">
-              Your pack
-            </text>
-
-            {/* X axis end labels */}
-            <text x="40" y="102" fill="var(--paper)" fontSize="10">{formatSize(0)}</text>
-            <text x="640" y="102" fill="var(--paper)" fontSize="10" textAnchor="end">{formatSize(totalBytes)}</text>
+          <div className="play-curve-legend"><span><i />Best fit {totalImportance > 0 ? Math.round(bestFitResult.totalImportance / totalImportance * 100) : 0}%</span><span>Capacity {formatSize(currentCapacityBytes)}</span></div>
+          <svg viewBox="0 0 1000 340" role="img" aria-label="Importance vs storage chart" style={{ width: '100%', height: 'auto', minHeight: '260px', display: 'block' }}>
+            {[50,108,166,224,282].map((y,index)=><g key={y}><line x1="72" y1={y} x2="960" y2={y} stroke="color-mix(in srgb, var(--paper) 24%, transparent)" strokeWidth="1"/><text x="60" y={y+5} textAnchor="end" fill="var(--paper)" fontSize="18">{100-index*25}%</text></g>)}
+            <path d={areaPath} fill="var(--highlight)" fillOpacity=".14" />
+            <path d={chartPath} fill="none" stroke="var(--highlight)" strokeWidth="4" strokeLinejoin="round" />
+            <line x1={bestFitX} y1="50" x2={bestFitX} y2="282" stroke="var(--paper)" strokeWidth="1.5" strokeDasharray="7 6" />
+            <circle cx={bestFitX} cy={bestFitY} r="10" fill="var(--highlight)" stroke="var(--paper)" strokeWidth="4" />
+            <circle cx={userPackX} cy={userPackY} r="6" fill="var(--kept)" stroke="var(--ink)" strokeWidth="2" />
+            <text x={Math.min(940,userPackX+10)} y={Math.max(66,userPackY-10)} fill="var(--paper)" fontSize="13" fontWeight="bold">Your pack</text>
+            <rect x={Math.max(72,Math.min(806,bestFitX-68))} y="20" width="136" height="28" rx="8" fill="var(--paper)" stroke="color-mix(in srgb, var(--ink) 14%, transparent)" />
+            <text x={Math.max(140,Math.min(874,bestFitX))} y="40" textAnchor="middle" fill="var(--ink)" fontSize="14" fontFamily="var(--font-mono)">Capacity {formatSize(currentCapacityBytes)}</text>
+            <rect x={Math.max(72,Math.min(710,calloutX))} y={Math.max(58,bestFitY-42)} width="250" height="30" rx="7" fill="var(--paper)" stroke="color-mix(in srgb, var(--ink) 14%, transparent)" />
+            <text x={Math.max(82,Math.min(720,calloutX+9))} y={Math.max(78,bestFitY-22)} fill="var(--ink)" fontSize="14" fontFamily="var(--font-mono)">At {formatSize(currentCapacityBytes)}: {totalImportance > 0 ? Math.round(bestFitResult.totalImportance / totalImportance * 100) : 0}% importance</text>
+            {[0,.25,.5,.75,1].map((ratio,index)=><text key={ratio} x={72+888*ratio} y="308" textAnchor={index===0?'start':index===4?'end':'middle'} fill="var(--paper)" fontSize="17" fontFamily="var(--font-mono)">{formatSize(totalBytes*ratio)}</text>)}
           </svg>
-
-          <p data-testid="knee-sentence" style={{ fontSize: '13px', marginTop: '10px', color: 'var(--paper)', lineHeight: 1.5 }}>
-            {curveSentence}
-          </p>
-        </div>
+          <p data-testid="knee-sentence" style={{ fontSize: '13px', marginTop: '8px', color: 'var(--paper)', lineHeight: 1.5 }}>{curveSentence}</p>
+        </section>
       </section>
     </div>
   );
